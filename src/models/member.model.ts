@@ -15,13 +15,30 @@ export interface IMember extends Document {
 
 const memberSchema = new Schema<IMember>(
   {
-
+    role: {
+      type: String,
+      enum: [MemberRole.ADMIN, MemberRole.MODERATOR, MemberRole.MEMBER],
+      default: MemberRole.MEMBER
+    },
+    profileId: {
+      type: Schema.Types.ObjectId,
+      ref: "Profile",
+      required: [true, "Profile ID is required"]
+    },
+    serverId: {
+      type: Schema.Types.ObjectId,
+      ref: "Server",
+      required: [true, "Server ID is required"]
+    }
   },
   {
     timestamps: true
   }
 );
 
+// Indexes
+memberSchema.index({ profileId: 1 });
+memberSchema.index({ serverId: 1 });
 
 const Member: Model<IMember> =
   mongoose.models.Member || mongoose.model<IMember>("Member", memberSchema);
