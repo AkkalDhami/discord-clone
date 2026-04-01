@@ -1,5 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
-import { IAvatar } from "./user.model";
+import { IAvatar } from "./profile.model";
 
 
 export interface IServer extends Document {
