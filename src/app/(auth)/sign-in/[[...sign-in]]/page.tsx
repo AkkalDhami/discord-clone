@@ -1,9 +1,11 @@
-import { Show, SignIn, SignInButton, SignUpButton, UserButton } from "@clerk/nextjs";
+"use client";
+
+import { SignIn } from "@clerk/nextjs";
 
 export default function Page() {
   return (
     <div className="flex h-screen items-center justify-center">
-      <SignIn />
+      <SignIn afterSignOutUrl={"/"} />
       {/* <Show when="signed-out">
         <SignInButton />
         <SignUpButton>
