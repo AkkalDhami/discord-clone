@@ -1,12 +1,11 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
-import { IAvatar } from "./profile.model";
 
 
 export interface IServer extends Document {
   _id: mongoose.Types.ObjectId;
 
   name: string;
-  logo: IAvatar;
+  logo: string;
   inviteCode: string;
 
   profileId: mongoose.Types.ObjectId;
@@ -25,9 +24,8 @@ const serverSchema = new Schema<IServer>(
       trim: true
     },
     logo: {
-      public_id: String,
-      url: String,
-      size: Number
+      type: String,
+      default: null
     },
     inviteCode: {
       type: String,

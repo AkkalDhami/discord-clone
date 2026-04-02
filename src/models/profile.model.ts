@@ -16,6 +16,12 @@ export interface IProfile extends Document {
 
 const profileSchema = new Schema<IProfile>(
   {
+    userId: {
+      type: String,
+      required: [true, "User ID is required"],
+      unique: true,
+      trim: true
+    },
     name: {
       type: String,
       required: [true, "Name is required"],
