@@ -1,33 +1,23 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-const isProtectedRoute = createRouteMatcher([
-  "/profile(.*)",
-  "/servers(.*)",
-  "/channels(.*)",
-  "/messages(.*)",
-  "/users(.*)",
-  "/settings(.*)"
-]);
+export function proxy(request: NextRequest) {
+  const isPublic =
+    request.nextUrl.pathname === "/signin" ||
+    request.nextUrl.pathname === "/signup";
 
-const isPublicRoute = createRouteMatcher(["/sign-in(.*)", "/sign-up(.*)", "/"]);
-
-export default clerkMiddleware(async (auth, req) => {
-  const authObj = await auth();
-  console.log({ authObj });
-  if (!isPublicRoute(req)) {
-    await auth.protect();
+  const accessToken = request.cookies.get("accessToken")?.value;
+  if (accessToken) {
+    if (isPublic) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+  } else {
+    if (!isPublic) {
+      return NextResponse.redirect(new URL("/signin", request.url));
+    }
   }
-  if (isProtectedRoute(req) && !authObj.userId) {
-    return auth().then(a => a.redirectToSignIn());
-  }
-});
+}
 
 export const config = {
-  matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
-    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)"
-  ]
+  matcher: ["/", "/signin", "/signup", "/profile"]
 };
