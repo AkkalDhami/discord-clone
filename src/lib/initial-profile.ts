@@ -1,16 +1,14 @@
 import dbConnect from "@/configs/db";
+import { currentAuthUser } from "@/helpers/auth.helper";
 import Profile from "@/models/profile.model";
-import { currentUser } from "@clerk/nextjs/server";
 export const initialProfile = async () => {
   await dbConnect();
-  const user = await currentUser();
+  const user = await currentAuthUser();
   if (!user) {
     return null;
   }
 
-  console.log({ user })
-
-  const email = user.emailAddresses[0].emailAddress;
+  const email = user.email;
 
   if (!email) {
     throw new Error("Email is required");
@@ -20,16 +18,14 @@ export const initialProfile = async () => {
     email: email
   });
 
-  if (profile) {
-    return profile;
-  }
-
-  const newProfile = await Profile.create({
-    userId: user.id,
-    name: `${user.firstName} ${user.lastName}`,
-    email: user.emailAddresses[0].emailAddress,
-    avatarUrl: user.imageUrl
-  });
-  return newProfile;
-
+  return {
+    _id: profile?._id.toString(),
+    name: profile?.name,
+    email: profile?.email,
+    avatar: profile?.avatar,
+    servers: profile?.servers,
+    channels: profile?.channels,
+    createdAt: profile?.createdAt,
+    updatedAt: profile?.updatedAt,
+  };
 };
