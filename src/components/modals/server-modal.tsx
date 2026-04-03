@@ -9,8 +9,7 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger
+  DialogTitle
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,8 +21,12 @@ import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useModal } from "@/hooks/use-modal-store";
 
-export function InitialModal() {
+export function ServerModal() {
+  const { close, isOpen, type } = useModal();
+  const isModalOpen = isOpen && type === "create-server";
+
   const { createServer, createServerLoading } = useServer();
   const router = useRouter();
 
@@ -40,7 +43,7 @@ export function InitialModal() {
       toast.success("Server created successfully");
       form.reset();
       router.refresh();
-      window.location.reload();
+      close();
     } catch (error) {
       console.log(error);
       toast.error("Failed to create server");
@@ -49,9 +52,13 @@ export function InitialModal() {
 
   const isLoading = form.formState.isSubmitting || createServerLoading;
 
+  const handleClose = () => {
+    form.reset();
+    close();
+  };
+
   return (
-    <Dialog open>
-      <DialogTrigger>Open</DialogTrigger>
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Customize your server</DialogTitle>
@@ -59,7 +66,7 @@ export function InitialModal() {
             Give your server a personality with a name and an image. You can
             always change them later.
           </p>
-          <form id="create-server-form" onSubmit={form.handleSubmit(onSubmit)}>
+          <form id="server-form" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <Controller
                 name="logo"
@@ -106,10 +113,10 @@ export function InitialModal() {
             <Button
               type="submit"
               variant={"primary"}
-              form="create-server-form"
+              form="server-form"
               className="mt-2 w-full"
               disabled={isLoading}>
-              Create
+              {isLoading ? "Creating..." : "Create"}
             </Button>
           </Field>
         </DialogHeader>
