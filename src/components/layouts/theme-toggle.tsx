@@ -3,8 +3,9 @@
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-export default function ThemeToggle() {
+export default function ThemeToggle({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
   const { theme, systemTheme, setTheme } = useTheme();
 
@@ -24,8 +25,8 @@ export default function ThemeToggle() {
   return (
     <Button
       variant="ghost"
-      size="icon"
-      className="primary-ring"
+      size="icon-lg"
+      className={cn("primary-ring rounded-lg", className)}
       onClick={toggleTheme}>
       {currentTheme === "dark" ? (
         <svg
