@@ -1,13 +1,12 @@
 import MemberRole from "@/enums/role.enum";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-
 export interface IMember extends Document {
   _id: mongoose.Types.ObjectId;
 
   role: MemberRole;
   profileId: mongoose.Types.ObjectId;
-  serverId: mongoose.Types.ObjectId;
+  serverId?: mongoose.Types.ObjectId;
 
   createdAt: Date;
   updatedAt: Date;
@@ -17,8 +16,8 @@ const memberSchema = new Schema<IMember>(
   {
     role: {
       type: String,
-      enum: [MemberRole.ADMIN, MemberRole.MODERATOR, MemberRole.MEMBER],
-      default: MemberRole.MEMBER
+      enum: [MemberRole.ADMIN, MemberRole.MODERATOR, MemberRole.GUEST],
+      default: MemberRole.GUEST
     },
     profileId: {
       type: Schema.Types.ObjectId,
@@ -27,8 +26,7 @@ const memberSchema = new Schema<IMember>(
     },
     serverId: {
       type: Schema.Types.ObjectId,
-      ref: "Server",
-      required: [true, "Server ID is required"]
+      ref: "Server"
     }
   },
   {

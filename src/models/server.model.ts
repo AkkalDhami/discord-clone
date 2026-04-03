@@ -1,6 +1,5 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-
 export interface IServer extends Document {
   _id: mongoose.Types.ObjectId;
 
@@ -10,7 +9,6 @@ export interface IServer extends Document {
 
   profileId: mongoose.Types.ObjectId;
   members: mongoose.Types.ObjectId[];
-  // channels: mongoose.Types.ObjectId[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -30,7 +28,8 @@ const serverSchema = new Schema<IServer>(
     inviteCode: {
       type: String,
       required: [true, "Invite code is required"],
-      trim: true
+      trim: true,
+      unique: true
     },
     profileId: {
       type: Schema.Types.ObjectId,
@@ -51,7 +50,6 @@ const serverSchema = new Schema<IServer>(
 
 // Indexes
 serverSchema.index({ profileId: 1 });
-serverSchema.index({ inviteCode: 1 });
 
 const Server: Model<IServer> =
   mongoose.models.Server || mongoose.model<IServer>("Server", serverSchema);

@@ -2,13 +2,26 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 
 export interface IProfile extends Document {
   _id: mongoose.Types.ObjectId;
-  userId: string;
   name: string;
   email: string;
+  password: string;
 
-  avatarUrl?: string;
   servers: mongoose.Types.ObjectId[];
   channels: mongoose.Types.ObjectId[];
+
+  lastLoginAt?: Date;
+  failedLoginAttempts: number;
+  lockUntil?: Date;
+
+  isDeleted: boolean;
+  deletedAt?: Date;
+  reActivateAvailableAt?: Date;
+
+  avatar?: {
+    public_id: string;
+    url: string;
+    size: number;
+  };
 
   createdAt: Date;
   updatedAt: Date;
@@ -16,12 +29,6 @@ export interface IProfile extends Document {
 
 const profileSchema = new Schema<IProfile>(
   {
-    userId: {
-      type: String,
-      required: [true, "User ID is required"],
-      unique: true,
-      trim: true
-    },
     name: {
       type: String,
       required: [true, "Name is required"],
@@ -34,10 +41,17 @@ const profileSchema = new Schema<IProfile>(
       lowercase: true,
       trim: true
     },
-
-    avatarUrl: {
+    password: {
       type: String,
-      default: null
+      required: [true, "Password is required"],
+      trim: true,
+      select: false
+    },
+
+    avatar: {
+      public_id: String,
+      url: String,
+      size: Number
     },
     servers: {
       type: [Schema.Types.ObjectId],
@@ -48,13 +62,30 @@ const profileSchema = new Schema<IProfile>(
       type: [Schema.Types.ObjectId],
       ref: "Channel",
       default: []
+    },
+    failedLoginAttempts: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    lockUntil: {
+      type: Date
+    },
+    isDeleted: {
+      type: Boolean,
+      default: false
+    },
+    deletedAt: {
+      type: Date
+    },
+    reActivateAvailableAt: {
+      type: Date
     }
   },
   {
     timestamps: true
   }
 );
-
 
 const Profile: Model<IProfile> =
   mongoose.models.Profile || mongoose.model<IProfile>("Profile", profileSchema);
