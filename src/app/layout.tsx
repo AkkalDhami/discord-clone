@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-import ThemeToggle from "@/components/layouts/theme-toggle";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
+import TanstackProvider from "@/components/providers/tanstack-provider";
+import { Toaster } from "react-hot-toast";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { ModalProvider } from "@/components/providers/modal-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,9 +41,14 @@ export default function RootLayout({
           defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange>
-          <ThemeToggle />
+          <Toaster position="top-center" reverseOrder={false} gutter={8} />
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
-          <ClerkProvider>{children}</ClerkProvider>
+          <TooltipProvider>
+            <TanstackProvider>
+              <ModalProvider />
+              {children}
+            </TanstackProvider>
+          </TooltipProvider>
         </ThemeProvider>
       </body>
     </html>
