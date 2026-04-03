@@ -41,22 +41,20 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const member = new Member({
-    profileId: user.id,
-    role: MemberRole.ADMIN
-  });
-
-  await member.save();
-
   const server = await Server.create({
     name,
     logo,
     profileId: user.id,
-    inviteCode: generateUUID(),
-    members: [member._id]
+    inviteCode: generateUUID()
   });
 
-  await member.updateOne({ serverId: server._id });
+  const member = new Member({
+    profileId: user.id,
+    role: MemberRole.ADMIN,
+    serverId: server._id
+  });
+
+  await member.save();
 
   return ApiResponse({
     statusCode: STATUS_CODES.CREATED,
