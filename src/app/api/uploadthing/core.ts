@@ -1,18 +1,11 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentAuthUser } from "@/helpers/auth.helper";
 import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
 
 const f = createUploadthing();
 
 const handleAuth = async () => {
-  const { isAuthenticated } = await auth();
 
-  if (!isAuthenticated) {
-    throw new Error("Unauthorized");
-  }
-
-  const user = await currentUser();
-  console.log({ user });
+  const user = await currentAuthUser();
   return { userId: user?.id };
 };
 
