@@ -1,7 +1,7 @@
 enum MemberRole {
   ADMIN = "ADMIN",
   MODERATOR = "MODERATOR",
-  MEMBER = "MEMBER"
+  GUEST = "GUEST"
 }
 
 export default MemberRole;
