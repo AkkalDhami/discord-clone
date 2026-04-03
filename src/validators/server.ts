@@ -5,13 +5,12 @@ export const ServerSchema = z.object({
     .string({
       error: "Server name must be a string"
     })
-    .min(5, "Server name must be at least 5 characters.")
+    .min(3, "Server name must be at least 3 characters.")
     .max(32, "Server name must be at most 32 characters."),
 
   logo: z.string({
     error: "Server logo must be a string"
-  }).min(1, "Server logo is required")
-
+  })
 });
 
 export type ServerSchemaType = z.infer<typeof ServerSchema>;
