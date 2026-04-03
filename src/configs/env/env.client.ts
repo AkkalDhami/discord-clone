@@ -2,14 +2,12 @@ import { z } from "zod";
 
 const clientSchema = z.object({
   // NEXT_PUBLIC_APP_URL: z.url()
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
-
+  // NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
 });
 
 const parsed = clientSchema.safeParse({
   // NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
-
+  // NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
 });
 
 if (!parsed.success) {
