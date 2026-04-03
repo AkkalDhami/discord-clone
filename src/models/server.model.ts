@@ -8,7 +8,7 @@ export interface IServer extends Document {
   inviteCode: string;
 
   profileId: mongoose.Types.ObjectId;
-  members: mongoose.Types.ObjectId[];
+  // members: mongoose.Types.ObjectId[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -36,12 +36,12 @@ const serverSchema = new Schema<IServer>(
       ref: "Profile",
       required: [true, "Profile ID is required"]
     },
-    members: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "Member"
-      }
-    ]
+    // members: [
+    //   {
+    //     type: Schema.Types.ObjectId,
+    //     ref: "Member"
+    //   }
+    // ]
   },
   {
     timestamps: true
