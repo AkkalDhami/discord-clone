@@ -3,7 +3,8 @@ import {
   Field,
   FieldError,
   FieldGroup,
-  FieldLabel
+  FieldLabel,
+  FieldSeparator
 } from "@/components/ui/field";
 import {
   Dialog,
@@ -21,11 +22,10 @@ import { ServerSchema, ServerSchemaType } from "@/validators/server";
 import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 
 export function InitialModal() {
   const { createServer, createServerLoading } = useServer();
-  const router = useRouter();
+  // const router = useRouter();
 
   const form = useForm<ServerSchemaType>({
     resolver: zodResolver(ServerSchema),
@@ -39,7 +39,6 @@ export function InitialModal() {
       await createServer(data);
       toast.success("Server created successfully");
       form.reset();
-      router.refresh();
       window.location.reload();
     } catch (error) {
       console.log(error);
@@ -102,14 +101,16 @@ export function InitialModal() {
             </FieldGroup>
           </form>
 
+          <FieldSeparator />
+
           <Field orientation="horizontal">
             <Button
               type="submit"
               variant={"primary"}
               form="create-server-form"
-              className="mt-2 w-full"
+              className="mt-2 h-9 w-full"
               disabled={isLoading}>
-              Create
+              {isLoading ? "Creating..." : "Create Server"}
             </Button>
           </Field>
         </DialogHeader>

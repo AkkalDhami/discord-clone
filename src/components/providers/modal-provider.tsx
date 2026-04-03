@@ -6,8 +6,8 @@ import { InviteModal } from "@/components/modals/invite-modal";
 export function ModalProvider() {
   return (
     <>
-      <ServerModal />
-      <InviteModal />
+        <ServerModal />
+        <InviteModal />
     </>
   );
 }

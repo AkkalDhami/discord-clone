@@ -25,7 +25,7 @@ export function InviteModal() {
   const origin = useOrigin();
   const { server } = data;
   if (!server) {
-    close();
+    // close();
 
     return;
   }
@@ -50,7 +50,11 @@ export function InviteModal() {
     }
   };
   return (
-    <Dialog open={isModalOpen} onOpenChange={close}>
+    <Dialog
+      open={isModalOpen}
+      onOpenChange={open => {
+        if (!open) close();
+      }}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Invite to server</DialogTitle>
