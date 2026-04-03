@@ -1,21 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const publicRoutes = ["/signin", "/signup"];
+
 export function proxy(request: NextRequest) {
-  const isPublic =
-    request.nextUrl.pathname === "/signin" ||
-    request.nextUrl.pathname === "/signup";
+  const pathname = request.nextUrl.pathname;
+  const isPublic = publicRoutes.includes(pathname);
 
   const accessToken = request.cookies.get("accessToken")?.value;
-  if (accessToken) {
-    if (isPublic) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-  } else {
-    if (!isPublic) {
-      return NextResponse.redirect(new URL("/signin", request.url));
-    }
+
+  if (accessToken && isPublic) {
+    return NextResponse.redirect(new URL("/", request.url));
   }
+
+  if (!accessToken && !isPublic) {
+    return NextResponse.redirect(new URL("/signin", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
