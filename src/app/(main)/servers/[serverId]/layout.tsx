@@ -1,6 +1,6 @@
 import { ServerSidebar } from "@/components/layouts/server-sidebar";
 import { currentAuthUser } from "@/helpers/auth.helper";
-import { IMember } from "@/models/member.model";
+import Member, { IMember } from "@/models/member.model";
 import Server from "@/models/server.model";
 import { redirect } from "next/navigation";
 
@@ -19,15 +19,14 @@ export default async function ServerIdLayout({
     return redirect("/signin");
   }
 
-  const serverInDb = await Server.findById(server.serverId).populate<{
-    members: IMember[];
-  }>("members");
+  const member = await Member.find({
+    where: {
+      userId: profile.id,
+      serverId: server.serverId
+    }
+  });
 
-  const member = serverInDb?.members.find(
-    member => member?.profileId?.toString() === profile?.id?.toString()
-  );
-
-  if (!serverInDb || !member) {
+  if (!member) {
     return redirect("/");
   }
 

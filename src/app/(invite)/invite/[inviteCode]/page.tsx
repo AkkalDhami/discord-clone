@@ -1,4 +1,5 @@
 import { currentAuthUser } from "@/helpers/auth.helper";
+import Member from "@/models/member.model";
 import Server from "@/models/server.model";
 import { redirect } from "next/navigation";
 
@@ -22,9 +23,12 @@ export default async function Page(props: PageProps<"/invite/[inviteCode]">) {
     return redirect("/");
   }
 
-  const profileMatch = server.members.some(
-    member => member.toString() === user.id
-  );
+  const profileMatch = await Member.findOne({
+    where: {
+      userId: user.id,
+      serverId: server._id
+    }
+  });
 
   if (profileMatch) {
     return redirect(`/servers/${server._id}`);
