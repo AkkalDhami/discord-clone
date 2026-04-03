@@ -1,0 +1,49 @@
+"use client";
+import { useParams, useRouter } from "next/navigation";
+/* eslint-disable @next/next/no-img-element */
+import { ActionTooltip } from "../common/action-tooltip";
+import { cn } from "@/lib/utils";
+
+interface NavigationItemProps {
+  id: string;
+  logo: string;
+  name: string;
+}
+
+export function NavigationItem({ id, logo, name }: NavigationItemProps) {
+  const params = useParams();
+  const router = useRouter();
+  return (
+    <div className="mt-4">
+      <ActionTooltip label={name} side="right" align="center">
+        <div
+          className="group relative cursor-pointer"
+          onClick={() => {
+            router.push(`/servers/${id}`);
+          }}>
+          <div
+            className={cn(
+              "bg-primary absolute top-1/2 left-0 w-[4px] -translate-y-1/2 rounded-r-full transition-all",
+              params?.serverId !== id && "group-hover:h-[20px]",
+              params?.serverId === id ? "h-[36px]" : "h-[8px]"
+            )}
+          />
+
+          <div className="group relative mx-3 flex size-[48px] overflow-hidden">
+            {logo ? (
+              <img
+                className="size-10 rounded-lg object-cover"
+                src={logo}
+                alt={name}
+              />
+            ) : (
+              <div className="flex size-10 items-center justify-center rounded-lg  text-lg font-medium transition-all bg-indigo-500 text-white dark:bg-indigo-500">
+                {name.charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+        </div>
+      </ActionTooltip>
+    </div>
+  );
+}
