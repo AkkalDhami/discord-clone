@@ -1,10 +1,10 @@
-import { IServer } from "@/models/server.model";
+import { Server } from "@/interface";
 import { create } from "zustand";
 
 export type ModalType = "create-server" | "invite-people";
 
 interface ModalData {
-  server?: Pick<IServer, "_id" | "name" | "logo" | "inviteCode" | "profileId">;
+  server?: Pick<Server, "_id" | "name" | "logo" | "inviteCode" | "profileId">;
 }
 
 interface ModalStore {
