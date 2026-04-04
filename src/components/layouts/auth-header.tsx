@@ -1,7 +1,9 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
 import ThemeToggle from "./theme-toggle";
 import { IconArrowLeft } from "@tabler/icons-react";
+import { useRouter } from "next/navigation";
 
 const AuthHeader = () => {
   const router = useRouter();

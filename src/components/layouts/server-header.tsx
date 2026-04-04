@@ -12,35 +12,41 @@ import {
 import { ServerWithMembersWithProfiles } from "@/types/server";
 import {
   IconChevronDown,
+  IconFolderPlus,
   IconPlus,
   IconSettings,
   IconTrash,
   IconUserPlus,
-  IconUsers
+  IconUsers,
+  IconUsersPlus
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useModal } from "@/hooks/use-modal-store";
+import { ActionTooltip } from "@/components/common/action-tooltip";
 
 type ServerHeaderProps = {
-  server: ServerWithMembersWithProfiles;
+  server: string;
   role?: MemberRole;
 };
 export function ServerHeader({ server, role }: ServerHeaderProps) {
   const { open } = useModal();
+  const serverObj = JSON.parse(server) as ServerWithMembersWithProfiles;
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
+  // console.log({ serverObj });
+
   return (
-    <div className="w-full">
+    <div className="border-edge flex w-full justify-between gap-4 border-b pb-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           className={
-            "flex w-full items-center justify-between border-none bg-transparent focus:outline-none dark:bg-transparent"
+            "flex-1 border-none justify-between bg-transparent hover:bg-neutral-200 focus:outline-none dark:bg-transparent"
           }
           render={
-            <Button variant="outline" className={"flex items-center gap-1"}>
+            <Button variant="ghost" className={"flex items-center gap-1"}>
               <span className="line-clamp-1 leading-relaxed font-medium">
-                {server.name}
+                {serverObj.name}
               </span>
               <IconChevronDown className="size-5" />
             </Button>
@@ -52,11 +58,12 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
                 onClick={() =>
                   open("invite-people", {
                     server: {
-                      _id: server._id,
-                      name: server.name,
-                      logo: server.logo,
-                      inviteCode: server.inviteCode,
-                      profileId: server.profileId
+                      _id: serverObj._id,
+                      name: serverObj.name,
+                      logo: serverObj.logo,
+                      inviteCode: serverObj.inviteCode,
+                      profileId: serverObj.profileId,
+                      members: serverObj.members
                     }
                   })
                 }
@@ -69,6 +76,18 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
             )}
             {isAdmin && (
               <DropdownMenuItem
+                onClick={() =>
+                  open("edit-server", {
+                    server: {
+                      _id: serverObj._id,
+                      name: serverObj.name,
+                      logo: serverObj.logo,
+                      inviteCode: serverObj.inviteCode,
+                      profileId: serverObj.profileId,
+                      members: serverObj.members
+                    }
+                  })
+                }
                 className={
                   "flex cursor-pointer items-center justify-between gap-2 px-3 py-1.5"
                 }>
@@ -78,6 +97,18 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
             )}
             {isAdmin && (
               <DropdownMenuItem
+                onClick={() =>
+                  open("members", {
+                    server: {
+                      _id: serverObj._id,
+                      name: serverObj.name,
+                      logo: serverObj.logo,
+                      inviteCode: serverObj.inviteCode,
+                      profileId: serverObj.profileId,
+                      members: serverObj.members
+                    }
+                  })
+                }
                 className={
                   "flex cursor-pointer items-center justify-between gap-2 px-3 py-1.5"
                 }>
@@ -87,6 +118,18 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
             )}
             {isModerator && (
               <DropdownMenuItem
+                onClick={() =>
+                  open("create-channel", {
+                    server: {
+                      _id: serverObj._id,
+                      name: serverObj.name,
+                      logo: serverObj.logo,
+                      inviteCode: serverObj.inviteCode,
+                      profileId: serverObj.profileId,
+                      members: serverObj.members
+                    }
+                  })
+                }
                 className={
                   "flex cursor-pointer items-center justify-between gap-2 px-3 py-1.5"
                 }>
@@ -94,10 +137,44 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
                 <IconPlus className="size-4" />
               </DropdownMenuItem>
             )}
+
+            {isModerator && (
+              <DropdownMenuItem
+                onClick={() =>
+                  open("create-category", {
+                    server: {
+                      _id: serverObj._id,
+                      name: serverObj.name,
+                      logo: serverObj.logo,
+                      inviteCode: serverObj.inviteCode,
+                      profileId: serverObj.profileId,
+                      members: serverObj.members
+                    }
+                  })
+                }
+                className={
+                  "flex cursor-pointer items-center justify-between gap-2 px-3 py-1.5"
+                }>
+                <span className="text-base">Create Category</span>
+                <IconFolderPlus className="size-4" />
+              </DropdownMenuItem>
+            )}
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           {isAdmin && (
             <DropdownMenuItem
+              onClick={() =>
+                open("delete-server", {
+                  server: {
+                    _id: serverObj._id,
+                    name: serverObj.name,
+                    logo: serverObj.logo,
+                    inviteCode: serverObj.inviteCode,
+                    profileId: serverObj.profileId,
+                    members: serverObj.members
+                  }
+                })
+              }
               className={cn(
                 "flex cursor-pointer items-center justify-between gap-2 px-3 py-1.5 text-red-500",
                 "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40"
@@ -108,6 +185,18 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
           )}
           {!isAdmin && (
             <DropdownMenuItem
+              onClick={() =>
+                open("leave-server", {
+                  server: {
+                    _id: serverObj._id,
+                    name: serverObj.name,
+                    logo: serverObj.logo,
+                    inviteCode: serverObj.inviteCode,
+                    profileId: serverObj.profileId,
+                    members: serverObj.members
+                  }
+                })
+              }
               className={cn(
                 "mt-1 flex cursor-pointer items-center justify-between gap-2 px-3 py-1.5 text-red-500"
               )}>
@@ -117,6 +206,18 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
           )}
         </DropdownMenuContent>
       </DropdownMenu>
+
+      {isModerator && (
+        <ActionTooltip label="Invite to server" side="right">
+          <div
+            onClick={() => open("invite-people", { server: serverObj })}
+            className={
+              "bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer rounded-md p-2"
+            }>
+            <IconUsersPlus className="size-4" />
+          </div>
+        </ActionTooltip>
+      )}
     </div>
   );
 }

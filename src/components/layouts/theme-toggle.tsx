@@ -26,7 +26,10 @@ export default function ThemeToggle({ className }: { className?: string }) {
     <Button
       variant="ghost"
       size="icon-lg"
-      className={cn("primary-ring rounded-lg", className)}
+      className={cn(
+        "primary-ring rounded-lg bg-transparent dark:bg-transparent dark:hover:bg-transparent",
+        className
+      )}
       onClick={toggleTheme}>
       {currentTheme === "dark" ? (
         <svg

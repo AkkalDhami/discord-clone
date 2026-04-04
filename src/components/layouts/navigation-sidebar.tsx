@@ -1,11 +1,13 @@
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Member from "@/models/member.model";
-import Server from "@/models/server.model";
 import { redirect } from "next/navigation";
 import { NavigationAction } from "@/components/navigation/navigation-action";
 import ThemeToggle from "./theme-toggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { NavigationItem } from "@/components/navigation/navigation-item";
+import { IServer } from "@/models/server.model";
+import { Types } from "mongoose";
+import { UserMenu } from "../auth/user-menu";
 
 export async function NavigationSidebar() {
   const profile = await currentAuthUser();
@@ -13,24 +15,37 @@ export async function NavigationSidebar() {
     return redirect("/signin");
   }
 
-  const member = await Member.findOne({
-    profileId: profile.id
-  }).populate("serverId");
+  const servers = await Member.aggregate([
+    {
+      $match: {
+        profileId: new Types.ObjectId(profile.id)
+      }
+    },
+    {
+      $lookup: {
+        from: "servers",
+        localField: "serverId",
+        foreignField: "_id",
+        as: "servers"
+      }
+    },
+    {
+      $unwind: "$servers"
+    },
+    {
+      $replaceRoot: { newRoot: "$servers" }
+    }
+  ]);
 
-  const server = member?.serverId;
-  if (!server) {
+  if (!servers || servers?.length === 0) {
     return redirect("/");
   }
-
-  const servers = await Server.find({
-    profileId: profile.id
-  });
 
   return (
     <aside className="relative flex h-full w-[72px] flex-col items-center space-y-4 bg-neutral-100 p-3 pt-6 dark:bg-neutral-950">
       <NavigationAction />
       <ScrollArea className="flex-1">
-        {servers.map(server => (
+        {servers?.map((server: IServer) => (
           <NavigationItem
             key={server._id.toString()}
             id={server._id.toString()}
@@ -39,7 +54,13 @@ export async function NavigationSidebar() {
           />
         ))}
       </ScrollArea>
-      <div className="absolute bottom-4">
+      <div className="absolute bottom-4 flex flex-col items-center space-y-3.5">
+        <UserMenu
+          name={profile.name}
+          email={profile.email}
+          username={profile.username}
+          image={profile.avatar?.url}
+        />
         <ThemeToggle className="bg-transparent dark:bg-transparent dark:hover:bg-transparent" />
       </div>
     </aside>
