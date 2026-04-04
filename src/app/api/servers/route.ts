@@ -1,11 +1,15 @@
 import { STATUS_CODES } from "@/constants/status-codes";
+import ChannelType from "@/enums/channel.enum";
 import MemberRole from "@/enums/role.enum";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { generateUUID } from "@/helpers/token.helper";
+import { validateRequest } from "@/lib/validation";
+import Channel from "@/models/channel.model";
 import Member from "@/models/member.model";
 import Server from "@/models/server.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
+import { ServerSchema } from "@/validators/server";
 import { NextRequest } from "next/server";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
@@ -21,22 +25,24 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const { name, logo } = body;
+  const validationResult = validateRequest(ServerSchema, body);
 
-  if (!name) {
+  if (!validationResult.success) {
     return ApiResponse({
       statusCode: STATUS_CODES.BAD_REQUEST,
-      message: "Name is required",
+      message: "Invalid request body",
       success: false
     });
   }
+
+  const { name, logo } = validationResult.data;
 
   const existingServer = await Server.findOne({ name });
 
   if (existingServer) {
     return ApiResponse({
       statusCode: STATUS_CODES.CONFLICT,
-      message: "Server already exists",
+      message: "Server with this name already exists",
       success: false
     });
   }
@@ -46,6 +52,13 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     logo,
     profileId: user.id,
     inviteCode: generateUUID()
+  });
+
+  await Channel.create({
+    name: "general",
+    type: ChannelType.TEXT,
+    serverId: server._id,
+    profileId: user.id
   });
 
   const member = new Member({
