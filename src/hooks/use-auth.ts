@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as authApi from "@/lib/api/auth";
 
 export function useAuth() {
@@ -40,7 +40,10 @@ export function useAuth() {
     // isAuthenticated: !!userQuery.data,
 
     login: loginMutation.mutateAsync,
+
     logout: logoutMutation.mutateAsync,
+    isLoggingOut: logoutMutation.isPending,
+
     signup: signupMutation.mutateAsync,
 
     loginLoading: loginMutation.isPending,
