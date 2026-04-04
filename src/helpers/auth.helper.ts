@@ -1,4 +1,3 @@
-import { NEXT_OTP_DELAY, OTP_TYPES } from "./../constants/auth-constants";
 import { cookies } from "next/headers";
 import crypto from "crypto";
 import argon2 from "argon2";
@@ -127,7 +126,8 @@ export const currentAuthUser = async () => {
       email: user.email,
       avatar: user.avatar,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      username: user.username
     };
 
     return userData;
