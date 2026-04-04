@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   typedRoutes: true,
+  //  experimental: {
+  //   serverComponentsExternalPackages: ["argon2"],
+  // },
   images: {
     remotePatterns: [
       {
