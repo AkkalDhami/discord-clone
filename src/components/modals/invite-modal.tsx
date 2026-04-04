@@ -10,12 +10,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { useModal } from "@/hooks/use-modal-store";
-import { Label } from "../ui/label";
+import { Label } from "@/components/ui/label";
 import { IconCheck, IconCopy, IconRefresh } from "@tabler/icons-react";
 import { useOrigin } from "@/hooks/use-origin";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useServer } from "@/hooks/use-server";
+import { cn } from "@/lib/utils";
 
 export function InviteModal() {
   const { close, isOpen, type, data, open } = useModal();
@@ -25,10 +26,9 @@ export function InviteModal() {
   const origin = useOrigin();
   const { server } = data;
   if (!server) {
-    // close();
-
     return;
   }
+
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
   const onCopy = () => {
     navigator.clipboard.writeText(inviteUrl);
@@ -41,9 +41,12 @@ export function InviteModal() {
   const onNewLink = async () => {
     try {
       const res = await generateInviteLink(server?._id?.toString());
-      console.log({ res });
-      toast.success("New link generated successfully");
-      open("invite-people", { server });
+      open("invite-people", {
+        server: {
+          ...server,
+          inviteCode: res?.data?.inviteCode
+        }
+      });
     } catch (error) {
       console.log({ error });
       toast.error("Failed to generate new link");
@@ -57,10 +60,7 @@ export function InviteModal() {
       }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Invite to server</DialogTitle>
-          <p className="text-muted-foreground">
-            Invite your friends to this server
-          </p>
+          <DialogTitle>Invite friends to {server.name}</DialogTitle>
 
           <div className="mt-2 space-y-2">
             <Label className="text-muted-foreground text-xs font-medium uppercase">
@@ -68,23 +68,28 @@ export function InviteModal() {
             </Label>
             <div className="mt-2 flex items-center gap-x-2">
               <Input
-                className="flex-1 border focus-visible:ring-offset-0"
+                className={cn(
+                  "focus-visible:border-border flex-1 border focus-visible:ring-0 focus-visible:ring-offset-0",
+                  generateInviteLinkLoading && "cursor-not-allowed"
+                )}
+                disabled={generateInviteLinkLoading}
                 value={inviteUrl}
               />
               {copied ? (
                 <Button
                   type="button"
                   variant={"ghost"}
-                  className="h-9 cursor-default py-1.5 text-green-500 hover:text-green-500">
-                  <IconCheck className="size-4" />
+                  className="h-9 cursor-default bg-green-500 px-2 py-1.5 text-white hover:bg-green-600 hover:text-white dark:hover:bg-green-600">
+                  <IconCheck className="size-5" />
                 </Button>
               ) : (
                 <Button
                   type="button"
                   onClick={onCopy}
+                  disabled={generateInviteLinkLoading}
                   variant={"ghost"}
-                  className="h-9 py-1.5">
-                  <IconCopy className="size-4" />
+                  className="h-9 bg-indigo-500 px-2 py-1.5 text-white hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600">
+                  <IconCopy className="size-5" />
                 </Button>
               )}
             </div>
@@ -97,7 +102,12 @@ export function InviteModal() {
               {generateInviteLinkLoading
                 ? "Generating..."
                 : "Generate a new link"}
-              <IconRefresh className="size-4" />
+              <IconRefresh
+                className={cn(
+                  "size-4",
+                  generateInviteLinkLoading && "animate-spin"
+                )}
+              />
             </Button>
           </div>
         </DialogHeader>

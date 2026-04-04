@@ -36,10 +36,14 @@ export function InitialModal() {
   });
   async function onSubmit(data: ServerSchemaType) {
     try {
-      await createServer(data);
-      toast.success("Server created successfully");
-      form.reset();
-      window.location.reload();
+      const res = await createServer(data);
+      if (res.success) {
+        toast.success(res.message);
+        form.reset();
+        window.location.reload();
+      } else {
+        toast.error(res.message || "Failed to create server");
+      }
     } catch (error) {
       console.log(error);
       toast.error("Failed to create server");
