@@ -41,6 +41,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
 
   const { success, data, error } = SignupSchema.safeParse(formData);
   await dbConnect();
+
   if (!success) {
     return ApiResponse({
       success: false,
@@ -50,7 +51,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const { name, email, password } = data;
+  const { name, email, password, username } = data;
   if (!name || !email) {
     return ApiResponse({
       success: false,
@@ -59,13 +60,15 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const existingUser = await Profile.findOne({ email }).select("+password");
+  const existingUser = await Profile.findOne({
+    $or: [{ email }, { username }]
+  });
 
   if (existingUser) {
     return ApiResponse({
       success: false,
       statusCode: STATUS_CODES.CONFLICT,
-      message: "User with this email already exists"
+      message: "User with this email or username already exists"
     });
   }
 
@@ -74,7 +77,8 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   const newUser = new Profile({
     name,
     email,
-    password: hashedPassword
+    password: hashedPassword,
+    username
   });
 
   if (!newUser) {
@@ -90,11 +94,12 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   return ApiResponse({
     success: true,
     statusCode: STATUS_CODES.CREATED,
-    message: "User created successfully",
+    message: "User registered successfully",
     data: {
       _id: newUser._id,
       name: newUser.name,
-      email: newUser.email
+      email: newUser.email,
+      username: newUser.username
     }
   });
 });

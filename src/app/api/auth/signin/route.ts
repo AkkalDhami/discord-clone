@@ -120,7 +120,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     data: {
       _id: existingUser._id,
       name: existingUser.name,
-      email: existingUser.email
+      email: existingUser.email,
     }
   });
 });
