@@ -4,6 +4,7 @@ import MemberRole from "@/enums/role.enum";
 export interface Profile {
   _id: string;
   name: string;
+  username: string;
   email: string;
   password?: string;
 
@@ -36,7 +37,7 @@ export interface Server {
   inviteCode: string;
 
   profileId: string;
-  members: string[];
+  members: Member[];
 
   createdAt?: string;
   updatedAt?: string;
@@ -49,6 +50,25 @@ export interface Member {
   profileId: string;
   serverId?: string;
 
+  profile: Profile;
+
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface Category {
+  _id: string;
+
+  name: string;
+  private: boolean;
+
+  serverId: string;
+  profileId: string;
+
+  privateMembers?: (Member & { profile: Profile })[];
+
+  channels?: Channel[];
+
   createdAt?: string;
   updatedAt?: string;
 }
@@ -60,6 +80,9 @@ export interface Channel {
   type: ChannelType;
   serverId: string;
   profileId: string;
+
+  categoryId?: string;
+  // category?: Category;
 
   createdAt?: string;
   updatedAt?: string;

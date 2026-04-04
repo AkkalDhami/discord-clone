@@ -1,10 +1,23 @@
 import { Server } from "@/interface";
 import { create } from "zustand";
 
-export type ModalType = "create-server" | "invite-people";
+export type ModalType =
+  | "create-server"
+  | "edit-server"
+  | "leave-server"
+  | "delete-server"
+  | "invite-people"
+  | "members"
+  | "create-channel"
+  | "edit-channel"
+  | "create-category"
+  | "edit-category";
 
 interface ModalData {
-  server?: Pick<Server, "_id" | "name" | "logo" | "inviteCode" | "profileId">;
+  server?: Pick<
+    Server,
+    "_id" | "name" | "logo" | "inviteCode" | "profileId" | "members"
+  >;
 }
 
 interface ModalStore {
