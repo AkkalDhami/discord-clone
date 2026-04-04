@@ -33,6 +33,7 @@ import { SigninFormData, SigninSchema } from "@/validators/auth";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
+import { OAuthSignin } from "@/components/auth/oauth-signin";
 
 export default function Login(): React.JSX.Element {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -52,9 +53,13 @@ export default function Login(): React.JSX.Element {
 
   async function onSubmit(values: SigninFormData) {
     try {
-      await login(values);
-      toast.success("Login successful");
-      router.push("/");
+      const res = await login(values);
+      if (res.success) {
+        toast.success(res.message || "Login successful");
+        router.push("/");
+      } else {
+        toast.error(res.message || "Something went wrong.");
+      }
     } catch (e) {
       const error = e as { data?: { message?: string } };
       console.log({ e });
@@ -158,6 +163,8 @@ export default function Login(): React.JSX.Element {
               "Sign in"
             )}
           </Button>
+
+          <OAuthSignin />
         </form>
       </CardContent>
     </Card>

@@ -1,3 +1,5 @@
+import { InviteCard } from "@/components/common/invite-card";
+import ThemeToggle from "@/components/layouts/theme-toggle";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Member from "@/models/member.model";
 import Server from "@/models/server.model";
@@ -18,35 +20,30 @@ export default async function Page(props: PageProps<"/invite/[inviteCode]">) {
   }
 
   const server = await Server.findOne({ inviteCode });
-
   if (!server) {
     return redirect("/");
   }
+  const members = await Member.find({ serverId: server._id });
 
   const profileMatch = await Member.findOne({
-    where: {
-      userId: user.id,
-      serverId: server._id
-    }
+    profileId: user.id,
+    serverId: server._id
   });
 
   if (profileMatch) {
     return redirect(`/servers/${server._id}`);
   }
 
-  const updatedServer = await Server.findByIdAndUpdate(
-    server._id,
-    {
-      $push: {
-        members: user.id
-      }
-    },
-    { new: true }
+  return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4">
+      <InviteCard
+        serverId={server._id.toString()}
+        inviterName={user.name}
+        serverName={server.name}
+        memberCount={members?.length || 0}
+        serverLogo={server?.logo}
+      />
+      <ThemeToggle />
+    </div>
   );
-
-  if (updatedServer) {
-    return redirect(`/servers/${updatedServer._id}`);
-  }
-
-  return null;
 }

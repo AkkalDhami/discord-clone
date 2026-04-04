@@ -93,7 +93,7 @@
   --muted-primary: #525252;
   --accent: #ebebeb;
   --accent-foreground: #000000;
-  --destructive: #e54b4f;
+  --destructive: #d6151b;
   --destructive-foreground: #ffffff;
   --border: #e4e4e4;
   --border-hover: var(--color-neutral-400);
@@ -162,7 +162,7 @@
   --muted-primary: #c0c0c0;
   --accent: #333333;
   --accent-foreground: #ffffff;
-  --destructive: #ff5b5b;
+  --destructive: #d6151b;
   --destructive-foreground: #000000;
   --border: #242424;
   --border-hover: var(--color-neutral-600);

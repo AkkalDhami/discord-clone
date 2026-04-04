@@ -9,11 +9,14 @@ export default async function Page() {
   const member = await Member.findOne({
     profileId: profile?._id
   });
+
   const server = await Server.findOne({
     _id: member?.serverId
   });
 
-  if (server && server?.profileId?.toString() === profile?._id?.toString()) {
+  // console.log({ server, profile });
+
+  if (server && profile) {
     return redirect(`/servers/${server._id}`);
   }
 

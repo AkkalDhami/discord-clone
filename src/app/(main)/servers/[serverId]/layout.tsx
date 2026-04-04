@@ -1,7 +1,7 @@
 import { ServerSidebar } from "@/components/layouts/server-sidebar";
 import { currentAuthUser } from "@/helpers/auth.helper";
-import Member, { IMember } from "@/models/member.model";
-import Server from "@/models/server.model";
+import Member from "@/models/member.model";
+
 import { redirect } from "next/navigation";
 
 export default async function ServerIdLayout({
@@ -11,7 +11,7 @@ export default async function ServerIdLayout({
   children: React.ReactNode;
   params: Promise<{ serverId: string }>;
 }) {
-  const server = await params;
+  const { serverId } = await params;
 
   const profile = await currentAuthUser();
 
@@ -19,11 +19,9 @@ export default async function ServerIdLayout({
     return redirect("/signin");
   }
 
-  const member = await Member.find({
-    where: {
-      userId: profile.id,
-      serverId: server.serverId
-    }
+  const member = await Member.findOne({
+    profileId: profile.id,
+    serverId
   });
 
   if (!member) {
@@ -32,10 +30,10 @@ export default async function ServerIdLayout({
 
   return (
     <section>
-      <div className="fixed inset-y-0 z-20 hidden h-full w-60 flex-col md:flex">
-        <ServerSidebar serverId={server.serverId} />
+      <div className="fixed inset-y-0 z-20 hidden h-full w-80 flex-col bg-neutral-100 p-3 pt-6 md:flex dark:bg-neutral-950">
+        <ServerSidebar serverId={serverId} />
       </div>
-      <main className="h-full md:pl-60">{children}</main>
+      <main className="h-full md:pl-80">{children}</main>
     </section>
   );
 }
