@@ -30,6 +30,7 @@ import { Error } from "@/interface/error";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
+import { OAuthSignin } from "./oauth-signin";
 
 export function SignupForm() {
   const { signup, signupLoading } = useAuth();
@@ -37,9 +38,13 @@ export function SignupForm() {
 
   async function onSubmit(values: SignupFormData) {
     try {
-      await signup(values);
-      toast.success("Signup successful");
-      router.push("/signin");
+      const res = await signup(values);
+      if (res.success) {
+        toast.success(res.message || "Singup successful");
+        router.push("/signin");
+      } else {
+        toast.error(res.message || "Something went wrong.");
+      }
     } catch (error: unknown) {
       toast.error((error as Error)?.data?.message || "Something went wrong.");
     }
@@ -55,7 +60,8 @@ export function SignupForm() {
       name: "",
       email: "",
       password: "",
-      confirmPassword: ""
+      confirmPassword: "",
+      username: ""
     }
   });
 
@@ -83,26 +89,44 @@ export function SignupForm() {
       <CardContent className="space-y-0">
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <FieldGroup>
-            {/* Name */}
-            <Controller
-              name="name"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Name *</FieldLabel>
-                  <Input
-                    {...field}
-                    placeholder="John Doe"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
+            <div className="grid gap-2 sm:grid-cols-2">
+              <Controller
+                name="name"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Name *</FieldLabel>
+                    <Input
+                      {...field}
+                      placeholder="John Doe"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
 
-            {/* Email */}
+              <Controller
+                name="username"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel>Username *</FieldLabel>
+                    <Input
+                      {...field}
+                      placeholder="john_doe"
+                      aria-invalid={fieldState.invalid}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+
             <Controller
               name="email"
               control={form.control}
@@ -202,6 +226,8 @@ export function SignupForm() {
               "Sign Up"
             )}
           </Button>
+
+          <OAuthSignin />
         </form>
       </CardContent>
     </Card>
