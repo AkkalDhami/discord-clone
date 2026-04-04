@@ -11,7 +11,7 @@ export function NavigationAction() {
       <div
         onClick={() => open("create-server")}
         className="group cursor-pointer">
-        <div className="flex size-10 items-center justify-center rounded-lg bg-neutral-200 transition-all group-hover:bg-indigo-600 dark:bg-neutral-900 dark:group-hover:bg-indigo-600">
+        <div className="flex size-11 items-center justify-center rounded-lg bg-neutral-200 transition-all group-hover:bg-indigo-600 dark:bg-neutral-900 dark:group-hover:bg-indigo-600">
           <IconPlus className="bg-accent-foreground text-accent size-6 rounded-full p-1" />
         </div>
       </div>

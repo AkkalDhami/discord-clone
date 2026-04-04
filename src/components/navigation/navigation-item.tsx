@@ -29,7 +29,7 @@ export function NavigationItem({ id, logo, name }: NavigationItemProps) {
             )}
           />
 
-          <div className="group relative mx-3 flex size-[48px] overflow-hidden">
+          <div className="group relative mx-3 flex size-10 overflow-hidden">
             {logo ? (
               <img
                 className="size-10 rounded-lg object-cover"
