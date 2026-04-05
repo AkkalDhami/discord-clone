@@ -42,7 +42,7 @@ export async function NavigationSidebar() {
   }
 
   return (
-    <aside className="relative flex h-full w-[72px] flex-col items-center space-y-4 bg-neutral-100 p-3 pt-6 dark:bg-neutral-950">
+    <aside className="relative flex h-full w-[72px] flex-col items-center space-y-4 p-3 pt-6">
       <NavigationAction />
       <ScrollArea className="flex-1">
         {servers?.map((server: IServer) => (

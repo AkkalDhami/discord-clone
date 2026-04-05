@@ -37,7 +37,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
   // console.log({ serverObj });
 
   return (
-    <div className="border-edge flex w-full justify-between gap-4 border-b pb-2">
+    <div className="border-edge flex w-full justify-between gap-4 border-b border-b-edge pb-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           className={

@@ -6,6 +6,8 @@ import mongoose from "mongoose";
 import { redirect } from "next/navigation";
 import { ServerHeader } from "./server-header";
 import { ServerWithMembersWithProfiles } from "@/types/server";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ServerSection } from "@/components/server/server-section";
 
 export async function ServerSidebar({ serverId }: { serverId: string }) {
   const profile = await currentAuthUser();
@@ -64,6 +66,22 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
         from: "categories",
         localField: "_id",
         foreignField: "serverId",
+        pipeline: [
+          {
+            $lookup: {
+              from: "channels",
+              localField: "_id",
+              foreignField: "categoryId",
+              as: "channels"
+            }
+          },
+          {
+            $unwind: {
+              path: "$channels",
+              preserveNullAndEmptyArrays: true
+            }
+          }
+        ],
         as: "categories"
       }
     },
@@ -122,9 +140,10 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
     }
   ]);
 
-  // console.log({
-  //   serverWithChannels: serverWithChannels.channels
-  // });
+  console.log({
+    serverWithChannels,
+    ch: serverWithChannels.channels
+  });
   const cleanServer: ServerWithMembersWithProfiles = {
     ...serverWithChannels,
     _id: serverWithChannels._id.toString(),
@@ -183,6 +202,15 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
   return (
     <div className="text-primary flex h-full w-full flex-col">
       <ServerHeader server={JSON.stringify(cleanServer)} role={role} />
+      <ScrollArea>
+        <ServerSection
+          sectionType="channels"
+          label="Text Channels"
+          channelType={ChannelType.TEXT}
+          role={role}
+          // server={cleanServer}
+        />
+      </ScrollArea>
     </div>
   );
 }

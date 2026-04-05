@@ -22,6 +22,7 @@ import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
+import { Spinner } from "@/components/ui/spinner";
 
 export function CreateServerModal() {
   const { close, isOpen, type } = useModal();
@@ -121,7 +122,13 @@ export function CreateServerModal() {
               form="server-form"
               className="mt-2 h-9 w-full"
               disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create"}
+              {isLoading ? (
+                <>
+                  <Spinner /> Creating...
+                </>
+              ) : (
+                "Create"
+              )}
             </Button>
           </Field>
         </DialogHeader>
