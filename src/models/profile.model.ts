@@ -3,11 +3,9 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 export interface IProfile extends Document {
   _id: mongoose.Types.ObjectId;
   name: string;
+  username: string;
   email: string;
   password: string;
-
-  servers: mongoose.Types.ObjectId[];
-  channels: mongoose.Types.ObjectId[];
 
   lastLoginAt?: Date;
   failedLoginAttempts: number;
@@ -34,6 +32,12 @@ const profileSchema = new Schema<IProfile>(
       required: [true, "Name is required"],
       trim: true
     },
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      trim: true,
+      unique: true
+    },
     email: {
       type: String,
       required: [true, "Email is required"],
@@ -52,16 +56,6 @@ const profileSchema = new Schema<IProfile>(
       public_id: String,
       url: String,
       size: Number
-    },
-    servers: {
-      type: [Schema.Types.ObjectId],
-      ref: "Server",
-      default: []
-    },
-    channels: {
-      type: [Schema.Types.ObjectId],
-      ref: "Channel",
-      default: []
     },
     failedLoginAttempts: {
       type: Number,

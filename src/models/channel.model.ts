@@ -1,7 +1,6 @@
 import ChannelType from "@/enums/channel.enum";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-
 export interface IChannel extends Document {
   _id: mongoose.Types.ObjectId;
 
@@ -9,6 +8,8 @@ export interface IChannel extends Document {
   type: ChannelType;
   serverId: mongoose.Types.ObjectId;
   profileId: mongoose.Types.ObjectId;
+
+  categoryId?: mongoose.Types.ObjectId;
 
   createdAt: Date;
   updatedAt: Date;
@@ -35,6 +36,10 @@ const channelSchema = new Schema<IChannel>(
       type: Schema.Types.ObjectId,
       ref: "Profile",
       required: [true, "Profile ID is required"]
+    },
+    categoryId: {
+      type: Schema.Types.ObjectId,
+      ref: "Category"
     }
   },
   {
