@@ -22,10 +22,10 @@ import { ServerSchema, ServerSchemaType } from "@/validators/server";
 import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
+import { Spinner } from "@/components/ui/spinner";
 
 export function InitialModal() {
   const { createServer, createServerLoading } = useServer();
-  // const router = useRouter();
 
   const form = useForm<ServerSchemaType>({
     resolver: zodResolver(ServerSchema),
@@ -114,7 +114,13 @@ export function InitialModal() {
               form="create-server-form"
               className="mt-2 h-9 w-full"
               disabled={isLoading}>
-              {isLoading ? "Creating..." : "Create Server"}
+              {isLoading ? (
+                <>
+                  <Spinner /> Creating...
+                </>
+              ) : (
+                "Create"
+              )}
             </Button>
           </Field>
         </DialogHeader>

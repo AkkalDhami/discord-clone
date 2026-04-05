@@ -32,12 +32,12 @@ export function NavigationItem({ id, logo, name }: NavigationItemProps) {
           <div className="group relative mx-3 flex size-10 overflow-hidden">
             {logo ? (
               <img
-                className="size-10 rounded-lg object-cover"
+                className="size-10 rounded-xl object-cover"
                 src={logo}
                 alt={name}
               />
             ) : (
-              <div className="flex size-10 items-center justify-center rounded-lg  text-lg font-medium transition-all bg-indigo-500 text-white dark:bg-indigo-500">
+              <div className="flex size-10 items-center justify-center rounded-xl  text-lg font-medium transition-all bg-indigo-500 text-white dark:bg-indigo-500">
                 {name.charAt(0).toUpperCase()}
               </div>
             )}

@@ -8,6 +8,7 @@ import { CreateChannelModal } from "@/components/modals/create-channel-modal";
 import { CreateCategoryModal } from "@/components/modals/create-category-modal";
 import { LeaveServerModal } from "@/components/modals/leave-server-modal";
 import { DeleteServerModal } from "@/components/modals/delete-server-modal";
+import { DeleteCategoryModal } from "@/components/modals/delete-category-modal";
 
 export function ModalProvider() {
   return (
@@ -24,6 +25,7 @@ export function ModalProvider() {
       <CreateChannelModal />
 
       <CreateCategoryModal />
+      <DeleteCategoryModal />
     </>
   );
 }
