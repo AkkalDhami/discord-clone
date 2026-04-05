@@ -11,6 +11,7 @@ export type ModalType =
   | "create-channel"
   | "edit-channel"
   | "create-category"
+  | "delete-category"
   | "edit-category";
 
 interface ModalData {
