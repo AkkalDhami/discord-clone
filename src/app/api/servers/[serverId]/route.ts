@@ -3,6 +3,7 @@ import MemberRole from "@/enums/role.enum";
 
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { validateRequest } from "@/lib/validation";
+import Category from "@/models/category.model";
 import Channel from "@/models/channel.model";
 import Member from "@/models/member.model";
 
@@ -10,6 +11,7 @@ import Server from "@/models/server.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 import { EditServerSchema, EditServerSchemaType } from "@/validators/server";
+import mongoose, { isValidObjectId } from "mongoose";
 import { NextRequest } from "next/server";
 
 export const PATCH = AsyncHandler(
@@ -98,9 +100,15 @@ export const DELETE = AsyncHandler(
       });
     }
 
-    const existingServer = await Server.findOne({
-      _id: serverId
-    });
+    if (!isValidObjectId(serverId)) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Invalid server ID",
+        success: false
+      });
+    }
+
+    const existingServer = await Server.findById(serverId);
 
     if (!existingServer) {
       return ApiResponse({
@@ -124,7 +132,7 @@ export const DELETE = AsyncHandler(
     }
 
     if (
-      member.role !== MemberRole.ADMIN ||
+      member.role !== MemberRole.ADMIN &&
       existingServer.profileId.toString() !== user.id
     ) {
       return ApiResponse({
@@ -134,20 +142,37 @@ export const DELETE = AsyncHandler(
       });
     }
 
-    await Server.findByIdAndDelete(serverId);
+    const session = await mongoose.startSession();
 
-    await Member.deleteMany({
-      serverId: existingServer._id
-    });
+    try {
+      await session.withTransaction(async () => {
+        await Channel.deleteMany({ serverId: existingServer._id }, { session });
 
-    await Channel.deleteMany({
-      serverId: existingServer._id
-    });
+        await Category.deleteMany(
+          { serverId: existingServer._id },
+          { session }
+        );
 
-    return ApiResponse({
-      statusCode: STATUS_CODES.OK,
-      message: "Server deleted successfully",
-      success: true
-    });
+        await Member.deleteMany({ serverId: existingServer._id }, { session });
+
+        await Server.findByIdAndDelete(existingServer._id, { session });
+      });
+
+      return ApiResponse({
+        statusCode: STATUS_CODES.OK,
+        message: "Server deleted successfully",
+        success: true
+      });
+    } catch (error) {
+      console.error("Delete transaction failed:", error);
+
+      return ApiResponse({
+        statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
+        message: "Failed to delete server",
+        success: false
+      });
+    } finally {
+      session.endSession();
+    }
   }
 );

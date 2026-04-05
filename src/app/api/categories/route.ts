@@ -62,19 +62,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
 
   const { name, private: isPrivate } = result.data;
 
-  if (
-    ["text-channels", "audio-channels", "video-channels"].includes(
-      name.toLocaleLowerCase()
-    )
-  ) {
-    return ApiResponse({
-      success: false,
-      message:
-        "Category name cannot be text-channels, audio-channels, or video-channels",
-      statusCode: STATUS_CODES.BAD_REQUEST
-    });
-  }
-
   const category = await Category.create({
     name,
     private: isPrivate,
