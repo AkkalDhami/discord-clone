@@ -1,4 +1,3 @@
-import MemberRole from "@/enums/role.enum";
 import z from "zod";
 
 export const emailSchema = z
@@ -13,6 +12,16 @@ export const nameSchema = z
   })
   .max(50, {
     message: "Name must be at most 50 characters long"
+  });
+
+export const usernameSchema = z
+  .string({ error: "Username must be a string" })
+  .trim()
+  .min(3, {
+    message: "Username must be at least 3 characters long"
+  })
+  .max(50, {
+    message: "Username must be at most 50 characters long"
   });
 
 export const passwordSchema = z
@@ -35,6 +44,7 @@ export const SigninSchema = z.object({
 export const SignupSchema = z
   .object({
     name: nameSchema,
+    username: usernameSchema,
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: passwordSchema

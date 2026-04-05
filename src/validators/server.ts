@@ -13,4 +13,14 @@ export const ServerSchema = z.object({
   })
 });
 
+export const EditServerSchema = ServerSchema.partial();
+
+export const DeleteServerSchema = z.object({
+  name: z.string({
+    error: "You didn't enter the server name correctly"
+  })
+});
+
 export type ServerSchemaType = z.infer<typeof ServerSchema>;
+export type EditServerSchemaType = z.infer<typeof EditServerSchema>;
+export type DeleteServerSchemaType = z.infer<typeof DeleteServerSchema>;
