@@ -108,21 +108,21 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
       await Channel.create(
         [
           {
-            name: "general",
+            name: "General",
             type: ChannelType.TEXT,
             serverId: serverDoc._id,
             profileId: user.id,
             categoryId: textCategory._id
           },
           {
-            name: "general",
+            name: "General",
             type: ChannelType.AUDIO,
             serverId: serverDoc._id,
             profileId: user.id,
             categoryId: voiceCategory._id
           },
           {
-            name: "general",
+            name: "General",
             type: ChannelType.VIDEO,
             serverId: serverDoc._id,
             profileId: user.id,
