@@ -8,4 +8,7 @@ export const CreateChannelSchema = z.object({
   })
 });
 
+export const EditChannelSchema = CreateChannelSchema.partial();
+
 export type CreateChannelSchemaType = z.infer<typeof CreateChannelSchema>;
+export type EditChannelSchemaType = z.infer<typeof EditChannelSchema>;
