@@ -1,7 +1,5 @@
 "use client";
 
-import qs from "query-string";
-
 import {
   Field,
   FieldError,
@@ -37,7 +35,7 @@ export function CreateChannelModal() {
   const { close, isOpen, type, data } = useModal();
   const isModalOpen = isOpen && type === "create-channel";
 
-  const server = data.server;
+  const { server, category } = data;
 
   const { createChannel, isChannelCreating } = useChannel();
   const router = useRouter();
@@ -49,26 +47,25 @@ export function CreateChannelModal() {
       type: ChannelType.TEXT
     }
   });
+
   async function onSubmit(data: CreateChannelSchemaType) {
     try {
-      const url = qs.stringifyUrl({
-        url: "/api/channels",
-        query: {
-          serverId: server?._id
-        }
+      const res = await createChannel({
+        serverId: server?._id || "",
+        data,
+        categoryId: category?._id || ""
       });
-      const res = await createChannel({ url, data });
       if (res.success) {
-        toast.success(res.message);
+        toast.success(res.message || "Channel created successfully");
+        form.reset();
+        router.refresh();
+        close();
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to create channel");
       }
-      form.reset();
-      router.refresh();
-      close();
     } catch (error) {
       console.log(error);
-      toast.error("Failed to create server");
+      toast.error("Failed to create channel");
     }
   }
 
@@ -114,7 +111,7 @@ export function CreateChannelModal() {
                         />
                         <Label
                           htmlFor="text-channel"
-                          className="flex flex-col items-start gap-1 cursor-pointer">
+                          className="flex cursor-pointer flex-col items-start gap-1">
                           <div className="flex items-center gap-1">
                             <IconHash className="size-5" />
                             <span className="text-base font-medium">Text</span>
@@ -133,7 +130,7 @@ export function CreateChannelModal() {
                         />
                         <Label
                           htmlFor="audio-channel"
-                          className="flex flex-col items-start gap-1 cursor-pointer">
+                          className="flex cursor-pointer flex-col items-start gap-1">
                           <div className="flex items-center gap-1">
                             <IconVolume className="size-5" />
                             <span className="text-base font-medium">Audio</span>
@@ -151,7 +148,7 @@ export function CreateChannelModal() {
                         />
                         <Label
                           htmlFor="video-channel"
-                          className="flex flex-col items-start gap-1 cursor-pointer">
+                          className="flex cursor-pointer flex-col items-start gap-1">
                           <div className="flex items-center gap-1">
                             <IconVideo className="size-5" />
                             <span className="text-base font-medium">Video</span>

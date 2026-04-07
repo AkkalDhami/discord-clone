@@ -12,30 +12,34 @@ import { Spinner } from "@/components/ui/spinner";
 
 import { useModal } from "@/hooks/use-modal-store";
 import toast from "react-hot-toast";
-import { useServer } from "@/hooks/use-server";
+import { useCategory } from "@/hooks/use-category";
+import { useRouter } from "next/navigation";
 
 export function DeleteCategoryModal() {
   const { close, isOpen, type, data } = useModal();
+  const router = useRouter();
   const isModalOpen = isOpen && type === "delete-category";
 
-  const { leaveServer, isLeaving } = useServer();
-  const { server } = data;
-  if (!server) {
+  const { deleteCategory, isCategoryDeleting } = useCategory();
+  const { category } = data;
+  if (!category) {
     return;
   }
 
   const onLeaveServer = async () => {
     try {
-      const res = await leaveServer(server?._id?.toString());
+      const res = await deleteCategory(category?._id?.toString());
       if (res?.success) {
         close();
-        toast.success(res.message);
+        router.refresh();
+
+        toast.success(res.message || "Category deleted successfully");
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete category");
       }
     } catch (error) {
       console.log({ error });
-      toast.error("Failed to leave server");
+      toast.error("Failed to delete category");
     }
   };
   return (
@@ -46,10 +50,10 @@ export function DeleteCategoryModal() {
       }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Leave &apos;{server.name}&apos;</DialogTitle>
+          <DialogTitle>Delete Category</DialogTitle>
           <DialogDescription className={"text-base"}>
-            Are you sure you want to leave <strong>{server.name}</strong>? You
-            won&apos;t be able to re-join this server unless you are re-invited.
+            Are you sure you want to delete <strong>{category.name}</strong>?
+            This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
@@ -63,15 +67,15 @@ export function DeleteCategoryModal() {
           <Button
             type="button"
             variant={"destructive"}
-            disabled={isLeaving}
+            disabled={isCategoryDeleting}
             onClick={onLeaveServer}
             className={"h-10 py-2 text-base font-medium"}>
-            {isLeaving ? (
+            {isCategoryDeleting ? (
               <>
-                <Spinner /> Leaving...
+                <Spinner /> Deleting...
               </>
             ) : (
-              "Leave Server"
+              "Delete Category"
             )}
           </Button>
         </div>
