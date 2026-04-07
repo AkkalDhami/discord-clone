@@ -34,14 +34,12 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
-  // console.log({ serverObj });
-
   return (
-    <div className="border-edge flex w-full justify-between gap-4 border-b border-b-edge pb-2">
+    <div className="border-edge border-b-edge flex w-full justify-between gap-4 border-y py-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           className={
-            "flex-1 border-none justify-between bg-transparent hover:bg-neutral-200 focus:outline-none dark:bg-transparent"
+            "mx-2 flex-1 justify-between border-none bg-transparent hover:bg-neutral-200 focus:outline-none dark:bg-transparent"
           }
           render={
             <Button variant="ghost" className={"flex items-center gap-1"}>
@@ -51,7 +49,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
               <IconChevronDown className="size-5" />
             </Button>
           }></DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent className={"p-2"}>
           <DropdownMenuGroup>
             {isModerator && (
               <DropdownMenuItem
@@ -137,7 +135,6 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
                 <IconPlus className="size-4" />
               </DropdownMenuItem>
             )}
-
             {isModerator && (
               <DropdownMenuItem
                 onClick={() =>
@@ -212,7 +209,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
           <div
             onClick={() => open("invite-people", { server: serverObj })}
             className={
-              "bg-secondary text-secondary-foreground hover:bg-secondary/80 cursor-pointer rounded-md p-2"
+              "hove:bg-secondary text-secondary-foreground dark:hover:bg-secondary mr-2 cursor-pointer rounded-md p-2"
             }>
             <IconUsersPlus className="size-4" />
           </div>

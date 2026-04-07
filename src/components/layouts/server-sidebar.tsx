@@ -1,13 +1,15 @@
-import ChannelType from "@/enums/channel.enum";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Server from "@/models/server.model";
-import { Category, Channel, Member, Profile } from "@/interface";
+import { Category, Channel, Member as MemberInterface, Profile } from "@/interface";
 import mongoose from "mongoose";
 import { redirect } from "next/navigation";
 import { ServerHeader } from "./server-header";
 import { ServerWithMembersWithProfiles } from "@/types/server";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ServerSection } from "@/components/server/server-section";
+import Member from "@/models/member.model";
+
+export const dynamic = "force-dynamic";
 
 export async function ServerSidebar({ serverId }: { serverId: string }) {
   const profile = await currentAuthUser();
@@ -17,6 +19,15 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
 
   const server = await Server.findById(serverId);
   if (!server) {
+    return redirect("/");
+  }
+
+  const member = await Member.findOne({
+    serverId,
+    profileId: profile.id
+  });
+
+  if (!member) {
     return redirect("/");
   }
 
@@ -30,28 +41,27 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
     {
       $lookup: {
         from: "channels",
-        localField: "_id",
-        foreignField: "serverId",
-        as: "channels",
+        let: { serverId: "$_id" },
         pipeline: [
           {
-            $lookup: {
-              from: "categories",
-              localField: "categoryId",
-              foreignField: "_id",
-              as: "category"
-            }
-          },
-          {
-            $unwind: {
-              path: "$category",
-              preserveNullAndEmptyArrays: true
+            $match: {
+              $expr: {
+                $and: [
+                  { $eq: ["$serverId", "$$serverId"] },
+                  {
+                    $or: [
+                      { $eq: ["$categoryId", null] },
+                      { $not: ["$categoryId"] }
+                    ]
+                  }
+                ]
+              }
             }
           }
-        ]
+        ],
+        as: "channels"
       }
     },
-
     {
       $lookup: {
         from: "members",
@@ -76,11 +86,35 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
             }
           },
           {
-            $unwind: {
-              path: "$channels",
-              preserveNullAndEmptyArrays: true
+            $lookup: {
+              from: "members",
+              localField: "privateMembers",
+              foreignField: "_id",
+              as: "privateMembers",
+              pipeline: [
+                {
+                  $lookup: {
+                    from: "profiles",
+                    localField: "profileId",
+                    foreignField: "_id",
+                    as: "profile"
+                  }
+                },
+                {
+                  $unwind: {
+                    path: "$profile",
+                    preserveNullAndEmptyArrays: true
+                  }
+                }
+              ]
             }
-          }
+          },
+          // {
+          //   $unwind: {
+          //     path: "$channels",
+          //     preserveNullAndEmptyArrays: true
+          //   }
+          // }
         ],
         as: "categories"
       }
@@ -140,10 +174,8 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
     }
   ]);
 
-  console.log({
-    serverWithChannels,
-    ch: serverWithChannels.channels
-  });
+  if (!serverWithChannels) return null;
+
   const cleanServer: ServerWithMembersWithProfiles = {
     ...serverWithChannels,
     _id: serverWithChannels._id.toString(),
@@ -153,7 +185,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
       serverId: c.serverId.toString()
     })),
     members: serverWithChannels?.members.map(
-      (m: Member & { profile: Profile }) => ({
+      (m: MemberInterface & { profile: Profile }) => ({
         ...m,
         _id: m._id.toString(),
         role: m.role,
@@ -177,38 +209,23 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
   //   cleanServer
   // });
 
-  const textChannels = cleanServer.channels.filter(
-    (channel: Channel) => channel.type === ChannelType.TEXT
-  );
-
-  const audioChannels = cleanServer.channels.filter(
-    (channel: Channel) => channel.type === ChannelType.AUDIO
-  );
-
-  const videoChannels = cleanServer.channels.filter(
-    (channel: Channel) => channel.type === ChannelType.VIDEO
-  );
-
-  // console.log({
-  //   textChannels,
-  //   audioChannels,
-  //   videoChannels
-  // });
+  // const firstChannel =
+  //   cleanServer.categories?.find(
+  //     (c: Category) => c?.channels && c?.channels?.length > 0 && c?.channels[0]
+  //   ) ?? cleanServer.channels[0];
 
   const role = cleanServer.members.find(
-    (member: Member) => member.profileId.toString() === profile.id
+    member => member.profile._id === profile.id
   )?.role;
 
   return (
     <div className="text-primary flex h-full w-full flex-col">
       <ServerHeader server={JSON.stringify(cleanServer)} role={role} />
-      <ScrollArea>
+      <ScrollArea className={"h-[calc(100vh-120px)] pb-4"}>
         <ServerSection
-          sectionType="channels"
-          label="Text Channels"
-          channelType={ChannelType.TEXT}
+          memberId={member._id.toString()}
           role={role}
-          // server={cleanServer}
+          server={JSON.stringify(cleanServer)}
         />
       </ScrollArea>
     </div>

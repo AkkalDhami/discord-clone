@@ -1,7 +1,5 @@
 "use client";
 
-import qs from "query-string";
-
 import {
   Field,
   FieldContent,
@@ -22,7 +20,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
@@ -33,7 +31,7 @@ import { IconLock } from "@tabler/icons-react";
 import { useCategory } from "@/hooks/use-category";
 
 export function CreateCategoryModal() {
-  const { close, isOpen, type, data } = useModal();
+  const { close, isOpen, type, data, open } = useModal();
   const isModalOpen = isOpen && type === "create-category";
 
   const server = data.server;
@@ -51,26 +49,38 @@ export function CreateCategoryModal() {
     }
   });
 
+  const isPrivate = useWatch({
+    control: form.control,
+    name: "private"
+  });
+
   async function onSubmit(data: CreateCategoryInput) {
-    try {
-      const url = qs.stringifyUrl({
-        url: "/api/categories",
-        query: {
-          serverId: server?._id
+    if (data.private) {
+      open("add-members", {
+        server,
+        categoryData: {
+          name: data.name,
+          private: true
         }
       });
+      return;
+    }
+
+    try {
       const res = await createCategory({
-        url,
+        serverId: server?._id || "",
         data: {
           name: data.name,
-          private: data.private || false
+          private: false
         }
       });
+
       if (res.success) {
         toast.success(res.message || "Category created successfully");
       } else {
         toast.error(res.message || "Failed to create category");
       }
+
       form.reset();
       router.refresh();
       close();
@@ -157,22 +167,34 @@ export function CreateCategoryModal() {
             </FieldGroup>
           </form>
 
-          <Field orientation="horizontal">
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              onClick={() => {
+                close();
+                form.reset();
+              }}
+              variant={"outline"}
+              className={"h-10 w-full py-2 text-base font-medium"}>
+              Cancel
+            </Button>
             <Button
               type="submit"
               form="create-category-form"
-              variant={"primary"}
-              className="mt-2 h-9 w-full"
+              variant="primary"
+              className="h-10 w-full"
               disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Spinner /> Creating...
                 </>
+              ) : isPrivate ? (
+                "Next"
               ) : (
                 "Create Category"
               )}
             </Button>
-          </Field>
+          </div>
         </DialogHeader>
       </DialogContent>
     </Dialog>
