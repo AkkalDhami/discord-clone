@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { NavigationItem } from "@/components/navigation/navigation-item";
 import { IServer } from "@/models/server.model";
 import { Types } from "mongoose";
-import { UserMenu } from "../auth/user-menu";
+import { UserMenu } from "@/components/auth/user-menu";
 
 export async function NavigationSidebar() {
   const profile = await currentAuthUser();
@@ -42,7 +42,7 @@ export async function NavigationSidebar() {
   }
 
   return (
-    <aside className="relative flex h-full w-[72px] flex-col items-center space-y-4 p-3 pt-6">
+    <aside className="relative flex h-full w-[72px] flex-col items-center space-y-4 p-3 pt-8">
       <NavigationAction />
       <ScrollArea className="flex-1">
         {servers?.map((server: IServer) => (
