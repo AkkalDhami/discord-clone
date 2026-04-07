@@ -1,4 +1,4 @@
-import { Server } from "@/interface";
+import { Category, Channel, Member, Server } from "@/interface";
 import { create } from "zustand";
 
 export type ModalType =
@@ -8,20 +8,30 @@ export type ModalType =
   | "delete-server"
   | "invite-people"
   | "members"
+  | "add-members"
+  | "remove-member"
   | "create-channel"
   | "edit-channel"
+  | "delete-channel"
   | "create-category"
   | "delete-category"
   | "edit-category";
 
-interface ModalData {
+export interface ModalData {
   server?: Pick<
     Server,
     "_id" | "name" | "logo" | "inviteCode" | "profileId" | "members"
   >;
+  channel?: Channel;
+  category?: Category;
+  categoryData?: {
+    name: string;
+    private: boolean;
+  };
+  member?: Member;
 }
 
-interface ModalStore {
+export interface ModalStore {
   type: ModalType | null;
   isOpen: boolean;
   data: ModalData;
