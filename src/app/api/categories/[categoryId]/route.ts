@@ -7,7 +7,10 @@ import Channel from "@/models/channel.model";
 import Member from "@/models/member.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
-import { EditCategorySchema, EditCategorySchemaType } from "@/validators/category";
+import {
+  EditCategorySchema,
+  EditCategorySchemaType
+} from "@/validators/category";
 import mongoose, { isValidObjectId } from "mongoose";
 import { NextRequest } from "next/server";
 
@@ -118,6 +121,18 @@ export const PATCH = AsyncHandler(
       });
     }
 
+    const body: EditCategorySchemaType = await req.json();
+
+    const result = validateRequest(EditCategorySchema, body);
+
+    if (!result.success) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Invalid request body",
+        success: false
+      });
+    }
+
     const category = await Category.findById(categoryId);
 
     if (!category) {
@@ -149,14 +164,17 @@ export const PATCH = AsyncHandler(
       });
     }
 
-    const body: EditCategorySchemaType = await req.json();
-
-    const result = validateRequest(EditCategorySchema, body);
-
-    if (!result.success) {
+    if (
+      category.private &&
+      ![MemberRole.ADMIN].includes(member.role) &&
+      !(
+        [MemberRole.MODERATOR].includes(member.role) &&
+        category.profileId.toString() === user.id
+      )
+    ) {
       return ApiResponse({
-        statusCode: STATUS_CODES.BAD_REQUEST,
-        message: "Invalid request body",
+        statusCode: STATUS_CODES.UNAUTHORIZED,
+        message: "You are not authorized to edit this category",
         success: false
       });
     }
