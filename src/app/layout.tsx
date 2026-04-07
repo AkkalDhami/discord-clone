@@ -21,8 +21,12 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Discord clone - Akkal Dhami",
-  description: "A Discord clone built with Next.js, React Query, and Tailwind CSS. This project is a demonstration of my skills in building a full-stack web application with modern technologies."
+  title: {
+    default: "Discord clone - Akkal Dhami",
+    template: "%s | Discord clone - Akkal Dhami"
+  },
+  description:
+    "A Discord clone built with Next.js, React Query, and Tailwind CSS. This project is a demonstration of my skills in building a full-stack web application with modern technologies."
 };
 
 export default function RootLayout({
