@@ -117,7 +117,10 @@ export function DeleteServerModal() {
         <div className="grid grid-cols-2 gap-2">
           <Button
             type="button"
-            onClick={close}
+            onClick={() => {
+              close();
+              form.reset();
+            }}
             variant={"outline"}
             className={"h-10 py-2 text-base font-medium"}>
             Cancel

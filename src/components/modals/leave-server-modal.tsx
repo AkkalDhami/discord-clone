@@ -13,9 +13,11 @@ import { Spinner } from "@/components/ui/spinner";
 import { useModal } from "@/hooks/use-modal-store";
 import toast from "react-hot-toast";
 import { useServer } from "@/hooks/use-server";
+import { useRouter } from "next/navigation";
 
 export function LeaveServerModal() {
   const { close, isOpen, type, data } = useModal();
+  const router = useRouter();
   const isModalOpen = isOpen && type === "leave-server";
 
   const { leaveServer, isLeaving } = useServer();
@@ -30,6 +32,7 @@ export function LeaveServerModal() {
       if (res?.success) {
         close();
         toast.success(res.message);
+        router.refresh();
       } else {
         toast.error(res.message);
       }

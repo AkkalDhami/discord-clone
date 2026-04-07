@@ -1,7 +1,5 @@
 "use client";
 
-import qr from "query-string";
-
 import {
   Dialog,
   DialogContent,
@@ -25,7 +23,7 @@ import {
 import { useModal } from "@/hooks/use-modal-store";
 import { ServerWithMembersWithProfiles } from "@/types/server";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { UserAvatar } from "../common/user-avatar";
+import { UserAvatar } from "@/components/common/user-avatar";
 import {
   IconCheck,
   IconDotsVertical,
@@ -42,9 +40,8 @@ import { Spinner } from "@/components/ui/spinner";
 import toast from "react-hot-toast";
 import { useMember } from "@/hooks/use-member";
 import { useRouter } from "next/navigation";
-import { Member } from "@/interface";
 
-const RoleIconMap = {
+export const RoleIconMap = {
   [MemberRole.ADMIN]: <IconShieldBolt className="size-4 text-red-500" />,
   [MemberRole.MODERATOR]: (
     <IconShieldCheck className="size-4 text-indigo-500" />
@@ -71,19 +68,7 @@ export function MemberModal() {
   const onKick = async (memberId: string) => {
     try {
       setLoadingId(memberId);
-
-      const url = qr.stringifyUrl({
-        url: `/api/members/${memberId}`,
-        query: {
-          serverId: server?._id
-        }
-      });
-
-      const res: {
-        success: boolean;
-        message: string;
-        data: Member;
-      } = await deleteMember({ url });
+      const res = await deleteMember({ serverId: server._id, memberId });
 
       if (res.success) {
         toast.success(res.message);
@@ -109,18 +94,11 @@ export function MemberModal() {
   const onRoleChange = async (memberId: string, role: MemberRole) => {
     try {
       setLoadingId(memberId);
-      const url = qr.stringifyUrl({
-        url: `/api/members/${memberId}`,
-        query: {
-          serverId: server._id
-        }
+      const res = await updateMemberRole({
+        serverId: server._id,
+        memberId,
+        role
       });
-
-      const res: {
-        success: boolean;
-        message: string;
-        data: Member;
-      } = await updateMemberRole({ url, role });
 
       if (res.success) {
         toast.success(res.message);

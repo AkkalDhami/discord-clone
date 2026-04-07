@@ -68,6 +68,7 @@ export function InviteModal() {
             </Label>
             <div className="mt-2 flex items-center gap-x-2">
               <Input
+                readOnly
                 className={cn(
                   "focus-visible:border-border flex-1 border focus-visible:ring-0 focus-visible:ring-offset-0",
                   generateInviteLinkLoading && "cursor-not-allowed"

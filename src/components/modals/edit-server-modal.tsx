@@ -24,9 +24,10 @@ import {
 import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 import { useEffect } from "react";
+import { Spinner } from "@/components/ui/spinner";
 
 export function EditServerModal() {
   const { close, isOpen, type, data } = useModal();
@@ -60,13 +61,12 @@ export function EditServerModal() {
 
       if (res.success) {
         toast.success(res.message);
+        form.reset();
+        router.refresh();
+        close();
       } else {
         toast.error(res.message);
       }
-
-      form.reset();
-      router.refresh();
-      close();
     } catch (error) {
       console.log(error);
       toast.error("Failed to edit server");
@@ -137,8 +137,15 @@ export function EditServerModal() {
               variant={"primary"}
               form="edit-server-form"
               className="mt-2 h-9 w-full"
-              disabled={isLoading}>
-              {isLoading ? "Updating..." : "Update Server"}
+              disabled={isLoading || !form.formState.isDirty}>
+              {isLoading ? (
+                <>
+                  <Spinner />
+                  Updating...
+                </>
+              ) : (
+                "Update Server"
+              )}
             </Button>
           </Field>
         </DialogHeader>
