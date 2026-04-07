@@ -2,8 +2,11 @@ import mongoose, { Document, Model, Schema } from "mongoose";
 
 export interface IProfile extends Document {
   _id: mongoose.Types.ObjectId;
+
   name: string;
   username: string;
+  bio?: string;
+
   email: string;
   password: string;
 
@@ -45,6 +48,12 @@ const profileSchema = new Schema<IProfile>(
       lowercase: true,
       trim: true
     },
+
+    bio: {
+      type: String,
+      trim: true
+    },
+
     password: {
       type: String,
       required: [true, "Password is required"],
