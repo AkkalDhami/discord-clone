@@ -40,15 +40,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
 
   const { name, logo } = validationResult.data;
 
-  const existingServer = await Server.findOne({ name });
-  if (existingServer) {
-    return ApiResponse({
-      statusCode: STATUS_CODES.CONFLICT,
-      message: "Server with this name already exists",
-      success: false
-    });
-  }
-
   const session = await mongoose.startSession();
 
   let server;
