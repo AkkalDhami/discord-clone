@@ -1,7 +1,7 @@
 "use client";
 import { useParams, useRouter } from "next/navigation";
 /* eslint-disable @next/next/no-img-element */
-import { ActionTooltip } from "../common/action-tooltip";
+import { ActionTooltip } from "@/components/common/action-tooltip";
 import { cn } from "@/lib/utils";
 
 interface NavigationItemProps {
@@ -32,12 +32,16 @@ export function NavigationItem({ id, logo, name }: NavigationItemProps) {
           <div className="group relative mx-3 flex size-10 overflow-hidden">
             {logo ? (
               <img
-                className="size-10 rounded-xl object-cover"
+                className="size-10 rounded-xl object-center object-cover"
                 src={logo}
                 alt={name}
               />
             ) : (
-              <div className="flex size-10 items-center justify-center rounded-xl  text-lg font-medium transition-all bg-indigo-500 text-white dark:bg-indigo-500">
+              <div
+                className={cn(
+                  "bg-secondary flex size-10 items-center justify-center rounded-xl text-lg font-medium transition-all hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500",
+                  params?.serverId === id && "bg-indigo-500 text-white"
+                )}>
                 {name.charAt(0).toUpperCase()}
               </div>
             )}
