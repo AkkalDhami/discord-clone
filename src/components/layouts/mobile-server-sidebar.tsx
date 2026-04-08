@@ -15,8 +15,10 @@ export function MobileServerSidebar({ serverId }: { serverId: string }) {
         }></SheetTrigger>
       <SheetContent
         side="left"
-        className={"flex flex-row items-center gap-0 pt-12"}>
-        <NavigationSidebar className="border-edge border-r pt-3" />
+        className={
+          "flex flex-row items-center gap-0 pt-12 data-[side=left]:w-[95%]"
+        }>
+        <NavigationSidebar className="border-edge p-2 border-r pt-3" />
         <ServerSidebar serverId={serverId} />
       </SheetContent>
     </Sheet>
