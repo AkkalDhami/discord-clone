@@ -1,21 +1,15 @@
 "use client";
-import {
-  Field,
-  FieldError,
-  FieldGroup,
-  FieldLabel
-} from "@/components/ui/field";
+import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { ServerSchema, ServerSchemaType } from "@/validators/server";
 import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
@@ -23,6 +17,8 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 import { Spinner } from "@/components/ui/spinner";
+import { EmojiClickData } from "emoji-picker-react";
+import { EmojiInput } from "@/components/common/emoji-input";
 
 export function CreateServerModal() {
   const { close, isOpen, type } = useModal();
@@ -38,6 +34,18 @@ export function CreateServerModal() {
       logo: ""
     }
   });
+
+  const name = useWatch({
+    control: form.control,
+    name: "name"
+  });
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    form.setValue("name", (name || "") + emojiData.emoji, {
+      shouldDirty: true
+    });
+  };
+
   async function onSubmit(data: ServerSchemaType) {
     try {
       const res = await createServer(data);
@@ -90,37 +98,36 @@ export function CreateServerModal() {
                   </Field>
                 )}
               />
-              <Controller
-                name="name"
+              <EmojiInput
+                label="Server name"
                 control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel
-                      htmlFor="server-name"
-                      className="text-muted-primary font-medium uppercase">
-                      Server name
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="server-name"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Enter server name"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                name="name"
+                placeholder="Enter server name"
+                onClick={emojiData => {
+                  if ("emoji" in emojiData) {
+                    onEmojiClick(emojiData);
+                  }
+                }}
               />
             </FieldGroup>
           </form>
 
-          <Field orientation="horizontal">
+          <div className="mt-2 grid sm:grid-cols-2 gap-2">
+            <Button
+              type="button"
+              onClick={() => {
+                close();
+                form.reset();
+              }}
+              variant={"outline"}
+              className={"h-10 w-full py-2 text-base font-medium"}>
+              Cancel
+            </Button>
             <Button
               type="submit"
               variant={"primary"}
               form="server-form"
-              className="mt-2 h-9 w-full"
+              className="py-2 h-10 w-full"
               disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -130,7 +137,7 @@ export function CreateServerModal() {
                 "Create"
               )}
             </Button>
-          </Field>
+          </div>
         </DialogHeader>
       </DialogContent>
     </Dialog>

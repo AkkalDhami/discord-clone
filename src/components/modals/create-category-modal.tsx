@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
@@ -29,6 +29,8 @@ import { CreateCategorySchema } from "@/validators/category";
 import z from "zod";
 import { IconLock } from "@tabler/icons-react";
 import { useCategory } from "@/hooks/use-category";
+import { EmojiClickData } from "emoji-picker-react";
+import { EmojiInput } from "@/components/common/emoji-input";
 
 export function CreateCategoryModal() {
   const { close, isOpen, type, data, open } = useModal();
@@ -53,6 +55,17 @@ export function CreateCategoryModal() {
     control: form.control,
     name: "private"
   });
+
+  const name = useWatch({
+    control: form.control,
+    name: "name"
+  });
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    form.setValue("name", (name || "") + emojiData.emoji, {
+      shouldDirty: true
+    });
+  };
 
   async function onSubmit(data: CreateCategoryInput) {
     if (data.private) {
@@ -108,27 +121,16 @@ export function CreateCategoryModal() {
             className="mt-3"
             id="create-category-form">
             <FieldGroup>
-              <Controller
-                name="name"
+              <EmojiInput
+                label="Category name"
                 control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel
-                      htmlFor="channel-name"
-                      className="text-muted-primary font-medium uppercase">
-                      Channel name
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="channel-name"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Enter channel name"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                name="name"
+                placeholder="Enter category name"
+                onClick={emojiData => {
+                  if ("emoji" in emojiData) {
+                    onEmojiClick(emojiData);
+                  }
+                }}
               />
               <Controller
                 name="private"

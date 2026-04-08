@@ -12,14 +12,14 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
@@ -28,6 +28,8 @@ import ChannelType from "@/enums/channel.enum";
 import { IconHash, IconVideo, IconVolume } from "@tabler/icons-react";
 import { useChannel } from "@/hooks/use-channel";
 import { useEffect } from "react";
+import { EmojiInput } from "@/components/common/emoji-input";
+import { EmojiClickData } from "emoji-picker-react";
 
 export function EditChannelModal() {
   const { close, isOpen, type, data } = useModal();
@@ -52,6 +54,17 @@ export function EditChannelModal() {
       form.setValue("type", channel.type);
     }
   }, [channel, form]);
+
+  const name = useWatch({
+    control: form.control,
+    name: "name"
+  });
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    form.setValue("name", (name || "") + emojiData.emoji, {
+      shouldDirty: true
+    });
+  };
 
   async function onSubmit(data: EditChannelSchemaType) {
     try {
@@ -170,32 +183,21 @@ export function EditChannelModal() {
                 )}
               />
 
-              <Controller
-                name="name"
+              <EmojiInput
+                label="Channel name"
                 control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel
-                      htmlFor="channel-name"
-                      className="text-muted-primary font-medium uppercase">
-                      Channel name
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="channel-name"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Enter channel name"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                name="name"
+                placeholder="Enter channel name"
+                onClick={emojiData => {
+                  if ("emoji" in emojiData) {
+                    onEmojiClick(emojiData);
+                  }
+                }}
               />
             </FieldGroup>
           </form>
 
-          <div className="grid mt-2 grid-cols-2 gap-2">
+          <div className="mt-2 grid grid-cols-2 gap-2">
             <Button
               type="button"
               onClick={close}
@@ -207,7 +209,7 @@ export function EditChannelModal() {
               type="submit"
               form="edit-channel-form"
               variant={"primary"}
-              className="h-10 py-2 w-full"
+              className="h-10 w-full py-2"
               disabled={isLoading || !form.formState.isDirty}>
               {isLoading ? (
                 <>

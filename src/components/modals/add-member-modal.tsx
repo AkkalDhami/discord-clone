@@ -44,9 +44,9 @@ export function AddMemberModal() {
 
   const isModalOpen = isOpen && type === "add-members";
 
-  const { createCategory, isCategoryCreating } = useCategory();
+  const { updateMember, isMemberUpdating } = useCategory();
 
-  const { server, categoryData } = data;
+  const { server, category } = data;
 
   const [selectedMembers, setSelectedMembers] = React.useState<string[]>([]);
 
@@ -61,7 +61,7 @@ export function AddMemberModal() {
 
   async function handleCreate() {
     if (items.length === 0) {
-      close();
+      // close();
       open("create-category", {
         server
       });
@@ -69,22 +69,20 @@ export function AddMemberModal() {
     }
 
     try {
-      const res = await createCategory({
+      const res = await updateMember({
+        categoryId: category?._id || "",
         serverId: server?._id || "",
-        data: {
-          name: categoryData?.name || "",
-          private: true,
-          memberIds: selectedMembers
-        }
+        type: "add",
+        memberIds: selectedMembers
       });
 
       if (res.success) {
-        toast.success(res.message || "Private category created");
+        toast.success(res.message || "Members added");
         close();
         router.refresh();
         setSelectedMembers([]);
       } else {
-        toast.error(res.message || "Failed to create category");
+        toast.error(res.message || "Failed to add members");
       }
     } catch (err) {
       console.error(err);
@@ -95,10 +93,11 @@ export function AddMemberModal() {
   return (
     <Dialog
       open={isModalOpen}
-      onOpenChange={openState => {
-        if (!openState) close();
-      }}>
-      <DialogContent className="w-full max-w-[800px]">
+      // onOpenChange={openState => {
+      //   if (!openState) close();
+      // }}
+    >
+      <DialogContent className="w-full max-w-200">
         <DialogHeader>
           <DialogTitle>Add Members</DialogTitle>
           <DialogDescription className="text-base font-medium">
@@ -107,7 +106,7 @@ export function AddMemberModal() {
           </DialogDescription>
         </DialogHeader>
 
-        <ScrollArea className={"mt-4 h-[200px] w-full pr-6"}>
+        <ScrollArea className={"mt-4 h-50 w-full pr-6"}>
           {server.members.map(member => (
             <div
               key={member._id}
@@ -199,15 +198,13 @@ export function AddMemberModal() {
             onClick={handleCreate}
             variant="primary"
             className="h-10 w-full"
-            disabled={isCategoryCreating}>
-            {isCategoryCreating ? (
+            disabled={isMemberUpdating}>
+            {isMemberUpdating ? (
               <>
-                <Spinner /> Creating...
+                <Spinner /> Updating...
               </>
-            ) : server.members.length > 1 && selectedMembers.length > 0 ? (
-              "Create Category"
             ) : (
-              "Skip"
+              "Add Members"
             )}
           </Button>
         </div>

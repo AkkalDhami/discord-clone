@@ -15,14 +15,14 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Switch } from "@/components/ui/switch";
 
 import { UserAvatar } from "@/components/common/user-avatar";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
@@ -35,6 +35,9 @@ import { IconLock, IconX } from "@tabler/icons-react";
 import { useCategory } from "@/hooks/use-category";
 import { useEffect } from "react";
 import MemberRole from "@/enums/role.enum";
+import { EmojiClickData } from "emoji-picker-react";
+import { EmojiInput } from "@/components/common/emoji-input";
+import { cn } from "@/lib/utils";
 
 export function EditCategoryModal() {
   const { close, isOpen, type, data, open } = useModal();
@@ -42,7 +45,7 @@ export function EditCategoryModal() {
 
   const { category } = data;
 
-  const { updateCategory, isCategoryUpdating, removeMember, isMemberRemoving } =
+  const { updateCategory, isCategoryUpdating, isMemberUpdating } =
     useCategory();
   const router = useRouter();
 
@@ -63,9 +66,21 @@ export function EditCategoryModal() {
     }
   }, [category, form]);
 
-  // console.log({
-  //   category
-  // });
+  const name = useWatch({
+    control: form.control,
+    name: "name"
+  });
+
+  const privateCategory = useWatch({
+    control: form.control,
+    name: "private"
+  });
+
+  const onEmojiClick = (emojiData: EmojiClickData) => {
+    form.setValue("name", (name || "") + emojiData.emoji, {
+      shouldDirty: true
+    });
+  };
 
   async function onSubmit(data: EditCategorySchemaType) {
     try {
@@ -124,7 +139,15 @@ export function EditCategoryModal() {
             <TabsTrigger value="general" className={"uppercase"}>
               General
             </TabsTrigger>
-            <TabsTrigger value="permissions" className={"uppercase"}>
+            <TabsTrigger
+              value="permissions"
+              className={cn(
+                "uppercase",
+                !privateCategory &&
+                  category?.privateMembers &&
+                  category?.privateMembers?.length < 2 &&
+                  "hidden"
+              )}>
               Permissions
             </TabsTrigger>
           </TabsList>
@@ -137,27 +160,16 @@ export function EditCategoryModal() {
                 className="mt-3"
                 id="edit-category-form">
                 <FieldGroup>
-                  <Controller
-                    name="name"
+                  <EmojiInput
+                    label="Category name"
                     control={form.control}
-                    render={({ field, fieldState }) => (
-                      <Field data-invalid={fieldState.invalid}>
-                        <FieldLabel
-                          htmlFor="channel-name"
-                          className="text-muted-primary font-medium uppercase">
-                          Channel name
-                        </FieldLabel>
-                        <Input
-                          {...field}
-                          id="channel-name"
-                          aria-invalid={fieldState.invalid}
-                          placeholder="Enter channel name"
-                        />
-                        {fieldState.invalid && (
-                          <FieldError errors={[fieldState.error]} />
-                        )}
-                      </Field>
-                    )}
+                    name="name"
+                    placeholder="Enter category name"
+                    onClick={emojiData => {
+                      if ("emoji" in emojiData) {
+                        onEmojiClick(emojiData);
+                      }
+                    }}
                   />
                   <Controller
                     name="private"
@@ -235,6 +247,7 @@ export function EditCategoryModal() {
                   type="button"
                   variant={"primary"}
                   onClick={() => {
+                    close();
                     open("add-members", {
                       category,
                       categoryData: {
@@ -286,9 +299,9 @@ export function EditCategoryModal() {
                           }}
                           variant={"ghost"}
                           size={"icon"}
-                          disabled={isMemberRemoving}
+                          disabled={isMemberUpdating}
                           className={"h-8 w-8"}>
-                          {isMemberRemoving ? (
+                          {isMemberUpdating ? (
                             <Spinner className="size-4" />
                           ) : (
                             <IconX className="size-4" />

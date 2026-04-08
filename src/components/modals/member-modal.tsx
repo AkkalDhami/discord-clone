@@ -26,12 +26,14 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserAvatar } from "@/components/common/user-avatar";
 import {
   IconCheck,
+  IconCrownFilled,
   IconDotsVertical,
   IconGavel,
+  IconRosetteFilled,
   IconShield,
-  IconShieldBolt,
   IconShieldCheck,
-  IconShieldQuestion
+  IconShieldQuestion,
+  IconSwords
 } from "@tabler/icons-react";
 import MemberRole from "@/enums/role.enum";
 import { useState } from "react";
@@ -42,11 +44,9 @@ import { useMember } from "@/hooks/use-member";
 import { useRouter } from "next/navigation";
 
 export const RoleIconMap = {
-  [MemberRole.ADMIN]: <IconShieldBolt className="size-4 text-red-500" />,
-  [MemberRole.MODERATOR]: (
-    <IconShieldCheck className="size-4 text-indigo-500" />
-  ),
-  [MemberRole.GUEST]: null
+  [MemberRole.ADMIN]: <IconCrownFilled className="size-4 text-orange-500" />,
+  [MemberRole.MODERATOR]: <IconSwords className="size-4 text-indigo-500" />,
+  [MemberRole.GUEST]: <IconRosetteFilled className="size-4 text-blue-500" />
 };
 
 export function MemberModal() {
@@ -135,14 +135,14 @@ export function MemberModal() {
       onOpenChange={open => {
         if (!open) close();
       }}>
-      <DialogContent className={"w-full max-w-[800px]"}>
+      <DialogContent className={"w-full max-w-200"}>
         <DialogHeader>
           <DialogTitle>Manage Members</DialogTitle>
           <DialogDescription className={"text-base font-medium"}>
             {server.members.length} Member{server.members.length > 1 ? "s" : ""}
           </DialogDescription>
 
-          <ScrollArea className={"mt-4 h-[400px] w-full pr-6"}>
+          <ScrollArea className={"mt-4 h-75 w-full pr-6"}>
             {server.members.map(member => (
               <div
                 key={member._id}

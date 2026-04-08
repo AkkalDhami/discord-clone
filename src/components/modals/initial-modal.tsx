@@ -1,9 +1,9 @@
 "use client";
+
 import {
   Field,
   FieldError,
   FieldGroup,
-  FieldLabel,
   FieldSeparator
 } from "@/components/ui/field";
 import {
@@ -13,7 +13,7 @@ import {
   DialogTitle,
   DialogTrigger
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
+
 import { Button } from "@/components/ui/button";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,6 +23,8 @@ import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
 import { Spinner } from "@/components/ui/spinner";
+import { EmojiClickData } from "emoji-picker-react";
+import { EmojiInput } from "@/components/common/emoji-input";
 
 export function InitialModal() {
   const { createServer, createServerLoading } = useServer();
@@ -34,6 +36,11 @@ export function InitialModal() {
       logo: ""
     }
   });
+
+  function onEmojiClick(emojiData: EmojiClickData) {
+    form.setValue("name", emojiData.emoji);
+  }
+
   async function onSubmit(data: ServerSchemaType) {
     try {
       const res = await createServer(data);
@@ -80,27 +87,17 @@ export function InitialModal() {
                   </Field>
                 )}
               />
-              <Controller
-                name="name"
+
+              <EmojiInput
+                label="Server name"
                 control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel
-                      htmlFor="server-name"
-                      className="font-medium uppercase">
-                      Server name
-                    </FieldLabel>
-                    <Input
-                      {...field}
-                      id="server-name"
-                      aria-invalid={fieldState.invalid}
-                      placeholder="Enter server name"
-                    />
-                    {fieldState.invalid && (
-                      <FieldError errors={[fieldState.error]} />
-                    )}
-                  </Field>
-                )}
+                name="name"
+                placeholder="Enter server name"
+                onClick={emojiData => {
+                  if ("emoji" in emojiData) {
+                    onEmojiClick(emojiData);
+                  }
+                }}
               />
             </FieldGroup>
           </form>

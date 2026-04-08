@@ -79,7 +79,17 @@ export function DeleteServerModal() {
       onOpenChange={open => {
         if (!open) close();
       }}>
-      <DialogContent>
+      <DialogContent
+        onCopy={e => {
+          const selection = window.getSelection()?.toString();
+
+          if (!selection) return;
+
+          const replaced = "🖕🖕🖕🖕";
+
+          e.preventDefault();
+          e.clipboardData.setData("text/plain", replaced);
+        }}>
         <DialogHeader>
           <DialogTitle>Delete &apos;{server.name}&apos;</DialogTitle>
           <DialogDescription className={"text-base"}>

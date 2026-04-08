@@ -16,11 +16,11 @@ import { useRouter } from "next/navigation";
 import { useCategory } from "@/hooks/use-category";
 
 export function RemoveMemberModal() {
-  const { close, isOpen, type, data } = useModal();
+  const { close, isOpen, type, data, open } = useModal();
   const router = useRouter();
   const isModalOpen = isOpen && type === "remove-member";
 
-  const { removeMember, isMemberRemoving } = useCategory();
+  const { updateMember, isMemberUpdating } = useCategory();
   const { member, category } = data;
   if (!member || !category) {
     // close();
@@ -29,9 +29,9 @@ export function RemoveMemberModal() {
 
   async function onRemoveMember() {
     try {
-      const res = await removeMember({
+      const res = await updateMember({
         categoryId: category?._id as string,
-        memberId: member?._id as string,
+        memberIds: [member?._id as string],
         serverId: category?.serverId as string,
         type: "remove"
       });
@@ -58,17 +58,20 @@ export function RemoveMemberModal() {
         <DialogHeader>
           <DialogTitle>Delete Permission Settings</DialogTitle>
           <DialogDescription className={"text-base"}>
-            Are you sure you want to delete
-            <strong className="font-semibold">
-              #{member.profile.name}
-            </strong>{" "}
+            Are you sure you want to delete{" "}
+            <strong className="font-semibold">{member.profile.name}</strong>{" "}
             permissions? This action cannot be undone.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
           <Button
             type="button"
-            onClick={close}
+            onClick={() => {
+              close();
+              open("edit-category", {
+                category
+              });
+            }}
             variant={"outline"}
             className={"h-10 py-2 text-base font-medium"}>
             Cancel
@@ -76,15 +79,15 @@ export function RemoveMemberModal() {
           <Button
             type="button"
             variant={"destructive"}
-            disabled={isMemberRemoving}
+            disabled={isMemberUpdating}
             onClick={onRemoveMember}
             className={"h-10 py-2 text-base font-medium"}>
-            {isMemberRemoving ? (
+            {isMemberUpdating ? (
               <>
                 <Spinner /> Removing...
               </>
             ) : (
-              "Okay"
+              "Remove Member"
             )}
           </Button>
         </div>
