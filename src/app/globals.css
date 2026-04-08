@@ -151,7 +151,7 @@
   --card: #090909;
   --highlight: var(--color-green-950);
   --card-foreground: #ffffff;
-  --popover: #121212;
+  --popover: var(--color-neutral-950);
   --popover-foreground: #ffffff;
   --primary: #ffffff;
   --primary-foreground: #000000;
