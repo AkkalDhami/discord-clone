@@ -30,7 +30,7 @@ export default async function Page(props: PageProps<"/servers/[serverId]">) {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-center">
+    <div className="flex min-h-screen flex-col items-center justify-center mx-auto">
       <div className="max-w-md space-y-5 text-center">
         <Image
           width={100}
@@ -39,8 +39,10 @@ export default async function Page(props: PageProps<"/servers/[serverId]">) {
           alt="No Channel"
           className="mx-auto size-60"
         />
-        <h2 className="text-xl font-semibold text-muted-foreground uppercase">No Channels Found</h2>
-        <p className="text-muted-secondary">
+        <h2 className="text-muted-foreground text-xl font-semibold uppercase">
+          No Channels Found
+        </h2>
+        <p className="text-muted-secondary text-pretty">
           You find yourself in a strange place. You don&apos;t have access to
           any text channels or there are none in this server.
         </p>
