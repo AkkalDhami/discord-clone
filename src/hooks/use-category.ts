@@ -41,21 +41,21 @@ export function useCategory() {
     }
   });
 
-  const removeMemberMutation = useMutation({
+  const updateMemberMutation = useMutation({
     mutationFn: async ({
       categoryId,
-      memberId,
+      memberIds,
       serverId,
       type
     }: {
       categoryId: string;
-      memberId: string;
+      memberIds: string[];
       serverId: string;
       type: "add" | "remove";
     }) => {
-      const res = await categoryApi.removeMember({
+      const res = await categoryApi.updateMember({
         categoryId,
-        memberId,
+        memberIds,
         serverId,
         type
       });
@@ -83,8 +83,8 @@ export function useCategory() {
     updateCategory: updateCategoryMutation.mutateAsync,
     isCategoryUpdating: updateCategoryMutation.isPending,
 
-    removeMember: removeMemberMutation.mutateAsync,
-    isMemberRemoving: removeMemberMutation.isPending,
+    updateMember: updateMemberMutation.mutateAsync,
+    isMemberUpdating: updateMemberMutation.isPending,
 
     deleteCategory: deleteCategoryMutation.mutateAsync,
     isCategoryDeleting: deleteCategoryMutation.isPending
