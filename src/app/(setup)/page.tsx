@@ -1,20 +1,21 @@
 import { InitialModal } from "@/components/modals/initial-modal";
-import { initialProfile } from "@/lib/initial-profile";
+import { currentAuthUser } from "@/helpers/auth.helper";
 import Member from "@/models/member.model";
 import Server from "@/models/server.model";
 import { redirect } from "next/navigation";
 
 export default async function Page() {
-  const profile = await initialProfile();
+  const profile = await currentAuthUser();
+  if (!profile) {
+    return redirect("/signin");
+  }
   const member = await Member.findOne({
-    profileId: profile?._id
+    profileId: profile.id
   });
 
   const server = await Server.findOne({
     _id: member?.serverId
   });
-
-  // console.log({ server, profile });
 
   if (server && profile) {
     return redirect(`/servers/${server._id}`);
