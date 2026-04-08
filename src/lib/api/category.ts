@@ -47,25 +47,25 @@ export async function deleteCategory(categoryId: string) {
   return result;
 }
 
-export async function removeMember({
+export async function updateMember({
   categoryId,
-  memberId,
+  memberIds,
   serverId,
   type
 }: {
   categoryId: string;
-  memberId: string;
+  memberIds: string[];
   serverId: string;
   type: "add" | "remove";
 }) {
   const response = await fetch(
-    `/api/categories/${categoryId}/members/${memberId}?serverId=${serverId}`,
+    `/api/categories/${categoryId}/members?serverId=${serverId}`,
     {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ type }),
+      body: JSON.stringify({ type, memberIds }),
       credentials: "include"
     }
   );
