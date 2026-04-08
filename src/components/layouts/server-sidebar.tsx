@@ -205,15 +205,6 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
     }))
   };
 
-  // console.log({
-  //   cleanServer
-  // });
-
-  // const firstChannel =
-  //   cleanServer.categories?.find(
-  //     (c: Category) => c?.channels && c?.channels?.length > 0 && c?.channels[0]
-  //   ) ?? cleanServer.channels[0];
-
   const role = cleanServer.members.find(
     member => member.profile._id === profile.id
   )?.role;
