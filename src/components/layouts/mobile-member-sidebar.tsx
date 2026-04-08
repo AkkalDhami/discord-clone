@@ -1,9 +1,4 @@
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTrigger
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MemberSidebar } from "@/components/layouts/member-sidebar";
 
 import { IconMenu2 } from "@tabler/icons-react";
@@ -18,9 +13,7 @@ export function MobileMemberSidebar({ serverId }: { serverId: string }) {
           />
         }></SheetTrigger>
       <SheetContent>
-        <SheetHeader>
-          <MemberSidebar serverId={serverId} />
-        </SheetHeader>
+        <MemberSidebar serverId={serverId} />
       </SheetContent>
     </Sheet>
   );

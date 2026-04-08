@@ -8,8 +8,9 @@ import { NavigationItem } from "@/components/navigation/navigation-item";
 import { IServer } from "@/models/server.model";
 import { Types } from "mongoose";
 import { UserMenu } from "@/components/auth/user-menu";
+import { cn } from "@/lib/utils";
 
-export async function NavigationSidebar() {
+export async function NavigationSidebar({ className }: { className?: string }) {
   const profile = await currentAuthUser();
   if (!profile) {
     return redirect("/signin");
@@ -42,7 +43,11 @@ export async function NavigationSidebar() {
   }
 
   return (
-    <aside className="relative border-t border-edge flex h-full w-18 flex-col items-center space-y-4 p-3 pt-8">
+    <aside
+      className={cn(
+        "border-edge relative flex h-full w-18 flex-col items-center space-y-4 border-t p-3 pt-8",
+        className
+      )}>
       <NavigationAction />
       <ScrollArea className="flex-1">
         {servers?.map((server: IServer) => (
