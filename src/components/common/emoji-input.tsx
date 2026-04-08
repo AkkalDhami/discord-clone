@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/input-group";
 
 import { IconMoodSmile } from "@tabler/icons-react";
-import { Field, FieldError, FieldLabel } from "../ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 
 type EmojiInputProps<T extends FieldValues> = React.ComponentProps<
   typeof InputGroupInput

@@ -1,6 +1,7 @@
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Channel from "@/models/channel.model";
 import Member from "@/models/member.model";
+import { Route } from "next";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
@@ -26,11 +27,11 @@ export default async function Page(props: PageProps<"/servers/[serverId]">) {
   });
 
   if (channel) {
-    redirect(`/servers/${serverId}/channels/${channel._id}`);
+    redirect(`/servers/${serverId}/channels/${channel._id}` as Route);
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center mx-auto">
+    <div className="mx-auto flex min-h-screen flex-col items-center justify-center">
       <div className="max-w-md space-y-5 text-center">
         <Image
           width={100}
