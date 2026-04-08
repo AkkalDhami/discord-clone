@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const baseEnvSchema = z.object({
-  DATABASE_URL: z.url(),
+  DATABASE_URL: z.string(),
 
   UPLOADTHING_TOKEN: z.string(),
 

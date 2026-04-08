@@ -183,7 +183,7 @@ export function ServerSection({ server, role, memberId }: ServerSectionProps) {
           })}
         </div>
 
-        {members.length > 0 && (
+        {/* {members.length > 0 && (
           <div className="space-y-2">
             <div className="my-3 flex items-center justify-between">
               <h2 className="text-muted-foreground px-2 text-sm font-medium uppercase">
@@ -237,7 +237,7 @@ export function ServerSection({ server, role, memberId }: ServerSectionProps) {
               </Link>
             ))}
           </div>
-        )}
+        )} */}
       </ContextMenuTrigger>
 
       <ContextMenuContent className={"max-w-100 p-2"}>
