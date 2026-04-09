@@ -1,3 +1,5 @@
+import { NextResponse } from "next/server";
+
 type ApiResponse<T = unknown> = {
   success: boolean;
   message?: string;
@@ -5,8 +7,6 @@ type ApiResponse<T = unknown> = {
   error?: unknown;
   statusCode: number;
 };
-
-import { NextResponse } from "next/server";
 
 export function ApiResponse<T>({
   success,
