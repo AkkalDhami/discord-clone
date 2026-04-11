@@ -1,4 +1,13 @@
+import { ChatInput } from "@/components/chat/chat-input";
+import { ChatHeader } from "@/components/layouts/chat-header";
+import { ScrollArea } from "@/components/ui/scroll-area";
+
 import { currentAuthUser } from "@/helpers/auth.helper";
+import { Channel as ChannelInterface } from "@/interface";
+import Channel from "@/models/channel.model";
+import Member from "@/models/member.model";
+import mongoose from "mongoose";
+
 import { redirect } from "next/navigation";
 
 export default async function Page(
@@ -10,5 +19,73 @@ export default async function Page(
     return redirect("/signin");
   }
 
-  return <div className="pt-6 px-6">channel id page</div>;
+  const { params } = props;
+  const { serverId, channelId } = await params;
+
+  const [channel] = (await Channel.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(channelId),
+        serverId: new mongoose.Types.ObjectId(serverId)
+      }
+    },
+    {
+      $lookup: {
+        from: "categories",
+        localField: "categoryId",
+        foreignField: "_id",
+        as: "category"
+      }
+    },
+    {
+      $unwind: {
+        path: "$category",
+        preserveNullAndEmptyArrays: true
+      }
+    }
+  ])) as ChannelInterface[];
+
+  // console.log({ channel });
+  const member = await Member.findOne({
+    profileId: profile.id,
+    serverId
+  });
+
+  if (!channel || !member) {
+    return redirect("/");
+  }
+
+  return (
+    <div className="h-full bg-neutral-100 dark:bg-neutral-950">
+      <ChatHeader
+        serverId={serverId}
+        name={channel.name}
+        type="channel"
+        isPrivate={channel?.category?.private ?? false}
+      />
+      <ScrollArea className="h-[calc(100vh-10.8rem)] p-4 py-4">
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+        {JSON.stringify(channel, null, 2)}
+      </ScrollArea>
+      <ChatInput
+        apiUrl={`/api/messages`}
+        query={{
+          channelId,
+          serverId
+        }}
+        name={channel.name}
+        type="channel"
+      />
+    </div>
+  );
 }
