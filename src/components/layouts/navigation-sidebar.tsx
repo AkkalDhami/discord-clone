@@ -45,7 +45,7 @@ export async function NavigationSidebar({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        "border-edge relative flex h-full w-18 flex-col items-center space-y-4 border-t p-3 pt-8",
+        "border-edge relative flex h-full w-18 flex-col items-center space-y-4 border-t p-3 pt-6",
         className
       )}>
       <NavigationAction />

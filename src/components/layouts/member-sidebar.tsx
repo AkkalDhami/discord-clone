@@ -5,6 +5,7 @@ import Server from "@/models/server.model";
 import { Types } from "mongoose";
 import { redirect } from "next/navigation";
 import { MemberItem } from "@/components/member/member-item";
+import { IconUsers } from "@tabler/icons-react";
 
 export async function MemberSidebar({ serverId }: { serverId: string }) {
   const profile = await currentAuthUser();
@@ -66,14 +67,16 @@ export async function MemberSidebar({ serverId }: { serverId: string }) {
 
   return (
     <div className="flex flex-col">
-      <h2 className="border-edge border-y py-3 pl-4 text-lg font-medium">
-        Members
+      <h2 className="border-edge flex items-center gap-2 border-y py-2.5 pl-4 text-lg font-medium">
+        <IconUsers className="size-4" /> Members ({members?.length})
       </h2>
-      <div className="flex flex-col space-y-2 px-2 py-4">
+      <div className="flex mt-2 flex-col">
         {members?.map(member => (
-          <div key={member._id}>
-            <MemberItem member={member} />
-          </div>
+          <MemberItem
+            key={member._id}
+            member={JSON.stringify(member)}
+            userId={profile.id}
+          />
         ))}
       </div>
     </div>

@@ -1,25 +1,45 @@
+"use client";
+
 import { Member as MemberInterface } from "@/interface";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { RoleIconMap } from "@/components/modals/member-modal";
 import MemberRole from "@/enums/role.enum";
+import Link from "next/link";
+import { useParams } from "next/navigation";
+import { cn } from "@/lib/utils";
 
-export function MemberItem({ member }: { member: MemberInterface }) {
+export function MemberItem({
+  member,
+  userId
+}: {
+  member: string;
+  userId: string;
+}) {
+  const params = useParams();
+  const memberData = JSON.parse(member) as MemberInterface;
   return (
-    <div className="hover:bg-secondary flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 transition">
+    <Link
+      href={`/servers/${memberData.serverId}/conversations/${memberData._id}`}
+      className={cn(
+        "hover:bg-secondary flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
+        "border-t border-edge last:border-b",
+        params.memberId === memberData._id && "bg-secondary",
+        userId === memberData.profileId && "pointer-events-none"
+      )}>
       <UserAvatar
-        src={member.profile.avatar?.url}
-        name={member.profile.name}
+        src={memberData.profile.avatar?.url}
+        name={memberData.profile.name}
         className="size-10"
       />
-      <div className="flex flex-col space-y-1">
+      <div className="flex flex-col">
         <p className="flex items-center gap-2 text-sm font-medium">
-          {member.profile.name}
-          {RoleIconMap[member.role as MemberRole]}
+          {memberData.profile.name}
+          {RoleIconMap[memberData.role as MemberRole]}
         </p>
         <p className="text-muted-primary text-xs">
-          {`@${member.profile.username || member.profile.email}`}
+          {`@${memberData.profile.username || memberData.profile.email}`}
         </p>
       </div>
-    </div>
+    </Link>
   );
 }
