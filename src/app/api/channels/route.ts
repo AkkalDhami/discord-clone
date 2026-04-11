@@ -38,11 +38,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   const serverId = searchParams.get("serverId");
   const categoryId = searchParams.get("categoryId");
 
-  console.log({
-    searchParams,
-    categoryId
-  });
-
   if (!serverId) {
     return ApiResponse({
       success: false,

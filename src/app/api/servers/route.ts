@@ -14,7 +14,7 @@ import { ServerSchema } from "@/validators/server";
 import { NextRequest } from "next/server";
 
 import mongoose from "mongoose";
-import { logger } from "better-auth";
+import { logger } from "@/utils/logger";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
   const body = await req.json();
@@ -143,7 +143,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
       data: server?.[0]
     });
   } catch (error) {
-    logger.error("Transaction failed:", error);
+    logger.error(error, "Transaction failed:");
 
     return ApiResponse({
       statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
