@@ -1,20 +1,8 @@
-import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { signInWithGoogle } from "@/server/auth";
 
 export function OAuthSignin({ className }: { className?: string }) {
-  const lastMethod = authClient.getLastUsedLoginMethod();
-
-  const signInWithGoogle = async () => {
-    const { data, error } = await authClient.signIn.social({
-      provider: "google",
-      callbackURL: "/"
-    });
-
-    console.log({ data, error });
-  };
-
   return (
     <div className={cn("mt-4", className)}>
       <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
@@ -54,9 +42,6 @@ export function OAuthSignin({ className }: { className?: string }) {
           />
         </svg>
         Signin with Google
-        {lastMethod === "google" && (
-          <Badge className="absolute right-2 text-[9px]">last used</Badge>
-        )}
       </Button>
     </div>
   );
