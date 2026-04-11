@@ -14,7 +14,7 @@ export function UserAvatar({ src, name, className }: UserAvatarProps) {
     <Avatar className={cn("size-10", className)}>
       <AvatarImage src={src} />
       <AvatarFallback className="bg-indigo-500 text-white">
-        {name?.slice(0, 2).toUpperCase()}
+        {name?.slice(0, 1).toUpperCase()}
       </AvatarFallback>
     </Avatar>
   );

@@ -43,7 +43,7 @@ export function InviteCard({
     }
   };
   return (
-    <Card className="shadow-secondary w-[420px] rounded-2xl bg-neutral-100 dark:bg-neutral-900">
+    <Card className="shadow-secondary m-4 w-full max-w-[420px] rounded-2xl bg-neutral-100 dark:bg-neutral-900">
       <CardContent className="flex flex-col items-center space-y-5 text-center">
         <Avatar className="size-18">
           <AvatarImage src={userAvatar} />

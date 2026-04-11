@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useId, useState } from "react";
 import { Controller, Control, FieldValues, Path } from "react-hook-form";
-import EmojiPicker, { EmojiClickData } from "emoji-picker-react";
 
 import {
   Popover,
@@ -18,6 +16,12 @@ import {
 
 import { IconMoodSmile } from "@tabler/icons-react";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  EmojiPicker,
+  EmojiPickerSearch,
+  EmojiPickerContent,
+  EmojiPickerFooter
+} from "@/components/ui/emoji-picker";
 
 type EmojiInputProps<T extends FieldValues> = React.ComponentProps<
   typeof InputGroupInput
@@ -25,14 +29,13 @@ type EmojiInputProps<T extends FieldValues> = React.ComponentProps<
   control: Control<T>;
   name: Path<T>;
   label: string;
-  onClick: (emoji: EmojiClickData) => void;
+  type?: "input" | "textarea";
 };
 
 export function EmojiInput<T extends FieldValues>({
   control,
   name,
   label,
-  onClick,
   ...inputProps
 }: EmojiInputProps<T>) {
   const [open, setOpen] = useState(false);
@@ -40,8 +43,8 @@ export function EmojiInput<T extends FieldValues>({
 
   return (
     <Controller
-      control={control as any}
-      name={name as keyof T & string}
+      control={control}
+      name={name}
       render={({ field, fieldState }) => {
         return (
           <Field data-invalid={fieldState.invalid}>
@@ -65,12 +68,42 @@ export function EmojiInput<T extends FieldValues>({
                       <button
                         type="button"
                         onMouseDown={e => e.preventDefault()}>
-                        <IconMoodSmile className="cursor-pointer" />
+                        <IconMoodSmile className="hover:text-accent-foreground cursor-pointer" />
                       </button>
                     }></PopoverTrigger>
 
-                  <PopoverContent className="w-auto p-0">
-                    <EmojiPicker onEmojiClick={onClick} />
+                  <PopoverContent className="w-fit p-0">
+                    <EmojiPicker
+                      className="h-[342px]"
+                      onEmojiSelect={({ emoji }) => {
+                        // onEmojiSelect(emoji);
+                        const input = document.getElementById(
+                          id
+                        ) as HTMLInputElement;
+
+                        if (input) {
+                          const start =
+                            input.selectionStart ?? field.value.length;
+                          const end = input.selectionEnd ?? field.value.length;
+
+                          const newValue =
+                            field.value.slice(0, start) +
+                            emoji +
+                            field.value.slice(end);
+
+                          field.onChange(newValue);
+
+                          // restore cursor after emoji
+                          requestAnimationFrame(() => {
+                            input.selectionStart = input.selectionEnd =
+                              start + emoji.length;
+                          });
+                        }
+                      }}>
+                      <EmojiPickerSearch />
+                      <EmojiPickerContent />
+                      <EmojiPickerFooter />
+                    </EmojiPicker>
                   </PopoverContent>
                 </Popover>
               </InputGroupAddon>
