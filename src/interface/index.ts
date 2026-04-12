@@ -82,7 +82,7 @@ export interface Channel {
   profileId: string;
 
   categoryId?: string;
-  // category?: Category;
+  category?: Category;
 
   createdAt?: string;
   updatedAt?: string;

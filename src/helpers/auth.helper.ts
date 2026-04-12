@@ -111,15 +111,18 @@ export const currentAuthUser = async () => {
     const accessToken = cookieStore.get("accessToken")?.value;
     if (!accessToken) return null;
 
-    const dd = verifyAccessToken(accessToken);
-    if (!dd) return null;
-    const { sub: userId } = dd;
+    const decodedAccessToken = verifyAccessToken(accessToken);
+
+    if (!decodedAccessToken?.sub) return null;
+
+    const { sub: userId } = decodedAccessToken;
 
     await dbConnect();
 
     const user = await Profile.findOne({ _id: userId });
 
     if (!user) return null;
+
     const userData = {
       id: user.id,
       name: user.name,
