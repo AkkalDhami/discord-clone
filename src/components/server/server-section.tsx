@@ -35,7 +35,6 @@ import { ActionTooltip } from "@/components/common/action-tooltip";
 import { useModal } from "@/hooks/use-modal-store";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
-import { UserAvatar } from "@/components/common/user-avatar";
 import Link from "next/link";
 import { Route } from "next";
 import { useParams } from "next/navigation";

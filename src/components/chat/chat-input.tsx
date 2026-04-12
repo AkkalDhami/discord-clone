@@ -43,7 +43,7 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
   const isLoading = form.formState.isSubmitting;
 
   return (
-    <div className="p-3">
+    <div className="px-3 py-2">
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
           <Controller
@@ -51,11 +51,11 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
             control={form.control}
             render={({ field }) => (
               <Field>
-                <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input in-data-[slot=combobox-content]:focus-within:border-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0 [[data-slot=input-group-control]:focus-visible]:border-none">
+                <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input items-start in-data-[slot=combobox-content]:focus-within:border-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0 [[data-slot=input-group-control]:focus-visible]:border-none">
                   <InputGroupTextarea
                     {...field}
                     disabled={isLoading}
-                    className="no-scrollbar h-16 resize-none"
+                    className="no-scrollbar h-18 resize-none"
                     placeholder={`Message  ${type === "channel" ? `#${name}` : `@${name}`}`}
                   />
                   <InputGroupAddon>
