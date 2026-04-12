@@ -51,7 +51,6 @@ export async function proxy(request: NextRequest) {
 
   return NextResponse.next();
 }
-export { auth } from "@/lib/auth";
 
 export const config = {
   matcher: ["/", "/signin", "/signup", "/profile"]
