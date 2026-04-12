@@ -48,6 +48,7 @@ const channelSchema = new Schema<IChannel>(
 );
 
 channelSchema.index({ serverId: 1 });
+
 channelSchema.index({ profileId: 1 });
 
 const Channel: Model<IChannel> =

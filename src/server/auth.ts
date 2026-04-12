@@ -1,7 +1,6 @@
 "use server";
 
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { signIn } from "@/lib/auth";
 
 // export const signIn = async (email: string, password: string) => {
 //   try {
@@ -54,8 +53,16 @@ import { headers } from "next/headers";
 //   }
 // };
 
-export async function getServerSession() {
-  return auth.api.getSession({
-    headers: await headers()
-  });
-}
+// export async function getServerSession() {
+//   return auth.api.getSession({
+//     headers: await headers()
+//   });
+// }
+
+export const signInWithGoogle = async () => {
+  await signIn("google");
+  return {
+    success: true,
+    message: "Signed in successfully."
+  };
+};

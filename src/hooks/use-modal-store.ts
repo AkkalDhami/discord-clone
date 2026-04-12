@@ -15,7 +15,8 @@ export type ModalType =
   | "delete-channel"
   | "create-category"
   | "delete-category"
-  | "edit-category";
+  | "edit-category"
+  | "file-upload";
 
 export interface ModalData {
   server?: Pick<
