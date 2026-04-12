@@ -1,77 +1,53 @@
 "use client";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
-
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-
 import { Button } from "@/components/ui/button";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import {
-  EditServerSchemaType,
-  ServerSchema,
-  ServerSchemaType
-} from "@/validators/server";
+import { ServerSchema, ServerSchemaType } from "@/validators/server";
 import { FileUpload } from "@/components/uploads/file-upload";
-import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
-import { useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { EmojiInput } from "@/components/common/emoji-input";
+import { FileUploadSchema, FileUploadType } from "@/validators/chat";
 
-export function EditServerModal() {
-  const { close, isOpen, type, data } = useModal();
+export function FileUploadModal() {
+  const { close, isOpen, type } = useModal();
+  const isModalOpen = isOpen && type === "file-upload";
 
-  const isModalOpen = isOpen && type === "edit-server";
-  const { server } = data;
-
-  const { isEditing, editServer } = useServer();
-  const router = useRouter();
-
-  const form = useForm<ServerSchemaType>({
-    resolver: zodResolver(ServerSchema),
+  const form = useForm<FileUploadType>({
+    resolver: zodResolver(FileUploadSchema),
     defaultValues: {
-      name: "",
-      logo: ""
+      file: "",
     }
   });
 
-  useEffect(() => {
-    if (server) {
-      form.setValue("name", server.name);
-      form.setValue("logo", server.logo || "");
-    }
-  }, [server, form]);
-
-  async function onSubmit(data: EditServerSchemaType) {
+  async function onSubmit(data: FileUploadType) {
     try {
-      const res = await editServer({
-        serverId: server?._id?.toString() as string,
-        data
-      });
+      console.log(data);
+      // const res = await createServer(data);
+      // if (res.success) {
+      //   toast.success(res.message);
 
-      if (res.success) {
-        toast.success(res.message);
-        form.reset();
-        router.refresh();
-        close();
-      } else {
-        toast.error(res.message);
-      }
+      //   form.reset();
+      //   router.refresh();
+      //   close();
+      // } else {
+      //   toast.error(res.message);
+      // }
     } catch (error) {
       console.log(error);
-      toast.error("Failed to edit server");
+      toast.error("Failed to create server");
     }
   }
 
-  const isLoading = form.formState.isSubmitting || isEditing;
+  const isLoading = form.formState.isSubmitting;
 
   const handleClose = () => {
     form.reset();
@@ -82,19 +58,16 @@ export function EditServerModal() {
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Customize your server</DialogTitle>
-          <p className="text-muted-foreground">
-            Update your server&apos;s name and logo to make it truly yours.
-          </p>
-          <form id="edit-server-form" onSubmit={form.handleSubmit(onSubmit)}>
+          <DialogTitle>Upload File</DialogTitle>
+          <form id="server-form" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <Controller
-                name="logo"
+                name="file"
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
                     <FileUpload
-                      endpoint="serverImage"
+                      endpoint="messageFile"
                       value={field.value}
                       onChange={field.onChange}
                     />
@@ -103,13 +76,6 @@ export function EditServerModal() {
                     )}
                   </Field>
                 )}
-              />
-
-              <EmojiInput
-                label="Server name"
-                control={form.control}
-                name="name"
-                placeholder="Enter server name"
               />
             </FieldGroup>
           </form>
@@ -125,20 +91,18 @@ export function EditServerModal() {
               className={"h-10 w-full py-2 text-base font-medium"}>
               Cancel
             </Button>
-
             <Button
               type="submit"
               variant={"primary"}
-              form="edit-server-form"
+              form="server-form"
               className="h-10 w-full py-2"
               disabled={isLoading || !form.formState.isDirty}>
               {isLoading ? (
                 <>
-                  <Spinner />
-                  Updating...
+                  <Spinner /> Uploading...
                 </>
               ) : (
-                "Update Server"
+                "Upload"
               )}
             </Button>
           </div>

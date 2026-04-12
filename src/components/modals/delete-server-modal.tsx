@@ -27,6 +27,7 @@ import {
   DeleteServerSchemaType
 } from "@/validators/server";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
 
 export function DeleteServerModal() {
   const router = useRouter();
@@ -39,10 +40,13 @@ export function DeleteServerModal() {
 
   const form = useForm<DeleteServerSchemaType>({
     resolver: zodResolver(
-      DeleteServerSchema.refine(data => data.name === server?.name, {
-        message: "You didn't enter the server name correctly",
-        path: ["name"]
-      })
+      DeleteServerSchema.refine(
+        data => data.name === removeLeadingEmoji(server?.name || ""),
+        {
+          message: "You didn't enter the server name correctly",
+          path: ["name"]
+        }
+      )
     ),
     defaultValues: { name: "" }
   });
@@ -69,7 +73,7 @@ export function DeleteServerModal() {
   };
 
   const onSubmit = (data: DeleteServerSchemaType) => {
-    if (data.name !== server.name) return;
+    if (data.name !== removeLeadingEmoji(server.name)) return;
     onDeleteServer();
   };
 

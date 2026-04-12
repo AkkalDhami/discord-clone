@@ -19,7 +19,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
@@ -30,7 +30,7 @@ import {
 import ChannelType from "@/enums/channel.enum";
 import { IconHash, IconVideo, IconVolume } from "@tabler/icons-react";
 import { useChannel } from "@/hooks/use-channel";
-import { EmojiClickData } from "emoji-picker-react";
+
 import { EmojiInput } from "@/components/common/emoji-input";
 
 export function CreateChannelModal() {
@@ -50,17 +50,6 @@ export function CreateChannelModal() {
     }
   });
 
-  const name = useWatch({
-    control: form.control,
-    name: "name"
-  });
-
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    form.setValue("name", (name || "") + emojiData.emoji, {
-      shouldDirty: true
-    });
-  };
-
   async function onSubmit(data: CreateChannelSchemaType) {
     try {
       const res = await createChannel({
@@ -68,6 +57,9 @@ export function CreateChannelModal() {
         data,
         categoryId: category?._id || ""
       });
+
+      console.log({ res });
+
       if (res.success) {
         toast.success(res.message || "Channel created successfully");
         form.reset();
@@ -184,16 +176,11 @@ export function CreateChannelModal() {
                 control={form.control}
                 name="name"
                 placeholder="Enter channel name"
-                onClick={emojiData => {
-                  if ("emoji" in emojiData) {
-                    onEmojiClick(emojiData);
-                  }
-                }}
               />
             </FieldGroup>
           </form>
 
-          <div className="mt-2 grid sm:grid-cols-2 gap-2">
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
             <Button
               type="button"
               onClick={() => {
@@ -208,7 +195,7 @@ export function CreateChannelModal() {
               type="submit"
               form="create-channel-form"
               variant={"primary"}
-              className="py-2 h-10 w-full"
+              className="h-10 w-full py-2"
               disabled={isLoading}>
               {isLoading ? (
                 <>

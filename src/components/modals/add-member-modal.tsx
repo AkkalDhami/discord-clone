@@ -93,9 +93,9 @@ export function AddMemberModal() {
   return (
     <Dialog
       open={isModalOpen}
-      // onOpenChange={openState => {
-      //   if (!openState) close();
-      // }}
+      onOpenChange={openState => {
+        if (!openState) close();
+      }}
     >
       <DialogContent className="w-full max-w-200">
         <DialogHeader>

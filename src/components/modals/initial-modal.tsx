@@ -23,7 +23,6 @@ import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
 import toast from "react-hot-toast";
 import { Spinner } from "@/components/ui/spinner";
-import { EmojiClickData } from "emoji-picker-react";
 import { EmojiInput } from "@/components/common/emoji-input";
 
 export function InitialModal() {
@@ -36,10 +35,6 @@ export function InitialModal() {
       logo: ""
     }
   });
-
-  function onEmojiClick(emojiData: EmojiClickData) {
-    form.setValue("name", emojiData.emoji);
-  }
 
   async function onSubmit(data: ServerSchemaType) {
     try {
@@ -93,11 +88,6 @@ export function InitialModal() {
                 control={form.control}
                 name="name"
                 placeholder="Enter server name"
-                onClick={emojiData => {
-                  if ("emoji" in emojiData) {
-                    onEmojiClick(emojiData);
-                  }
-                }}
               />
             </FieldGroup>
           </form>

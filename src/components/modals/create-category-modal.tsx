@@ -29,7 +29,7 @@ import { CreateCategorySchema } from "@/validators/category";
 import z from "zod";
 import { IconLock } from "@tabler/icons-react";
 import { useCategory } from "@/hooks/use-category";
-import { EmojiClickData } from "emoji-picker-react";
+
 import { EmojiInput } from "@/components/common/emoji-input";
 
 export function CreateCategoryModal() {
@@ -56,19 +56,8 @@ export function CreateCategoryModal() {
     name: "private"
   });
 
-  const name = useWatch({
-    control: form.control,
-    name: "name"
-  });
-
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    form.setValue("name", (name || "") + emojiData.emoji, {
-      shouldDirty: true
-    });
-  };
-
   async function onSubmit(data: CreateCategoryInput) {
-    if (data.private) {
+    if (data.private && server?.members && server?.members?.length > 1) {
       open("add-members", {
         server,
         categoryData: {
@@ -126,11 +115,6 @@ export function CreateCategoryModal() {
                 control={form.control}
                 name="name"
                 placeholder="Enter category name"
-                onClick={emojiData => {
-                  if ("emoji" in emojiData) {
-                    onEmojiClick(emojiData);
-                  }
-                }}
               />
               <Controller
                 name="private"
@@ -190,7 +174,9 @@ export function CreateCategoryModal() {
                 <>
                   <Spinner /> Creating...
                 </>
-              ) : isPrivate ? (
+              ) : isPrivate &&
+                server?.members &&
+                server?.members?.length > 1 ? (
                 "Next"
               ) : (
                 "Create Category"

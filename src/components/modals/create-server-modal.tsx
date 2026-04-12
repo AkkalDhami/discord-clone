@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { ServerSchema, ServerSchemaType } from "@/validators/server";
 import { FileUpload } from "@/components/uploads/file-upload";
 import { useServer } from "@/hooks/use-server";
@@ -17,7 +17,6 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 import { Spinner } from "@/components/ui/spinner";
-import { EmojiClickData } from "emoji-picker-react";
 import { EmojiInput } from "@/components/common/emoji-input";
 
 export function CreateServerModal() {
@@ -34,17 +33,6 @@ export function CreateServerModal() {
       logo: ""
     }
   });
-
-  const name = useWatch({
-    control: form.control,
-    name: "name"
-  });
-
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    form.setValue("name", (name || "") + emojiData.emoji, {
-      shouldDirty: true
-    });
-  };
 
   async function onSubmit(data: ServerSchemaType) {
     try {
@@ -103,16 +91,11 @@ export function CreateServerModal() {
                 control={form.control}
                 name="name"
                 placeholder="Enter server name"
-                onClick={emojiData => {
-                  if ("emoji" in emojiData) {
-                    onEmojiClick(emojiData);
-                  }
-                }}
               />
             </FieldGroup>
           </form>
 
-          <div className="mt-2 grid sm:grid-cols-2 gap-2">
+          <div className="mt-2 grid gap-2 sm:grid-cols-2">
             <Button
               type="button"
               onClick={() => {
@@ -127,7 +110,7 @@ export function CreateServerModal() {
               type="submit"
               variant={"primary"}
               form="server-form"
-              className="py-2 h-10 w-full"
+              className="h-10 w-full py-2"
               disabled={isLoading}>
               {isLoading ? (
                 <>

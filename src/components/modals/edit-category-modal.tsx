@@ -35,7 +35,6 @@ import { IconLock, IconX } from "@tabler/icons-react";
 import { useCategory } from "@/hooks/use-category";
 import { useEffect } from "react";
 import MemberRole from "@/enums/role.enum";
-import { EmojiClickData } from "emoji-picker-react";
 import { EmojiInput } from "@/components/common/emoji-input";
 import { cn } from "@/lib/utils";
 
@@ -66,21 +65,10 @@ export function EditCategoryModal() {
     }
   }, [category, form]);
 
-  const name = useWatch({
-    control: form.control,
-    name: "name"
-  });
-
   const privateCategory = useWatch({
     control: form.control,
     name: "private"
   });
-
-  const onEmojiClick = (emojiData: EmojiClickData) => {
-    form.setValue("name", (name || "") + emojiData.emoji, {
-      shouldDirty: true
-    });
-  };
 
   async function onSubmit(data: EditCategorySchemaType) {
     try {
@@ -165,11 +153,6 @@ export function EditCategoryModal() {
                     control={form.control}
                     name="name"
                     placeholder="Enter category name"
-                    onClick={emojiData => {
-                      if ("emoji" in emojiData) {
-                        onEmojiClick(emojiData);
-                      }
-                    }}
                   />
                   <Controller
                     name="private"
