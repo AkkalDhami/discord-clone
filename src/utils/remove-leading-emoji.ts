@@ -1,6 +1,3 @@
 export const removeLeadingEmoji = (value: string) => {
-  return value.replace(
-    /^(\p{Emoji_Presentation}|\p{Extended_Pictographic})\s*/u,
-    ""
-  );
+  return value.replace(/\p{Emoji_Presentation}|\p{Extended_Pictographic}/gu, "");
 };
