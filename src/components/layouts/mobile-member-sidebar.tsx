@@ -1,5 +1,6 @@
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { MemberSidebar } from "@/components/layouts/member-sidebar";
+import { Button } from "@/components/ui/button";
 
 import { IconMenu2 } from "@tabler/icons-react";
 
@@ -8,9 +9,9 @@ export function MobileMemberSidebar({ serverId }: { serverId: string }) {
     <Sheet>
       <SheetTrigger
         render={
-          <IconMenu2
-            className={"bg-secondary size-9 cursor-pointer rounded-lg p-1.5"}
-          />
+          <Button variant={"ghost"} className={"px-1 py-3"}>
+            <IconMenu2 className={"size-6"} />
+          </Button>
         }></SheetTrigger>
       <SheetContent>
         <MemberSidebar serverId={serverId} />

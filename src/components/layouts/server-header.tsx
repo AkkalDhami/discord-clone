@@ -35,7 +35,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
   return (
-    <div className="border-edge border-b-edge flex w-full justify-between gap-4 border-y py-2">
+    <div className="border-edge flex w-full justify-between gap-4 border-y-4 border-double py-2">
       <DropdownMenu>
         <DropdownMenuTrigger
           className={

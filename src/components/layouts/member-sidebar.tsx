@@ -66,11 +66,11 @@ export async function MemberSidebar({ serverId }: { serverId: string }) {
   ]);
 
   return (
-    <div className="flex flex-col">
-      <h2 className="border-edge flex items-center gap-2 border-y py-2.5 pl-4 text-lg font-medium">
+    <div className="flex h-full flex-col">
+      <h2 className="border-edge flex items-center gap-2 border-y-4 border-double py-2.5 pl-4 text-lg">
         <IconUsers className="size-4" /> Members ({members?.length})
       </h2>
-      <div className="flex mt-2 flex-col">
+      <div className="mt-2 flex flex-col">
         {members?.map(member => (
           <MemberItem
             key={member._id}
