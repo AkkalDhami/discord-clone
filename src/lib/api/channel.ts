@@ -2,6 +2,7 @@ import {
   CreateChannelSchemaType,
   EditChannelSchemaType
 } from "@/validators/channel";
+import { fetchWithAuth } from "./auth";
 
 export async function createChannel({
   serverId,
@@ -12,7 +13,7 @@ export async function createChannel({
   categoryId?: string;
   data: CreateChannelSchemaType;
 }) {
-  const res = await fetch(
+  const res = await fetchWithAuth(
     `/api/channels?serverId=${serverId}&categoryId=${categoryId}`,
     {
       method: "POST",
@@ -20,6 +21,15 @@ export async function createChannel({
       credentials: "include"
     }
   );
+
+  // const res = await fetch(
+  //   `/api/channels?serverId=${serverId}&categoryId=${categoryId}`,
+  //   {
+  //     method: "POST",
+  //     body: JSON.stringify(data),
+  //     credentials: "include"
+  //   }
+  // );
 
   return res.json();
 }
