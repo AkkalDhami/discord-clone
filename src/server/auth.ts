@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn } from "@/lib/auth";
+// import { signIn } from "@/lib/auth";
 
 // export const signIn = async (email: string, password: string) => {
 //   try {
@@ -60,7 +60,7 @@ import { signIn } from "@/lib/auth";
 // }
 
 export const signInWithGoogle = async () => {
-  await signIn("google");
+  // await signIn("google");
   return {
     success: true,
     message: "Signed in successfully."
