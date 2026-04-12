@@ -18,6 +18,7 @@ import { CreateCategoryModal } from "@/components/modals/create-category-modal";
 import { EditCategoryModal } from "@/components/modals/edit-category-modal";
 import { DeleteCategoryModal } from "@/components/modals/delete-category-modal";
 import { RemoveMemberModal } from "@/components/modals/remove-member-modal";
+import { FileUploadModal } from "@/components/modals/file-upload-modal";
 
 export function ModalProvider() {
   return (
@@ -26,6 +27,8 @@ export function ModalProvider() {
       <EditServerModal />
       <LeaveServerModal />
       <DeleteServerModal />
+
+      <FileUploadModal />
 
       <InviteModal />
 

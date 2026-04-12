@@ -43,7 +43,7 @@ export function NavigationItem({ id, logo, name }: NavigationItemProps) {
                   "bg-secondary flex size-10 items-center justify-center rounded-xl text-lg font-medium transition-all hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500",
                   params?.serverId === id && "bg-indigo-500 text-white"
                 )}>
-                {removeLeadingEmoji(name).charAt(0).toUpperCase()}
+                {removeLeadingEmoji(name)?.charAt(0)?.toUpperCase()}
               </div>
             )}
           </div>
