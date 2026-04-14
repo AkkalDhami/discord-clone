@@ -3,6 +3,7 @@ import { ChatHeader } from "@/components/layouts/chat-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { Member as MemberIterface } from "@/interface";
+import { getOrCreateConversation } from "@/lib/conversation";
 import Member from "@/models/member.model";
 import { Types } from "mongoose";
 import { redirect } from "next/navigation";
@@ -56,8 +57,21 @@ export default async function Page(
     return redirect("/");
   }
 
+  const conversation = await getOrCreateConversation({
+    memberOneId: member._id.toString(),
+    memberTwoId: profile.id.toString(),
+    serverId,
+    type: "direct"
+  });
+
+  if (!conversation) {
+    return redirect(`/servers/${serverId}`);
+  }
+
+  console.log({ conversation });
+
   return (
-    <div className="h-full bg-neutral-100 dark:bg-neutral-950">
+    <div className="h-full border-b border-edge pb-2.5">
       <ChatHeader
         serverId={serverId}
         name={member.profile.name}
@@ -65,7 +79,7 @@ export default async function Page(
         imageUrl={member.profile?.avatar?.url}
         isPrivate={false}
       />
-      <ScrollArea className="h-[calc(100vh-10.8rem)] p-4 py-4">
+      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.3rem)]">
         {JSON.stringify(member, null, 2)}
         {JSON.stringify(member, null, 2)}
         {JSON.stringify(member, null, 2)}
