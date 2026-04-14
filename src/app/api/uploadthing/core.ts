@@ -4,7 +4,6 @@ import { createUploadthing, type FileRouter } from "uploadthing/next";
 const f = createUploadthing();
 
 const handleAuth = async () => {
-
   const user = await currentAuthUser();
   return { userId: user?.id };
 };
@@ -17,11 +16,11 @@ export const ourFileRouter = {
     }
   })
     .middleware(async () => await handleAuth())
-    .onUploadComplete(() => { }),
+    .onUploadComplete(() => {}),
 
   messageFile: f(["image", "pdf"])
     .middleware(async () => await handleAuth())
-    .onUploadComplete(() => { })
+    .onUploadComplete(() => {})
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

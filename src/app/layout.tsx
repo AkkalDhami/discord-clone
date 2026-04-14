@@ -9,6 +9,7 @@ import TanstackProvider from "@/components/providers/tanstack-provider";
 import { Toaster } from "react-hot-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ModalProvider } from "@/components/providers/modal-provider";
+import { SessionProvider } from "@/components/providers/session-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,10 +49,12 @@ export default function RootLayout({
           <Toaster position="top-center" reverseOrder={false} gutter={8} />
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           <TooltipProvider>
-            <TanstackProvider>
-              <ModalProvider />
-              {children}
-            </TanstackProvider>
+            <SessionProvider>
+              <TanstackProvider>
+                <ModalProvider />
+                {children}
+              </TanstackProvider>
+            </SessionProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>

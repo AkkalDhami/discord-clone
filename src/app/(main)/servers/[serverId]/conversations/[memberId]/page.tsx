@@ -71,7 +71,7 @@ export default async function Page(
   console.log({ conversation });
 
   return (
-    <div className="h-full border-b border-edge pb-2.5">
+    <div className="border-edge h-full border-b pb-2.5">
       <ChatHeader
         serverId={serverId}
         name={member.profile.name}
