@@ -56,14 +56,14 @@ export default async function Page(
   }
 
   return (
-    <div className="h-full">
+    <div className="flex h-full border-y flex-col">
       <ChatHeader
         serverId={serverId}
         name={channel.name}
         type="channel"
         isPrivate={channel?.category?.private ?? false}
       />
-      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.3rem)]">
+      <ScrollArea className="px-4 pt-3 sm:h-[calc(100vh-10.5rem)]">
         {JSON.stringify(channel, null, 2)}
         {JSON.stringify(channel, null, 2)}
         {JSON.stringify(channel, null, 2)}

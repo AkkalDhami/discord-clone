@@ -67,7 +67,7 @@ export async function MemberSidebar({ serverId }: { serverId: string }) {
 
   return (
     <div className="bg-background flex h-full flex-col">
-      <h2 className="border-edge flex items-center gap-2 border-y py-2.5 pl-4 text-lg">
+      <h2 className="border-edge flex items-center gap-2 border-y py-3 pl-4 text-lg">
         <IconUsers className="size-4" /> Members ({members?.length})
       </h2>
       <div className="mt-2 flex flex-col space-y-1">

@@ -18,8 +18,7 @@ import { useModal } from "@/hooks/use-modal-store";
 
 type ChatInputProps = {
   apiUrl: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  query: Record<string, any>;
+  query: Record<string, unknown>;
   name: string;
   type: "channel" | "member";
 };
@@ -55,7 +54,7 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
                   <InputGroupTextarea
                     {...field}
                     disabled={isLoading}
-                    className="no-scrollbar h-18 resize-none"
+                    className="no-scrollbar h-10 resize-none"
                     placeholder={`Message  ${type === "channel" ? `#${name}` : `@${name}`}`}
                   />
                   <InputGroupAddon>

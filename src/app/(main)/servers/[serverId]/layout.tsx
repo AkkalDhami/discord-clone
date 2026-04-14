@@ -39,7 +39,8 @@ export default async function ServerIdLayout({
       <div className="bg-background fixed top-1 left-2 z-20 md:hidden">
         <MobileServerSidebar serverId={serverId} />
       </div>
-      <div className="border-edge h-full flex-1 overflow-x-auto border-x bg-neutral-100 md:pl-86 lg:pr-80 dark:bg-neutral-950">
+      <div className="border-edge h-full flex-1 overflow-x-auto border-x md:pl-86 lg:pr-80">
+      {/* <div className="border-edge h-full flex-1 overflow-x-auto border-x bg-neutral-100 md:pl-86 lg:pr-80 dark:bg-neutral-950"> */}
         {children}
       </div>
 

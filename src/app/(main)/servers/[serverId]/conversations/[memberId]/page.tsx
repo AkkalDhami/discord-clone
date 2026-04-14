@@ -68,7 +68,7 @@ export default async function Page(
     return redirect(`/servers/${serverId}`);
   }
 
-  console.log({ conversation });
+  // console.log({ conversation });
 
   return (
     <div className="border-edge h-full border-b pb-2.5">
@@ -79,7 +79,7 @@ export default async function Page(
         imageUrl={member.profile?.avatar?.url}
         isPrivate={false}
       />
-      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.3rem)]">
+      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.1rem)]">
         {JSON.stringify(member, null, 2)}
         {JSON.stringify(member, null, 2)}
         {JSON.stringify(member, null, 2)}

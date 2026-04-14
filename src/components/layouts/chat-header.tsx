@@ -17,7 +17,7 @@ export function ChatHeader({
   isPrivate
 }: ChatHeaderProps) {
   return (
-    <div className="border-edge mt-4 flex items-center border-y px-4 py-3">
+    <div className="border-edge mt-4 flex items-center border-y px-4 py-3.5">
       {/* <div className="border-edge fixed top-6 z-10 flex w-[calc(100vw-20rem)] items-center border-y bg-neutral-100 px-4 py-3 pr-110 dark:bg-neutral-950"> */}
       <div className="relative flex items-center gap-2">
         {type === "channel" && (

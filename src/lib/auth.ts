@@ -26,11 +26,6 @@ export const authOptions: AuthOptions = {
         await dbConnect();
         let user = await Profile.findOne({ email: profile?.email });
 
-        console.log({
-          profile,
-          account
-        });
-
         if (!user) {
           user = await createProfile({
             name: profile?.name as string,
