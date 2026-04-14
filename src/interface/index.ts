@@ -87,3 +87,9 @@ export interface Channel {
   createdAt?: string;
   updatedAt?: string;
 }
+
+export interface IFile {
+  public_id: string;
+  url: string;
+  size: number;
+}

@@ -150,3 +150,52 @@ export const generateRandomToken = (id: string) => {
 
   return { token, hashedToken };
 };
+
+export const generateUniqueUsername = async (
+  email: string
+): Promise<string> => {
+  const username = email.split("@")[0];
+  const user = await Profile.findOne({ username });
+  if (user) {
+    return generateUniqueUsername(email + Math.floor(Math.random() * 100));
+  }
+  return username;
+};
+
+export const createProfile = async ({
+  name,
+  email,
+  avatar,
+  provider,
+  providerAccountId,
+  isEmailVerified
+}: {
+  name: string;
+  email: string;
+  avatar?: string;
+  provider: string;
+  providerAccountId: string;
+  isEmailVerified: boolean;
+}) => {
+  try {
+    await dbConnect();
+    const user = await Profile.create({
+      email,
+      name,
+      avatar: {
+        url: avatar
+      },
+      username: await generateUniqueUsername(email),
+      providerAccountId,
+      provider,
+      isEmailVerified
+    });
+
+    return user;
+  } catch (error) {
+    if (error instanceof Error) {
+      logger.error(error.message);
+    }
+    return null;
+  }
+};

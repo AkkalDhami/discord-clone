@@ -16,7 +16,11 @@ export function useMember() {
       memberId: string;
       role: MemberRole;
     }) => {
-      const res = await memberApi.updateMemberRole({ serverId, memberId, role });
+      const res = await memberApi.updateMemberRole({
+        serverId,
+        memberId,
+        role
+      });
       return res as ApiResponse;
     },
     onSuccess: () => {

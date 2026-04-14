@@ -1,6 +1,11 @@
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Server from "@/models/server.model";
-import { Category, Channel, Member as MemberInterface, Profile } from "@/interface";
+import {
+  Category,
+  Channel,
+  Member as MemberInterface,
+  Profile
+} from "@/interface";
 import mongoose from "mongoose";
 import { redirect } from "next/navigation";
 import { ServerHeader } from "./server-header";
@@ -108,13 +113,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
                 }
               ]
             }
-          },
-          // {
-          //   $unwind: {
-          //     path: "$channels",
-          //     preserveNullAndEmptyArrays: true
-          //   }
-          // }
+          }
         ],
         as: "categories"
       }
@@ -210,7 +209,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
   )?.role;
 
   return (
-    <div className="text-primary flex h-full w-full flex-col">
+    <div className="text-primary border-edge bg-background mb-4 flex h-full w-full flex-col border-x border-b pb-4">
       <ServerHeader server={JSON.stringify(cleanServer)} role={role} />
       <ScrollArea className={"h-[calc(100vh-120px)] pb-4"}>
         <ServerSection

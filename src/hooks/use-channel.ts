@@ -18,7 +18,7 @@ export function useChannel() {
       serverId: string;
       categoryId?: string;
       data: CreateChannelSchemaType;
-    }) => channelApi.createChannel({serverId, categoryId, data}),
+    }) => channelApi.createChannel({ serverId, categoryId, data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["server", "me"] });
     }

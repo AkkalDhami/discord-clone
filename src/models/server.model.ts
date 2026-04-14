@@ -35,7 +35,7 @@ const serverSchema = new Schema<IServer>(
       type: Schema.Types.ObjectId,
       ref: "Profile",
       required: [true, "Profile ID is required"]
-    },
+    }
     // members: [
     //   {
     //     type: Schema.Types.ObjectId,

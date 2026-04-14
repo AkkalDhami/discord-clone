@@ -6,12 +6,12 @@ export const logger = pino({
   transport:
     env.NODE_ENV !== "production"
       ? {
-        target: "pino-pretty",
-        options: {
-          colorize: true,
-          translateTime: "yyyy-mm-dd HH:MM:ss",
-          ignore: "pid,hostname"
+          target: "pino-pretty",
+          options: {
+            colorize: true,
+            translateTime: "yyyy-mm-dd HH:MM:ss",
+            ignore: "pid,hostname"
+          }
         }
-      }
       : undefined
 });

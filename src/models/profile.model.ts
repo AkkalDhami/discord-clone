@@ -1,3 +1,4 @@
+import { IFile } from "@/interface";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
 export interface IProfile extends Document {
@@ -8,21 +9,22 @@ export interface IProfile extends Document {
   bio?: string;
 
   email: string;
-  password: string;
+  password?: string;
+
+  isEmailVerified: boolean;
 
   lastLoginAt?: Date;
   failedLoginAttempts: number;
   lockUntil?: Date;
 
+  provider: "google" | "github" | "local";
+  providerAccountId?: string;
+
   isDeleted: boolean;
   deletedAt?: Date;
   reActivateAvailableAt?: Date;
 
-  avatar?: {
-    public_id: string;
-    url: string;
-    size: number;
-  };
+  avatar?: IFile;
 
   createdAt: Date;
   updatedAt: Date;
@@ -49,16 +51,34 @@ const profileSchema = new Schema<IProfile>(
       trim: true
     },
 
+    isEmailVerified: {
+      type: Boolean,
+      default: false
+    },
+
     bio: {
       type: String,
       trim: true
     },
 
+    provider: {
+      type: String,
+      enum: ["google", "github", "local"],
+      required: true,
+      default: "local"
+    },
+
+    providerAccountId: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
+
     password: {
       type: String,
-      required: [true, "Password is required"],
       trim: true,
-      select: false
+      select: false,
+      default: ""
     },
 
     avatar: {

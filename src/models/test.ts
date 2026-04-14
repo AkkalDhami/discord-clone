@@ -1,7 +1,6 @@
 import ChannelType from "@/enums/channel.enum";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-
 export interface IChannel extends Document {
   _id: mongoose.Types.ObjectId;
 
@@ -15,14 +14,11 @@ export interface IChannel extends Document {
 }
 
 const channelSchema = new Schema<IChannel>(
-  {
-
-  },
+  {},
   {
     timestamps: true
   }
 );
-
 
 const Channel: Model<IChannel> =
   mongoose.models.Channel || mongoose.model<IChannel>("Channel", channelSchema);

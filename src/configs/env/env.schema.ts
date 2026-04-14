@@ -5,10 +5,11 @@ export const baseEnvSchema = z.object({
 
   UPLOADTHING_TOKEN: z.string(),
 
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
 
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
-    .default("info"),
-
+    .default("info")
 });

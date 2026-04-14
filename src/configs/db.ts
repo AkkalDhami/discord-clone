@@ -9,7 +9,7 @@ if (!MONGODB_URI) {
 
 const globalCache = global.mongooseCache ?? {
   conn: null,
-  promise: null,
+  promise: null
 };
 
 global.mongooseCache = globalCache;
@@ -20,9 +20,7 @@ export default async function dbConnect(): Promise<Connection> {
   }
 
   if (!globalCache.promise) {
-    globalCache.promise = mongoose
-      .connect(MONGODB_URI)
-      .then((m) => m.connection);
+    globalCache.promise = mongoose.connect(MONGODB_URI).then(m => m.connection);
   }
 
   try {
