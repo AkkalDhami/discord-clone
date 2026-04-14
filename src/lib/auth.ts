@@ -1,83 +1,72 @@
-// // import { ForgotPasswordEmail } from "@/components/emails/reset-password";
-// // import { VerifyEmail } from "@/components/emails/verify-email";
-// import { betterAuth } from "better-auth";
-// // import { Resend } from "resend";
+import dbConnect from "@/configs/db";
+import { createProfile, setAuthCookies } from "@/helpers/auth.helper";
+import Profile from "@/models/profile.model";
+import { AuthOptions } from "next-auth";
+import Google from "next-auth/providers/google";
+import { signAccessToken, signRefreshToken } from "@/lib/jwt";
 
-// import { MongoClient } from "mongodb";
-// import { mongodbAdapter } from "better-auth/adapters/mongodb";
+export const authOptions: AuthOptions = {
+  callbacks: {
+    async signIn({ account, profile }) {
+      if (!account || !profile) return false;
+      if (account?.provider === "google") {
+        await dbConnect();
+        let user = await Profile.findOne({ email: profile?.email });
 
-// // const resend = new Resend(process.env.RESEND_API_KEY);
+        if (!user) {
+          user = await createProfile({
+            name: profile?.name as string,
+            email: profile?.email as string,
+            avatar: (profile?.picture as string) || (profile.image as string),
+            provider: account.provider,
+            providerAccountId: account.providerAccountId,
+            isEmailVerified: profile.email_verified
+          });
 
-// const client = new MongoClient(process.env.DATABASE_URL as string);
-// const db = client.db();
+          if (!user) return false;
+        }
 
-// export const auth = betterAuth({
-//   baseURL: process.env.BETTER_AUTH_URL,
+        await Profile.findOneAndUpdate(
+          { email: profile?.email },
+          {
+            $set: {
+              providerAccountId: account.providerAccountId,
+              provider: account.provider,
+              isEmailVerified: profile.email_verified,
+              avatar: {
+                url: profile?.picture || profile.image
+              }
+            }
+          }
+        );
 
-//   // emailVerification: {
-//   //   sendVerificationEmail: async ({ user, url }) => {
-//   //     await resend.emails.send({
-//   //       from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
-//   //       to: user.email,
-//   //       subject: "Verify your email",
-//   //       react: VerifyEmail({
-//   //         name: user.name,
-//   //         url: url
-//   //       })
-//   //     });
-//   //   },
-//   //   sendOnSignUp: true
-//   // },
+        const accessToken = signAccessToken({
+          sub: user._id.toString(),
+          email: user.email
+        });
 
-//   socialProviders: {
-//     google: {
-//       clientId: process.env.GOOGLE_CLIENT_ID as string,
-//       clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
-//       accessType: "offline",
-//       prompt: "select_account consent"
-//     }
-//   },
+        const refreshToken = signRefreshToken({
+          sub: user._id.toString()
+        });
 
-//   // emailAndPassword: {
-//   //   enabled: true,
-//   //   sendResetPassword: async ({ user, url }) => {
-//   //     await resend.emails.send({
-//   //       from: `${process.env.EMAIL_SENDER_NAME} <${process.env.EMAIL_SENDER_ADDRESS}>`,
-//   //       to: user.email,
-//   //       subject: "Reset your password",
-//   //       react: ForgotPasswordEmail({
-//   //         name: user.name,
-//   //         url: url,
-//   //         email: user.email
-//   //       })
-//   //     });
-//   //   },
-//   //   requireEmailVerification: true
-//   // },
+        await setAuthCookies(accessToken, refreshToken);
+      }
+      return true;
+    }
+  },
+  providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID as string,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
+    })
+  ],
 
-//   database: mongodbAdapter(db, {
-//     client
-//   })
-// });
-
-// import NextAuth from "next-auth";
-// import Google from "next-auth/providers/google";
-
-// export const { handlers, signIn, signOut, auth } = NextAuth({
-//   providers: [
-//     Google({
-//       clientId: process.env.AUTH_GOOGLE_ID as string,
-//       clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
-//       authorization: {
-//         params: {
-//           prompt: "consent",
-//           access_type: "offline",
-//           response_type: "code"
-//         }
-//       }
-//     })
-//   ],
-//   pages: {
-//     signIn: "/signin"
-//   }
-// });
+  secret: process.env.NEXTAUTH_SECRET
+};
