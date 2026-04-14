@@ -80,7 +80,7 @@ export function SignupForm() {
         <CardDescription>
           <div className="text-muted-foreground text-sm">
             Already have an account?{" "}
-            <a href="/signin" className="text-primary-500 hover:underline">
+            <a href="/signin" className="text-primary hover:underline">
               Sign in
             </a>
           </div>
@@ -212,11 +212,7 @@ export function SignupForm() {
             />
           </FieldGroup>
 
-          <Button
-            type="submit"
-            size="lg"
-            disabled={isLoading}
-            className="mt-4 w-full">
+          <Button type="submit" disabled={isLoading} className="mt-4 w-full">
             {isLoading ? (
               <>
                 <Spinner />

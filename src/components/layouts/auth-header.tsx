@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 const AuthHeader = () => {
   const router = useRouter();
   return (
-    <header className="bg-background mb-3 w-full rounded-md px-2 backdrop-blur-sm">
+    <header className="bg-background mb-3 w-full rounded-md backdrop-blur-sm">
       <nav className="mx-auto flex max-w-7xl items-center justify-between py-2">
         <Button onClick={() => router.back()} variant="ghost">
           <IconArrowLeft className="size-4" />

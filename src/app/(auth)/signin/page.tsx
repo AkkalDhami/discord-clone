@@ -76,7 +76,7 @@ export default function Login(): React.JSX.Element {
         <CardDescription>
           <div className="text-muted-foreground text-sm">
             Don&apos;t have an account?{" "}
-            <a href="/signup" className="text-primary-500 hover:underline">
+            <a href="/signup" className="text-primary hover:underline">
               Sign up
             </a>
           </div>
@@ -149,11 +149,7 @@ export default function Login(): React.JSX.Element {
             />
           </FieldGroup>
 
-          <Button
-            type="submit"
-            size="lg"
-            disabled={isLoading}
-            className="mt-4 w-full">
+          <Button type="submit" disabled={isLoading} className="mt-4 w-full">
             {isLoading ? (
               <>
                 <Spinner />
