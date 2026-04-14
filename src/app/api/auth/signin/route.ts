@@ -74,7 +74,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
 
   const ispasswordMatched = await verifyPassword(
     password,
-    existingUser.password
+    existingUser.password || ""
   );
 
   if (!ispasswordMatched) {
@@ -120,7 +120,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     data: {
       _id: existingUser._id,
       name: existingUser.name,
-      email: existingUser.email,
+      email: existingUser.email
     }
   });
 });
