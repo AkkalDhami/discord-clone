@@ -24,7 +24,7 @@ export function FileUploadModal() {
   const form = useForm<FileUploadType>({
     resolver: zodResolver(FileUploadSchema),
     defaultValues: {
-      file: "",
+      file: ""
     }
   });
 

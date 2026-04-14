@@ -22,9 +22,10 @@ export function MemberItem({
       href={`/servers/${memberData.serverId}/conversations/${memberData._id}`}
       className={cn(
         "hover:bg-secondary flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
-        "border-t border-edge last:border-b",
+        "border-edge border-t last:border-b",
         params.memberId === memberData._id && "bg-secondary",
-        userId === memberData.profileId && "pointer-events-none"
+        userId === memberData.profileId &&
+          "pointer-events-none bg-indigo-500/10 dark:bg-indigo-500/20"
       )}>
       <UserAvatar
         src={memberData.profile.avatar?.url}
@@ -35,6 +36,7 @@ export function MemberItem({
         <p className="flex items-center gap-2 text-sm font-medium">
           {memberData.profile.name}
           {RoleIconMap[memberData.role as MemberRole]}
+          {userId === memberData.profileId && " (You)"}
         </p>
         <p className="text-muted-primary text-xs">
           {`@${memberData.profile.username || memberData.profile.email}`}

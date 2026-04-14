@@ -10,7 +10,6 @@ type FileUploadProps = {
 };
 
 export function FileUpload({ value, endpoint, onChange }: FileUploadProps) {
-  
   const fileType = value?.split(".").pop();
 
   console.log({ value });

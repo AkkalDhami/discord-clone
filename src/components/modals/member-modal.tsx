@@ -29,7 +29,6 @@ import {
   IconCrownFilled,
   IconDotsVertical,
   IconGavel,
-  IconRosetteFilled,
   IconShield,
   IconShieldCheck,
   IconShieldQuestion,
@@ -46,7 +45,7 @@ import { useRouter } from "next/navigation";
 export const RoleIconMap = {
   [MemberRole.ADMIN]: <IconCrownFilled className="size-4 text-orange-500" />,
   [MemberRole.MODERATOR]: <IconSwords className="size-4 text-indigo-500" />,
-  [MemberRole.GUEST]: <IconRosetteFilled className="size-4 text-blue-500" />
+  [MemberRole.GUEST]: null
 };
 
 export function MemberModal() {
