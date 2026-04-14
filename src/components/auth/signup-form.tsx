@@ -30,7 +30,7 @@ import { Error } from "@/interface/error";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-// import { OAuthSignin } from "@/components/auth/oauth-signin";
+import { OAuthSignin } from "@/components/auth/oauth-signin";
 
 export function SignupForm() {
   const { signup, signupLoading } = useAuth();
@@ -227,7 +227,7 @@ export function SignupForm() {
             )}
           </Button>
 
-          {/* <OAuthSignin /> */}
+          <OAuthSignin />
         </form>
       </CardContent>
     </Card>

@@ -45,15 +45,17 @@ export function UserMenu({ name, username, image, email }: UserMenuProps) {
       />
 
       <DropdownMenuContent align="end" className="relative z-50 w-56">
-        <div className="px-2 py-1.5 space-y-1 text-sm">
+        <div className="space-y-1 px-2 py-1.5 text-sm">
           <p className="font-medium">{name || "User"}</p>
           {username && (
             <p className="text-muted-foreground truncate text-xs">
-              @{username}
+              {`@${username}`}
             </p>
           )}
           {email && (
-            <p className="text-muted-foreground truncate text-xs">{email}</p>
+            <p className="text-muted-foreground truncate text-xs">
+              {`${email}`}
+            </p>
           )}
         </div>
 

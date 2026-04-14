@@ -33,7 +33,7 @@ import { SigninFormData, SigninSchema } from "@/validators/auth";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
-// import { OAuthSignin } from "@/components/auth/oauth-signin";
+import { OAuthSignin } from "@/components/auth/oauth-signin";
 
 export default function Login(): React.JSX.Element {
   const [showPassword, setShowPassword] = useState<boolean>(false);
@@ -164,7 +164,7 @@ export default function Login(): React.JSX.Element {
             )}
           </Button>
 
-          {/* <OAuthSignin /> */}
+          <OAuthSignin />
         </form>
       </CardContent>
     </Card>
