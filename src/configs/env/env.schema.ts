@@ -11,5 +11,12 @@ export const baseEnvSchema = z.object({
 
   LOG_LEVEL: z
     .enum(["fatal", "error", "warn", "info", "debug", "trace"])
-    .default("info")
+    .default("info"),
+
+  UPSTASH_REDIS_REST_TOKEN: z.string(),
+  UPSTASH_REDIS_REST_URL: z.string(),
+
+  EMAIL_FROM: z.string(),
+
+  RESEND_API_KEY: z.string()
 });
