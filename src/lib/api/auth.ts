@@ -1,4 +1,4 @@
-import { SignupFormData } from "@/validators/auth";
+import { ForgotPasswordFormData, SignupFormData, VerifyResetOtpFormData } from "@/validators/auth";
 
 // export async function getMe() {
 //   const res = await fetch("/api/auth/me", {
@@ -77,4 +77,23 @@ export async function fetchWithAuth(
   }
 
   return makeRequest();
+}
+
+export async function forgotPassword(data: ForgotPasswordFormData) {
+  const res = await fetch("/api/auth/forgot-password", {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  return res.json();
+}
+
+
+export async function verifyResetOtp(data: VerifyResetOtpFormData) {
+  const res = await fetch("/api/auth/verify-reset-otp", {
+    method: "POST",
+    body: JSON.stringify(data)
+  });
+
+  return res.json();
 }
