@@ -74,9 +74,8 @@ export function EmojiInput<T extends FieldValues>({
 
                   <PopoverContent className="w-fit p-0">
                     <EmojiPicker
-                      className="h-[342px]"
+                      className="h-85.5"
                       onEmojiSelect={({ emoji }) => {
-                        // onEmojiSelect(emoji);
                         const input = document.getElementById(
                           id
                         ) as HTMLInputElement;
@@ -93,7 +92,6 @@ export function EmojiInput<T extends FieldValues>({
 
                           field.onChange(newValue);
 
-                          // restore cursor after emoji
                           requestAnimationFrame(() => {
                             input.selectionStart = input.selectionEnd =
                               start + emoji.length;
