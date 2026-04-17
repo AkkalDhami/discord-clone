@@ -34,6 +34,7 @@ import { IconRefresh } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { InputOtp } from "@/components/ui/input-otp";
 import { useUser } from "@/hooks/use-user-store";
+import { useRouter } from "next/navigation";
 
 export default function Page(): React.JSX.Element {
   const {
@@ -44,6 +45,8 @@ export default function Page(): React.JSX.Element {
   } = useAuth();
 
   const { otp, setOtp } = useUser();
+
+  const router = useRouter()
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(ForgotPasswordSchema),
@@ -92,6 +95,7 @@ export default function Page(): React.JSX.Element {
           email: null
         });
         setOtpCode("");
+        router.push("/reset-password")
       } else {
         toast.error(res.message || "Something went wrong.");
       }
