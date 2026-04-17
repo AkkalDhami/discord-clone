@@ -33,13 +33,13 @@ export default async function ServerIdLayout({
 
   return (
     <section className="flex min-h-screen w-full">
-      <aside className="border-edge -x bg-background fixed inset-y-0 z-20 hidden h-full w-86 flex-col pt-4 md:flex">
+      <aside className="border-edge border-x bg-background fixed inset-y-0 z-20 hidden h-full w-80 sm:w-86 flex-col pt-4 md:flex">
         <ServerSidebar serverId={serverId} />
       </aside>
-      <div className="bg-background fixed top-1 left-2 z-20 md:hidden">
+      <div className="bg-background fixed top-6 left-2 z-20 md:hidden">
         <MobileServerSidebar serverId={serverId} />
       </div>
-      <div className="border-edge h-full flex-1 overflow-x-auto border-x md:pl-86 lg:pr-80">
+      <div className="h-full flex-1 overflow-x-auto  md:pl-86 lg:pr-80">
       {/* <div className="border-edge h-full flex-1 overflow-x-auto border-x bg-neutral-100 md:pl-86 lg:pr-80 dark:bg-neutral-950"> */}
         {children}
       </div>
@@ -47,7 +47,7 @@ export default async function ServerIdLayout({
       <aside className="border-edge bg-background fixed right-1 z-20 hidden h-full w-80 flex-col border-x pt-4 lg:flex">
         <MemberSidebar serverId={serverId} />
       </aside>
-      <div className="fixed top-1 right-2 z-20 lg:hidden">
+      <div className="fixed top-6 right-2 z-20 lg:hidden">
         <MobileMemberSidebar serverId={serverId} />
       </div>
     </section>

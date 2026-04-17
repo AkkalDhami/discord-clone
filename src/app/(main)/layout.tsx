@@ -7,7 +7,7 @@ export default function ServerLayout({
 }) {
   return (
     <section className="w-full">
-      <div className="fixed inset-y-0 z-30 ml-1 hidden h-full w-18 flex-col border-l md:flex">
+      <div className="fixed inset-y-0 z-30 ml-1 hidden h-full w-16 sm:w-18 flex-col border-l md:flex">
         <NavigationSidebar />
       </div>
       <main className="h-full md:pl-18"> {children}</main>
