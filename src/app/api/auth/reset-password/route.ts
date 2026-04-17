@@ -2,16 +2,36 @@ import dbConnect from "@/configs/db";
 import { STATUS_CODES } from "@/constants/status-codes";
 
 import { ResetPasswordSchema } from "@/validators/auth";
-import { NextRequest } from "next/server";
-import { RESET_PASSWORD_TOKEN_EXPIRY } from "@/constants/auth-constants";
+import { NextRequest, NextResponse } from "next/server";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 import { validateRequest } from "@/lib/validation";
-import { verifyOtp } from "@/helpers/otp.helper";
-import { generateHashedToken } from "@/helpers/token.helper";
 import redis from "@/configs/redis";
+import { hashPassword, verifyPassword } from "@/helpers/auth.helper";
+import Profile from "@/models/profile.model";
+import { getRemainingTime } from "@/utils/date";
+import { ratelimit } from "@/utils/rate-limiter";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "127.0.0.1";
+  const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return NextResponse.json(
+      {
+        message: "Too many requests, please try again later."
+      },
+      {
+        status: STATUS_CODES.TOO_MANY_REQUESTS,
+        headers: {
+          "X-RateLimit-Limit": limit.toString(),
+          "X-RateLimit-Remaining": remaining.toString(),
+          "X-RateLimit-Reset": reset.toString()
+        }
+      }
+    );
+  }
   const formData = await req.json();
 
   const result = validateRequest(ResetPasswordSchema, formData);
@@ -35,38 +55,85 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const hashedCode = generateHashedToken(email);
-
-  const redisKey = `reset_password:${email}:${hashedCode}`;
-  const storedHashCode = (await redis.get(redisKey)) as string;
-  if (!storedHashCode) {
+  const user = await Profile.findOne({ email }).select("+password");
+  if (!user) {
     return ApiResponse({
       success: false,
       statusCode: STATUS_CODES.UNAUTHORIZED,
-      message: "Invalid or expired otp"
+      message: "Unauthorized access"
     });
   }
 
-  const verifyOtpResult = await verifyOtp(email, storedHashCode);
-
-  if (!verifyOtpResult.success) {
+  if (user?.provider === "google") {
     return ApiResponse({
       success: false,
-      statusCode: verifyOtpResult.statusCode,
-      message: verifyOtpResult.message
+      statusCode: STATUS_CODES.UNAUTHORIZED,
+      message: "This account uses Google login. Please sign in with Google."
     });
   }
 
-  await redis.del(redisKey);
+  if (user?.provider === "github") {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.UNAUTHORIZED,
+      message: "This account uses GitHub login. Please sign in with GitHub."
+    });
+  }
 
-  await redis.set(`reset_password:status:${email}`, "pending", {
-    px: RESET_PASSWORD_TOKEN_EXPIRY
+  console.log({
+    user
   });
+
+  if (user.lockUntil && new Date(user.lockUntil) > new Date()) {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.FORBIDDEN,
+      message: `Your account has been locked. Please try again after ${
+        getRemainingTime(user.lockUntil).minutes
+      } minutes and ${getRemainingTime(user.lockUntil).seconds} seconds.`
+    });
+  }
+
+  const redisKey = `reset_password:status:${email}`;
+  const status = await redis.get(redisKey);
+  if (status !== "pending") {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.UNAUTHORIZED,
+      message:
+        "Please request a password reset before attempting to set a new password."
+    });
+  }
+
+  const oldPassword = user?.password;
+
+  const isOldPassword = await verifyPassword(newPassword, oldPassword || "");
+
+  if (isOldPassword) {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.BAD_REQUEST,
+      message: "New password cannot be the same as the old password."
+    });
+  }
+
+  const hashedPassword = await hashPassword(newPassword);
+  await Profile.updateOne(
+    {
+      email
+    },
+    {
+      $set: {
+        password: hashedPassword
+      }
+    }
+  );
+
+  await redis.del(redisKey);
 
   return ApiResponse({
     success: true,
     statusCode: STATUS_CODES.OK,
-    message:
-      "Reset password otp verified successfully. Please reset your password."
+    message: "Password reset successfully. Please login with your new password."
   });
 });

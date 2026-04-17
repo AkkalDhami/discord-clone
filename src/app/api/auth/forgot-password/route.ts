@@ -2,7 +2,7 @@ import dbConnect from "@/configs/db";
 import { STATUS_CODES } from "@/constants/status-codes";
 
 import { ForgotPasswordSchema } from "@/validators/auth";
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import {
   OTP_CODE_LENGTH,
   RESET_PASSWORD_TOKEN_EXPIRY
@@ -18,8 +18,28 @@ import {
 import { generateOTP } from "@/helpers/token.helper";
 import redis from "@/configs/redis";
 import { logger } from "@/utils/logger";
+import { ratelimit } from "@/utils/rate-limiter";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
+  const ip =
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "127.0.0.1";
+  const { success, limit, remaining, reset } = await ratelimit.limit(ip);
+
+  if (!success) {
+    return NextResponse.json(
+      {
+        message: "Too many requests, please try again later."
+      },
+      {
+        status: STATUS_CODES.TOO_MANY_REQUESTS,
+        headers: {
+          "X-RateLimit-Limit": limit.toString(),
+          "X-RateLimit-Remaining": remaining.toString(),
+          "X-RateLimit-Reset": reset.toString()
+        }
+      }
+    );
+  }
   const formData = await req.json();
 
   const result = validateRequest(ForgotPasswordSchema, formData);
