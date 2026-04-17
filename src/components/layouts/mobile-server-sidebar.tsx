@@ -11,7 +11,7 @@ export function MobileServerSidebar({ serverId }: { serverId: string }) {
     <Sheet>
       <SheetTrigger
         render={
-          <Button variant={"ghost"} className={"px-1 py-3"}>
+          <Button variant={"secondary"} className={"px-1 py-3"}>
             <IconChevronLeft className={"size-6"} />
           </Button>
         }></SheetTrigger>
@@ -20,8 +20,10 @@ export function MobileServerSidebar({ serverId }: { serverId: string }) {
         className={
           "flex flex-row items-center gap-0 pt-12 data-[side=left]:w-[98%]"
         }>
-        <NavigationSidebar className="border-edge border-r p-2 pt-3" />
-        <ServerSidebar serverId={serverId} />
+        <NavigationSidebar className="border-edge p-2 pt-3" />
+        <div className="pt-4 flex-1 pr-1">
+          <ServerSidebar serverId={serverId} />
+        </div>
       </SheetContent>
     </Sheet>
   );

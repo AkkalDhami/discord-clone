@@ -9,7 +9,7 @@ export function MobileMemberSidebar({ serverId }: { serverId: string }) {
     <Sheet>
       <SheetTrigger
         render={
-          <Button variant={"ghost"} className={"px-1 py-3"}>
+          <Button variant={"secondary"} className={"px-1 py-3"}>
             <IconMenu2 className={"size-6"} />
           </Button>
         }></SheetTrigger>

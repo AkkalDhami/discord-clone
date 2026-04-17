@@ -9,6 +9,7 @@ import { IServer } from "@/models/server.model";
 import { Types } from "mongoose";
 import { UserMenu } from "@/components/auth/user-menu";
 import { cn } from "@/lib/utils";
+import { DirectChatAction } from "@/components/chat/direct-chat-action";
 
 export async function NavigationSidebar({ className }: { className?: string }) {
   const profile = await currentAuthUser();
@@ -45,9 +46,11 @@ export async function NavigationSidebar({ className }: { className?: string }) {
   return (
     <aside
       className={cn(
-        "border-edge relative my-4 flex h-full flex-col items-center space-y-4 border-y border-double pt-2 pr-2 pl-1",
+        "border-edge relative my-4 flex h-full flex-col items-center space-y-3 border-y pt-2 pr-1 sm:space-y-4 sm:pr-2 sm:pl-1",
         className
       )}>
+      <DirectChatAction />
+
       <NavigationAction />
       <ScrollArea className="flex-1">
         {servers?.map((server: IServer) => (
@@ -59,7 +62,7 @@ export async function NavigationSidebar({ className }: { className?: string }) {
           />
         ))}
       </ScrollArea>
-      <div className="absolute bottom-4 flex flex-col items-center space-y-3.5">
+      <div className="absolute bottom-4 flex flex-col items-center space-y-2.5 sm:space-y-3.5">
         <UserMenu
           name={profile.name}
           email={profile.email}
