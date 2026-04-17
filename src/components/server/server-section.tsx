@@ -79,7 +79,7 @@ export function ServerSection({ server, role, memberId }: ServerSectionProps) {
 
   return (
     <ContextMenu>
-      <ContextMenuTrigger className={"w-full space-y-4 p-3"}>
+      <ContextMenuTrigger className={"w-full space-y-4 px-3 py-1"}>
         <div className="w-full space-y-2">
           {serverData.channels?.map((channel: Channel) => (
             <ChannelCard
