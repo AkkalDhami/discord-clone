@@ -72,15 +72,31 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
+  if (existingUser?.provider === "google") {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.UNAUTHORIZED,
+      message: "This account uses Google login. Please sign in with Google."
+    });
+  }
+
+  if (existingUser?.provider === "github") {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.UNAUTHORIZED,
+      message: "This account uses GitHub login. Please sign in with GitHub."
+    });
+  }
+
   const ispasswordMatched = await verifyPassword(
     password,
-    existingUser.password || ""
+    existingUser?.password || ""
   );
 
   if (!ispasswordMatched) {
     let lockUntil = null;
 
-    const newAttempts = existingUser.failedLoginAttempts + 1;
+    const newAttempts = (existingUser?.failedLoginAttempts || 0) + 1;
 
     if (newAttempts >= LOGIN_MAX_ATTEMPTS) {
       lockUntil = new Date(Date.now() + LOCK_TIME_MS);
