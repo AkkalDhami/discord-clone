@@ -11,9 +11,22 @@ import {
   InputGroupTextarea
 } from "@/components/ui/input-group";
 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
+
+import {
+  EmojiPicker,
+  EmojiPickerSearch,
+  EmojiPickerContent,
+  EmojiPickerFooter
+} from "@/components/ui/emoji-picker";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { IconPlus, IconSend } from "@tabler/icons-react";
+import { IconMoodSmile, IconPlus, IconSend } from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
 
 type ChatInputProps = {
@@ -54,6 +67,7 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
                   <InputGroupTextarea
                     {...field}
                     disabled={isLoading}
+                    id="chat-input"
                     className="no-scrollbar h-10 resize-none"
                     placeholder={`Message  ${type === "channel" ? `#${name}` : `@${name}`}`}
                   />
@@ -64,6 +78,51 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
                     />
                   </InputGroupAddon>
                   <InputGroupAddon align="inline-end">
+                    <Popover>
+                      <PopoverTrigger
+                        render={
+                          <button
+                            type="button"
+                            onMouseDown={e => e.preventDefault()}>
+                            <IconMoodSmile className="hover:text-accent-foreground cursor-pointer" />
+                          </button>
+                        }></PopoverTrigger>
+
+                      <PopoverContent className="w-fit p-0">
+                        <EmojiPicker
+                          className="h-85.5"
+                          onEmojiSelect={({ emoji }) => {
+                            const input = document.getElementById(
+                              "chat-input"
+                            ) as HTMLTextAreaElement | null;
+                            if (!input) {
+                              return;
+                            }
+                            if (input) {
+                              const start =
+                                input.selectionStart ?? field.value.length;
+                              const end =
+                                input.selectionEnd ?? field.value.length;
+
+                              const newValue =
+                                field.value.slice(0, start) +
+                                emoji +
+                                field.value.slice(end);
+
+                              field.onChange(newValue);
+
+                              requestAnimationFrame(() => {
+                                input.selectionStart = input.selectionEnd =
+                                  start + emoji.length;
+                              });
+                            }
+                          }}>
+                          <EmojiPickerSearch />
+                          <EmojiPickerContent />
+                          <EmojiPickerFooter />
+                        </EmojiPicker>
+                      </PopoverContent>
+                    </Popover>
                     <InputGroupButton
                       type="submit"
                       disabled={isLoading}
