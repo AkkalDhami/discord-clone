@@ -28,18 +28,16 @@ export const EMAIL_VERIFY_OTP_CODE_EXPIRY =
 
 export const OTP_CODE_EXPIRY = 5 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
-export const OTP_TYPES = [
-  "admin-login",
-  "email-verification",
-  "password-reset",
-  "password-change"
-] as const;
+export const OTP_COOL_DOWN = 1 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
 export const OTP_MAX_ATTEMPTS = 5 as const;
 
 export const NEXT_OTP_DELAY = 1 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
 export const LOGIN_MAX_ATTEMPTS = 5 as const;
+
+export const OTP_SPAM_LOCK_TIME =
+  60 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
 export const LOCK_TIME_MS = 60 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
 
@@ -68,5 +66,8 @@ export const CONTACT_MESSAGES_EXPIRY =
   MILLISECONDS_PER_SECOND; // 30 days
 
 export const RATE_LIMIT_WINDOW =
-  1 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND; //
+  1 * SECONDS_PER_MINUTE * MILLISECONDS_PER_SECOND;
+
 export const RATE_LIMIT_MAX_REQUESTS = 5 as const;
+
+export const RATE_LIMIT_WINDOW_MS = "1m";

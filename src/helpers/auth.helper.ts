@@ -27,31 +27,6 @@ export const verifyPassword = async (
   hashedPassword: string
 ) => argon2.verify(hashedPassword, password);
 
-export const generateOtp = (length: number, ttlMinutes: number) => {
-  const code = String(
-    Math.floor(Math.random() * Math.pow(10, length))
-  ).padStart(length, "0");
-  const hashCode = crypto
-    .createHash("sha256")
-    .update(String(code))
-    .digest("hex");
-  const expiresAt = new Date(Date.now() + ttlMinutes * 60 * 1000);
-  return { code, hashCode, expiresAt };
-};
-
-export const verifyOtp = ({
-  code,
-  hashCode
-}: {
-  code: string;
-  hashCode: string;
-}) => {
-  const hashedCode = crypto
-    .createHash("sha256")
-    .update(String(code))
-    .digest("hex");
-  return hashedCode === hashCode;
-};
 
 export const setAuthCookies = async (
   accessToken: string,
