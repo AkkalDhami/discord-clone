@@ -19,6 +19,7 @@ import { EditCategoryModal } from "@/components/modals/edit-category-modal";
 import { DeleteCategoryModal } from "@/components/modals/delete-category-modal";
 import { RemoveMemberModal } from "@/components/modals/remove-member-modal";
 import { FileUploadModal } from "@/components/modals/file-upload-modal";
+import { AddFriendModal } from "@/components/modals/add-friend-modal";
 
 export function ModalProvider() {
   return (
@@ -31,6 +32,8 @@ export function ModalProvider() {
       <FileUploadModal />
 
       <InviteModal />
+
+      <AddFriendModal />
 
       <MemberModal />
       <AddMemberModal />
