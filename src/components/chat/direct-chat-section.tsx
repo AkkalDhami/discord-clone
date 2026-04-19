@@ -1,7 +1,11 @@
+"use client";
+
 import { IconPlus } from "@tabler/icons-react";
 import { ActionTooltip } from "@/components/common/action-tooltip";
+import { useModal } from "@/hooks/use-modal-store";
 
 export function DirectChatSection() {
+  const { open } = useModal();
   return (
     <div className="px-2 py-3">
       <div className="flex items-center justify-between">
@@ -13,7 +17,10 @@ export function DirectChatSection() {
           side="top"
           size="sm"
           align="center">
-          <IconPlus className="text-muted-foreground hover:text-accent-foreground size-5 cursor-pointer p-0.5" />
+          <IconPlus
+            onClick={() => open("new-chat")}
+            className="text-muted-foreground hover:text-accent-foreground size-5 cursor-pointer p-0.5"
+          />
         </ActionTooltip>
       </div>
     </div>
