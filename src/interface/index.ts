@@ -1,12 +1,12 @@
 import ChannelType from "@/enums/channel.enum";
 import MemberRole from "@/enums/role.enum";
+import { FriendRequestStatus } from "@/models/friend-request.model";
 
 export interface Profile {
   _id: string;
   name: string;
   username: string;
   email: string;
-  password?: string;
 
   servers: string[];
   channels: string[];
@@ -92,4 +92,24 @@ export interface IFile {
   public_id: string;
   url: string;
   size: number;
+}
+
+export interface Friendship {
+  _id: string;
+
+  user: Pick<Profile, "_id" | "avatar" | "email" | "name" | "username">;
+  friend: Pick<Profile, "_id" | "avatar" | "email" | "name" | "username">;
+  createdAt: string;
+}
+
+export interface FriendRequest {
+  _id: string;
+
+  sender: string;
+  receiver: string;
+  status: FriendRequestStatus;
+  pairKey: string;
+
+  createdAt: string;
+  updatedAt: string;
 }
