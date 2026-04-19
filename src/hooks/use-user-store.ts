@@ -1,17 +1,20 @@
+import { IFile } from "@/interface";
 import { OtpType } from "@/utils/send-email";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 interface AuthData {
   user: {
-    id: number | null;
-    name: string | null;
-    email: string | null;
+    id: number;
+    name: string;
+    username: string;
+    email: string;
+    avatar: IFile;
   } | null;
   otp: {
-    type: OtpType | null;
-    email: string | null;
-  };
+    type: OtpType;
+    email: string;
+  } | null;
 }
 
 export interface AuthStore extends AuthData {
@@ -23,10 +26,7 @@ export const useUser = create<AuthStore>()(
   persist(
     set => ({
       user: null,
-      otp: {
-        type: null,
-        email: null
-      },
+      otp: null,
       setUser: user => set({ user }),
       setOtp: otp => set({ otp })
     }),
