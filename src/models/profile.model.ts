@@ -77,8 +77,7 @@ const profileSchema = new Schema<IProfile>(
     password: {
       type: String,
       trim: true,
-      select: false,
-      default: ""
+      select: false
     },
 
     avatar: {

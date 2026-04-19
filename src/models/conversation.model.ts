@@ -9,6 +9,8 @@ export interface IConversation extends Document {
 
   participants: mongoose.Types.ObjectId[];
   type: "direct" | "group";
+  name?: string;
+
   lastMessage?: mongoose.Types.ObjectId;
 
   createdAt: Date;
@@ -17,6 +19,10 @@ export interface IConversation extends Document {
 
 const conversationSchema = new Schema<IConversation>(
   {
+    name: {
+      type: String,
+      trim: true
+    },
     serverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Server"

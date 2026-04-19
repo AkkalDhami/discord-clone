@@ -1,7 +1,7 @@
 import { IFile } from "@/interface";
 import mongoose, { Document, Model, Schema } from "mongoose";
 
-const MESSAGE_TYPES = ["TEXT", "FILE", "IMAGE"];
+const MESSAGE_TYPES = ["TEXT", "FILE", "IMAGE"] as const;
 
 type MessageType = (typeof MESSAGE_TYPES)[number];
 
@@ -15,6 +15,7 @@ export interface IMessage extends Document {
   attachments?: IFile[];
 
   type: MessageType;
+  pinned: boolean;
 
   mentions: mongoose.Types.ObjectId[];
   readBy: mongoose.Types.ObjectId[];
@@ -54,6 +55,10 @@ const messageSchema = new Schema<IMessage>(
       type: String,
       enum: MESSAGE_TYPES,
       default: "TEXT"
+    },
+    pinned: {
+      type: Boolean,
+      default: false
     },
     memberId: {
       type: mongoose.Schema.Types.ObjectId,
