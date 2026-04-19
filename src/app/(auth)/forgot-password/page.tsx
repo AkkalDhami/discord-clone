@@ -90,10 +90,7 @@ export default function Page(): React.JSX.Element {
       const res = await verifyResetOtp(values);
       if (res.success) {
         toast.success(res.message || "Password reset otp verified");
-        setOtp({
-          type: null,
-          email: null
-        });
+        setOtp(null);
         setOtpCode("");
         router.push("/reset-password")
       } else {
@@ -107,7 +104,7 @@ export default function Page(): React.JSX.Element {
 
   return (
     <Card className="relative w-full max-w-md overflow-hidden border-0">
-      {!(otp.type === "reset-password" && otp.email) ? (
+      {!(otp?.type === "reset-password" && otp?.email) ? (
         <>
           <CardHeader>
             <CardTitle>
