@@ -72,7 +72,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   if (existingFriend) {
     return ApiResponse({
       statusCode: STATUS_CODES.BAD_REQUEST,
-      message: "You are already friends",
+      message: `You are already friend with @${receiverUsername}`,
       success: false
     });
   }
@@ -83,7 +83,15 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     pairKey
   });
 
-  if (existingRequest) {
+  if (existingRequest?.status === "blocked") {
+    return ApiResponse({
+      statusCode: STATUS_CODES.BAD_REQUEST,
+      message: `You can't send a friend request to @${receiverUsername}`,
+      success: false
+    });
+  }
+
+  if (existingRequest && existingRequest.status !== "rejected") {
     return ApiResponse({
       statusCode: STATUS_CODES.BAD_REQUEST,
       message: "You already sent request to this user",
@@ -91,17 +99,29 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const friendRequest = new FriendRequest({
-    sender: currentUser.id,
-    pairKey,
-    receiver: receiver._id
-  });
+  let friendRequest;
+  if (existingRequest?.status === "rejected") {
+    friendRequest = await FriendRequest.updateOne(
+      { _id: existingRequest._id },
+      {
+        $set: {
+          status: "pending"
+        }
+      }
+    );
+  } else {
+    friendRequest = new FriendRequest({
+      sender: currentUser.id,
+      pairKey,
+      receiver: receiver._id
+    });
 
-  await friendRequest.save();
+    await friendRequest.save();
+  }
 
   return ApiResponse({
     statusCode: STATUS_CODES.OK,
-    message: "Friend request sent",
+    message: "Friend request sent successfully",
     success: true,
     data: friendRequest
   });
