@@ -2,6 +2,12 @@
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as authApi from "@/lib/api/auth";
+import {
+  ForgotPasswordFormData,
+  ResetPasswordFormData,
+  VerifyResetOtpFormData
+} from "@/validators/auth";
+import { ApiResponse } from "@/interface/error";
 
 export function useAuth() {
   const queryClient = useQueryClient();
@@ -34,6 +40,27 @@ export function useAuth() {
     }
   });
 
+  const forgotPasswordMutation = useMutation({
+    mutationFn: async (data: ForgotPasswordFormData) => {
+      const res = await authApi.forgotPassword(data);
+      return res as ApiResponse;
+    }
+  });
+
+  const verifyResetOtpMutation = useMutation({
+    mutationFn: async (data: VerifyResetOtpFormData) => {
+      const res = await authApi.verifyResetOtp(data);
+      return res as ApiResponse;
+    }
+  });
+
+  const resetPasswordMutation = useMutation({
+    mutationFn: async (data: ResetPasswordFormData) => {
+      const res = await authApi.resetPassword(data);
+      return res as ApiResponse;
+    }
+  });
+
   return {
     // user: userQuery.data?.data || null,
     // isLoading: userQuery.isLoading,
@@ -47,6 +74,15 @@ export function useAuth() {
     signup: signupMutation.mutateAsync,
 
     loginLoading: loginMutation.isPending,
-    signupLoading: signupMutation.isPending
+    signupLoading: signupMutation.isPending,
+
+    forgotPassword: forgotPasswordMutation.mutateAsync,
+    forgotPasswordLoading: forgotPasswordMutation.isPending,
+
+    verifyResetOtp: verifyResetOtpMutation.mutateAsync,
+    verifyResetOtpLoading: verifyResetOtpMutation.isPending,
+
+    resetPassword: resetPasswordMutation.mutateAsync,
+    resetPasswordLoading: resetPasswordMutation.isPending
   };
 }
