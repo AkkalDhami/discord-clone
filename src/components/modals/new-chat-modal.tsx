@@ -107,7 +107,7 @@ export function NewChatDialog() {
           </div>
         </div>
 
-        <ScrollArea className="mt-4 max-h-64 px-2">
+        <ScrollArea className="mt-4 h-64 px-2">
           <div className="space-y-1 px-4">
             {filtered.map(friend => (
               <div
@@ -142,7 +142,7 @@ export function NewChatDialog() {
               </div>
 
               <div className="flex-1">
-                <p className="mb-1 text-sm text-muted-foreground">
+                <p className="text-muted-foreground mb-1 text-sm">
                   Group Name (optional)
                 </p>
                 <Input

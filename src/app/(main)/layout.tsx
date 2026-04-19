@@ -1,13 +1,21 @@
 import { NavigationSidebar } from "@/components/layouts/navigation-sidebar";
+import { currentAuthUser } from "@/helpers/auth.helper";
+import { redirect } from "next/navigation";
 
-export default function ServerLayout({
+export default async function ServerLayout({
   children
 }: {
   children: React.ReactNode;
 }) {
+  const profile = await currentAuthUser();
+
+  if (!profile) {
+    return redirect("/signin");
+  }
+
   return (
     <section className="w-full">
-      <div className="fixed inset-y-0 z-30 ml-1 hidden h-full w-16 sm:w-18 flex-col border-l md:flex">
+      <div className="fixed inset-y-0 z-30 ml-1 hidden h-full w-16 flex-col border-l sm:w-18 md:flex">
         <NavigationSidebar />
       </div>
       <main className="h-full md:pl-18"> {children}</main>

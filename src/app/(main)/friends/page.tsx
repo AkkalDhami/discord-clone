@@ -7,7 +7,7 @@ export default async function Page() {
   const currentUser = await currentAuthUser();
 
   if (!currentUser) {
-    return redirect("/");
+    return redirect("/signin");
   }
 
   const friends = await Friendship.find({
