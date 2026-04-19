@@ -1,8 +1,11 @@
 import { FriendCard } from "@/components/friends/friend-card";
+import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Friendship from "@/models/friendship.model";
 import { PopulatedFriendship } from "@/types/friend";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const currentUser = await currentAuthUser();
@@ -10,6 +13,8 @@ export default async function Page() {
   if (!currentAuthUser) {
     return redirect("/friends");
   }
+
+  await dbConnect();
 
   const friends = (await Friendship.find({
     user: currentUser?.id
