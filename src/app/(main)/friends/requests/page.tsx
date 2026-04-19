@@ -3,10 +3,13 @@ import {
   SentFriendRequestCard
 } from "@/components/friends/friend-request-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import FriendRequest from "@/models/friend-request.model";
 import { FriendWithReciever, FriendWithSender } from "@/types/friend";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const currentUser = await currentAuthUser();
@@ -14,6 +17,8 @@ export default async function Page() {
   if (!currentAuthUser) {
     return redirect("/friends");
   }
+
+  await dbConnect();
 
   const incomingFriendRequests = (await FriendRequest.find({
     receiver: currentUser?.id,

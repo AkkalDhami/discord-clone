@@ -1,8 +1,11 @@
 import { BlockedFriendCard } from "@/components/friends/friend-card";
+import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import FriendRequest from "@/models/friend-request.model";
 import { FriendWithRecieverAndSender } from "@/types/friend";
 import { redirect } from "next/navigation";
+
+export const dynamic = "force-dynamic";
 
 export default async function Page() {
   const currentUser = await currentAuthUser();
@@ -11,6 +14,8 @@ export default async function Page() {
     return redirect("/friends");
   }
 
+  await dbConnect();
+
   const friends = (await FriendRequest.find({
     receiver: currentUser?.id,
     status: "blocked"
@@ -18,8 +23,6 @@ export default async function Page() {
     .populate("sender", "username email name _id avatar")
     .populate("receiver", "username email name _id avatar")
     .lean()) as unknown as FriendWithRecieverAndSender[];
-
-  console.log({ friends });
 
   return (
     <section className="h-full">
