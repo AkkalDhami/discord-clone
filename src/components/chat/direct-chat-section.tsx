@@ -10,13 +10,9 @@ export function DirectChatSection() {
     <div className="px-2 py-3">
       <div className="flex items-center justify-between">
         <h3 className="text-muted-foreground hover:text-accent-foreground text-sm">
-          Direct Messages
+          Direct Chats
         </h3>
-        <ActionTooltip
-          label="Create Message"
-          side="top"
-          size="sm"
-          align="center">
+        <ActionTooltip label="Create Chat" side="top" size="sm" align="center">
           <IconPlus
             onClick={() => open("new-chat")}
             className="text-muted-foreground hover:text-accent-foreground size-5 cursor-pointer p-0.5"

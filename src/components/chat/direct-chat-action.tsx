@@ -10,7 +10,7 @@ export function DirectChatAction() {
   const pathname = usePathname();
 
   return (
-    <ActionTooltip label="Direct Messages" side="right" align="center">
+    <ActionTooltip label="Direct Chats" side="right" align="center">
       <Link href={"/friends"} className="group relative cursor-pointer">
         <div
           className={cn(
