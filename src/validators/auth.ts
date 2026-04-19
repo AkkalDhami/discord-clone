@@ -59,5 +59,27 @@ export const SignupSchema = z
     }
   );
 
+export const ForgotPasswordSchema = z.object({
+  email: emailSchema
+});
+
+export const VerifyResetOtpSchema = z.object({
+  otp: z.string({ error: "OTP must be a string" }).trim().min(1, {
+    message: "OTP is required"
+  }),
+  email: emailSchema
+});
+
+export const ResetPasswordSchema = z.object({
+  newPassword: passwordSchema,
+  confirmNewPassword: passwordSchema,
+  email: emailSchema
+});
+
+
 export type SigninFormData = z.infer<typeof SigninSchema>;
 export type SignupFormData = z.infer<typeof SignupSchema>;
+export type ForgotPasswordFormData = z.infer<typeof ForgotPasswordSchema>;
+
+export type VerifyResetOtpFormData = z.infer<typeof VerifyResetOtpSchema>;
+export type ResetPasswordFormData = z.infer<typeof ResetPasswordSchema>;
