@@ -47,7 +47,7 @@ export const authOptions: AuthOptions = {
               provider: account.provider,
               isEmailVerified: true,
               avatar: {
-                url: profile.picture || profile.avatar_url
+                url: user.avatar?.url || profile.picture || profile.avatar_url
               }
             }
           }
