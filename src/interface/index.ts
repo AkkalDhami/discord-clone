@@ -1,6 +1,7 @@
 import ChannelType from "@/enums/channel.enum";
 import MemberRole from "@/enums/role.enum";
 import { FriendRequestStatus } from "@/models/friend-request.model";
+import { PartialProfile } from "@/types/friend";
 
 export interface Profile {
   _id: string;
@@ -97,8 +98,8 @@ export interface IFile {
 export interface Friendship {
   _id: string;
 
-  user: Pick<Profile, "_id" | "avatar" | "email" | "name" | "username">;
-  friend: Pick<Profile, "_id" | "avatar" | "email" | "name" | "username">;
+  user: PartialProfile;
+  friend: PartialProfile;
   createdAt: string;
 }
 
