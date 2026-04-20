@@ -9,7 +9,7 @@ import { validateObjectId } from "@/utils/validate-objid";
 import mongoose from "mongoose";
 import { NextRequest } from "next/server";
 
-export const POST = AsyncHandler(async (req: NextRequest) => {
+export const PUT = AsyncHandler(async (req: NextRequest) => {
   await dbConnect();
 
   const session = await mongoose.startSession();
