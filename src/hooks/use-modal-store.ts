@@ -1,4 +1,5 @@
-import { Category, Channel, Member, Server } from "@/interface";
+import { Category, Channel, Member, Profile, Server } from "@/interface";
+import { PartialProfile } from "@/types/friend";
 import { create } from "zustand";
 
 export type ModalType =
@@ -32,6 +33,7 @@ export interface ModalData {
     private: boolean;
   };
   member?: Member;
+  friends?: PartialProfile[];
 }
 
 export interface ModalStore {

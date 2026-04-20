@@ -31,7 +31,7 @@ export function useFriend() {
 
   const rejectFriendReqMutation = useMutation({
     mutationFn: async (data: UpdateFriendRequestStatusType) => {
-      const res = await friendApi.rejectFriendRequest(data);
+      const res = await friendApi.ignoreFriendRequest(data);
       return res as ApiResponse;
     },
     onSuccess: () => {
@@ -39,35 +39,35 @@ export function useFriend() {
     }
   });
 
-  const blockFriendReqMutation = useMutation({
-    mutationFn: async (
-      data: Pick<UpdateFriendRequestStatusType, "requestId">
-    ) => {
-      const res = await friendApi.rejectFriendRequest({
-        ...data,
-        type: "block"
-      });
-      return res as ApiResponse;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["friend", "me"] });
-    }
-  });
+  // const blockFriendReqMutation = useMutation({
+  //   mutationFn: async (
+  //     data: Pick<UpdateFriendRequestStatusType, "requestId">
+  //   ) => {
+  //     const res = await friendApi.ignoreFriendRequest({
+  //       ...data,
+  //       type: "block"
+  //     });
+  //     return res as ApiResponse;
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["friend", "me"] });
+  //   }
+  // });
 
-  const unBlockFriendReqMutation = useMutation({
-    mutationFn: async (
-      data: Pick<UpdateFriendRequestStatusType, "requestId">
-    ) => {
-      const res = await friendApi.rejectFriendRequest({
-        requestId: data.requestId,
-        type: "unblock"
-      });
-      return res as ApiResponse;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["friend", "me"] });
-    }
-  });
+  // const unBlockFriendReqMutation = useMutation({
+  //   mutationFn: async (
+  //     data: Pick<UpdateFriendRequestStatusType, "requestId">
+  //   ) => {
+  //     const res = await friendApi.ignoreFriendRequest({
+  //       requestId: data.requestId,
+  //       type: "unblock"
+  //     });
+  //     return res as ApiResponse;
+  //   },
+  //   onSuccess: () => {
+  //     queryClient.invalidateQueries({ queryKey: ["friend", "me"] });
+  //   }
+  // });
 
   return {
     sendFriendRequest: sendFriendReqMutation.mutateAsync,
@@ -76,13 +76,13 @@ export function useFriend() {
     acceptFriendRequest: acceptFriendReqMutation.mutateAsync,
     isAcceptingFriendRequest: acceptFriendReqMutation.isPending,
 
-    rejectFriendRequest: rejectFriendReqMutation.mutateAsync,
-    isRejectingFriendRequest: rejectFriendReqMutation.isPending,
+    ignoreFriendRequest: rejectFriendReqMutation.mutateAsync,
+    isRejectingFriendRequest: rejectFriendReqMutation.isPending
 
-    blockFriendRequest: blockFriendReqMutation.mutateAsync,
-    isblockingFriendRequest: blockFriendReqMutation.isPending,
+    // blockFriendRequest: blockFriendReqMutation.mutateAsync,
+    // isblockingFriendRequest: blockFriendReqMutation.isPending,
 
-    unBlockFriendRequest: unBlockFriendReqMutation.mutateAsync,
-    isunBlockingFriendRequest: unBlockFriendReqMutation.isPending
+    // unBlockFriendRequest: unBlockFriendReqMutation.mutateAsync,
+    // isunBlockingFriendRequest: unBlockFriendReqMutation.isPending
   };
 }
