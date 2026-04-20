@@ -31,3 +31,8 @@ export type PopulatedFriendship = {
   };
   createdAt: Date;
 };
+
+export type PartialProfile = Pick<
+  Profile,
+  "_id" | "avatar" | "email" | "name" | "username"
+>;
