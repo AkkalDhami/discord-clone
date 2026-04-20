@@ -39,6 +39,16 @@ export function useFriend() {
     }
   });
 
+  const removeFriendMutation = useMutation({
+    mutationFn: async (friendId: string) => {
+      const res = await friendApi.removeFriend(friendId);
+      return res as ApiResponse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["friend", "me"] });
+    }
+  });
+
   // const blockFriendReqMutation = useMutation({
   //   mutationFn: async (
   //     data: Pick<UpdateFriendRequestStatusType, "requestId">
@@ -77,7 +87,10 @@ export function useFriend() {
     isAcceptingFriendRequest: acceptFriendReqMutation.isPending,
 
     ignoreFriendRequest: rejectFriendReqMutation.mutateAsync,
-    isRejectingFriendRequest: rejectFriendReqMutation.isPending
+    isRejectingFriendRequest: rejectFriendReqMutation.isPending,
+
+    removeFriend: removeFriendMutation.mutateAsync,
+    isRemovingFriend: removeFriendMutation.isPending
 
     // blockFriendRequest: blockFriendReqMutation.mutateAsync,
     // isblockingFriendRequest: blockFriendReqMutation.isPending,

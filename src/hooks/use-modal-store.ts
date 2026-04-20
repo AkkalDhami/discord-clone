@@ -19,7 +19,8 @@ export type ModalType =
   | "edit-category"
   | "file-upload"
   | "new-chat"
-  | "add-friend";
+  | "add-friend"
+  | "remove-friend";
 
 export interface ModalData {
   server?: Pick<
@@ -34,6 +35,7 @@ export interface ModalData {
   };
   member?: Member;
   friends?: PartialProfile[];
+  friend?: PartialProfile;
 }
 
 export interface ModalStore {
