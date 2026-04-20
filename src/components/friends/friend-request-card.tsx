@@ -9,14 +9,15 @@ import toast from "react-hot-toast";
 import { FriendRequestStatus } from "@/models/friend-request.model";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { ActionTooltip } from "../common/action-tooltip";
+import { IconCheck, IconLoader2, IconSend, IconX } from "@tabler/icons-react";
 
 export const FriendRequestStatusMap: Record<FriendRequestStatus, string> = {
   accepted:
     "bg-green-500/10 text-green-500 border-green-300 dark:border-green-700",
   pending:
     "bg-amber-500/10 text-amber-600 border-amber-300 dark:border-amber-700",
-  blocked: "bg-rose-500/10 text-rose-600 border-rose-300 dark:border-rose-700",
-  rejected: "bg-red-500/10 text-red-600 border-red-300 dark:border-red-700"
+  ignored: "bg-red-500/10 text-red-600 border-red-300 dark:border-red-700"
 };
 
 export function SentFriendRequestCard({
@@ -55,25 +56,32 @@ export function SentFriendRequestCard({
           />
           <div className="flex w-full items-center justify-between">
             <div className="flex w-full flex-col">
-              <h3 className="text-lg font-normal">{friendReq.receiver.name}</h3>
+              <div className="flex w-full items-center gap-3">
+                <h3 className="font-medium">{friendReq.receiver.name}</h3>
+                <p className="text-muted-foreground text-xs">
+                  {timeAgo(friendReq.createdAt)}
+                </p>
+              </div>
               <p className="text-muted-foreground text-sm">
                 @{friendReq.receiver.username}
               </p>
             </div>
             <div className="flex items-center gap-4">
-              {friendReq.status === "rejected" && (
-                <Button
-                  variant={"primary"}
-                  disabled={isSendingFriendRequest}
-                  onClick={onSend}
-                  className={"bg-green-600 text-white hover:bg-green-700"}>
-                  {isSendingFriendRequest ? "Sending..." : "Send Request"}
-                </Button>
+              {friendReq.status === "ignored" && (
+                <>
+                  {isSendingFriendRequest ? (
+                    <IconLoader2 className="text-accent-foreground size-10 animate-spin cursor-not-allowed rounded-full bg-neutral-500/10 p-2" />
+                  ) : (
+                    <ActionTooltip label="Send Request" size="sm">
+                      <IconSend
+                        onClick={onSend}
+                        className="size-10 cursor-pointer rounded-full bg-green-500/10 p-2 text-green-600"
+                      />
+                    </ActionTooltip>
+                  )}
+                </>
               )}
               <div className="space-y-1">
-                <p className="text-muted-foreground w-17.5 text-xs">
-                  {timeAgo(friendReq.createdAt)}
-                </p>
                 <p
                   className={cn(
                     "rounded-full border px-2 py-0.5 text-center text-xs font-normal",
@@ -99,9 +107,7 @@ export function FriendRequestCard({
     acceptFriendRequest,
     isAcceptingFriendRequest,
     isRejectingFriendRequest,
-    rejectFriendRequest,
-    blockFriendRequest,
-    isblockingFriendRequest
+    ignoreFriendRequest
   } = useFriend();
 
   const router = useRouter();
@@ -124,43 +130,74 @@ export function FriendRequestCard({
 
   async function onReject() {
     try {
-      const res = await rejectFriendRequest({
-        requestId: friendReq._id,
-        type: "reject"
-      });
-      if (res.success) {
-        toast.success(res.message || "Rejected friend request successfully");
-        close();
-        router.refresh();
-      } else {
-        toast.error(res.message || "Failed to reject friend request");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to reject friend request");
-    }
-  }
-
-  async function onBlock() {
-    try {
-      const res = await blockFriendRequest({
+      const res = await ignoreFriendRequest({
         requestId: friendReq._id
       });
       if (res.success) {
-        toast.success(res.message || "Blocked friend request successfully");
+        toast.success(res.message || "Ignored friend request successfully");
         close();
         router.refresh();
       } else {
-        toast.error(res.message || "Failed to block friend request");
+        toast.error(res.message || "Failed to ignore friend request");
       }
     } catch (error) {
       console.log(error);
-      toast.error("Failed to block friend request");
+      toast.error("Failed to ignore friend request");
     }
   }
 
   return (
-    <div className="hover:bg-secondary/50 border-edge flex items-center justify-between border-y p-3.5">
+    <div className="hover:bg-secondary/30 border-edge flex w-full items-center justify-between border-y p-3.5">
+      <div className="w-full space-y-3">
+        <div className="flex w-full items-center gap-1.5">
+          <UserAvatar
+            name={friendReq.sender.name}
+            src={friendReq.sender.avatar?.url}
+            className="size-13"
+          />
+          <div className="flex w-full items-center justify-between">
+            <div className="flex w-full flex-col space-y-1">
+              <div className="flex w-full items-center gap-3">
+                <h3 className="font-medium">{friendReq.sender.name}</h3>
+                <p className="text-muted-foreground text-xs">
+                  {timeAgo(friendReq.createdAt)}
+                </p>
+              </div>
+              <p className="text-muted-foreground text-sm">
+                @{friendReq.sender.username}
+              </p>
+            </div>
+            <div className="flex gap-2">
+              {isAcceptingFriendRequest ? (
+                <IconLoader2 className="text-accent-foreground size-10 animate-spin cursor-not-allowed rounded-full bg-neutral-500/10 p-2" />
+              ) : (
+                <ActionTooltip label="Accept" size="sm">
+                  <IconCheck
+                    onClick={onAccept}
+                    className="size-10 cursor-pointer rounded-full bg-green-500/10 p-2 text-green-600"
+                  />
+                </ActionTooltip>
+              )}
+              {isRejectingFriendRequest ? (
+                <IconLoader2 className="text-accent-foreground size-10 animate-spin cursor-not-allowed rounded-full bg-neutral-500/10 p-2" />
+              ) : (
+                <ActionTooltip label="Ignore" size="sm">
+                  <IconX
+                    onClick={onReject}
+                    className="size-10 cursor-pointer rounded-full bg-red-500/10 p-2 text-red-600"
+                  />
+                </ActionTooltip>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/*
+<div className="hover:bg-secondary/50 border-edge flex items-center justify-between border-y p-3.5">
       <div className="w-full space-y-3">
         <div className="flex w-full items-center gap-1.5">
           <UserAvatar
@@ -191,7 +228,7 @@ export function FriendRequestCard({
           </div>
         </div>
 
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-2 gap-2">
           <Button
             variant={"primary"}
             disabled={isAcceptingFriendRequest}
@@ -199,19 +236,12 @@ export function FriendRequestCard({
             {isAcceptingFriendRequest ? "Confirming..." : "Confirm"}
           </Button>
           <Button
-            variant={"outline"}
+            variant={"destructive"}
             disabled={isRejectingFriendRequest}
             onClick={onReject}>
             {isRejectingFriendRequest ? "Rejecting..." : "Reject"}
           </Button>
-          <Button
-            variant={"destructive"}
-            disabled={isblockingFriendRequest}
-            onClick={onBlock}>
-            {isblockingFriendRequest ? "Blocking..." : "Block"}
-          </Button>
         </div>
       </div>
     </div>
-  );
-}
+    */

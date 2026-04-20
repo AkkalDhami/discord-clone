@@ -38,24 +38,24 @@ export function BlockedFriendCard({
 }: {
   friend: FriendWithRecieverAndSender;
 }) {
-  const { unBlockFriendRequest, isunBlockingFriendRequest } = useFriend();
+  // const { unBlockFriendRequest, isunBlockingFriendRequest } = useFriend();
   const router = useRouter();
 
-  async function onUnBlock() {
-    try {
-      const res = await unBlockFriendRequest({ requestId: friend._id });
-      if (res.success) {
-        toast.success(res.message || "Unblocked friend request successfully");
-        close();
-        router.refresh();
-      } else {
-        toast.error(res.message || "Failed to unblock friend request");
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Failed to unblock friend request");
-    }
-  }
+  // async function onUnBlock() {
+  //   try {
+  //     const res = await unBlockFriendRequest({ requestId: friend._id });
+  //     if (res.success) {
+  //       toast.success(res.message || "Unblocked friend request successfully");
+  //       close();
+  //       router.refresh();
+  //     } else {
+  //       toast.error(res.message || "Failed to unblock friend request");
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     toast.error("Failed to unblock friend request");
+  //   }
+  // }
 
   return (
     <div className="bg-secondary/30 hover:bg-secondary/60 flex items-center justify-between rounded-lg p-3.5">
@@ -76,12 +76,12 @@ export function BlockedFriendCard({
             </div>
           </div>
 
-          <Button
+          {/* <Button
             variant={"success"}
             onClick={onUnBlock}
             disabled={isunBlockingFriendRequest}>
-            {isunBlockingFriendRequest ?"Unblocking.." :"Unblock"}
-          </Button>
+            {isunBlockingFriendRequest ? "Unblocking.." : "Unblock"}
+          </Button> */}
         </div>
       </div>
     </div>
