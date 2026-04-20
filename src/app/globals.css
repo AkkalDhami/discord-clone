@@ -98,7 +98,7 @@
   --border: #e4e4e4;
   --border-hover: var(--color-neutral-400);
   --edge: color-mix(in oklab, var(--border) 94%, var(--background));
-  --input: #ebebeb;
+  --input: #e1e1e1;
   --ring: #000000;
   --chart-1: #ffae04;
   --chart-2: #2d62ef;

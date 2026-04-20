@@ -21,7 +21,10 @@ export function ActionTooltip({
   return (
     <Tooltip>
       <TooltipTrigger>{children}</TooltipTrigger>
-      <TooltipContent side={side} align={align}>
+      <TooltipContent
+        side={side}
+        align={align}
+        className={cn(size === "sm" && "px-2 py-1")}>
         <p
           className={cn(
             "text-base font-medium",
