@@ -1,7 +1,7 @@
 import dbConnect from "@/configs/db";
 import { STATUS_CODES } from "@/constants/status-codes";
 import { currentAuthUser } from "@/helpers/auth.helper";
-import FriendRequest from "@/models/friend-request.model";
+import Friendship from "@/models/friendship.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 
@@ -17,18 +17,16 @@ export const GET = AsyncHandler(async () => {
     });
   }
 
-  const requests = await FriendRequest.find({
-    receiver: currentUser.id,
-    status: "pending"
+  const friends = await Friendship.find({
+    user: currentUser.id
   })
-    .populate("sender", "username name email _id avatar")
-    .sort({ createdAt: -1 })
+    .populate("friend", "username name email _id avatar")
     .lean();
 
   return ApiResponse({
     statusCode: STATUS_CODES.OK,
     message: "Success",
     success: true,
-    data: requests
+    data: friends
   });
 });
