@@ -18,7 +18,7 @@ import { PartialProfile } from "@/types/friend";
 
 const MAX = 10;
 
-export function NewChatModal() {
+export function NewChatDialog2() {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState<PartialProfile[]>([]);
   const [groupName, setGroupName] = useState("");
@@ -83,7 +83,7 @@ export function NewChatModal() {
     <Dialog open={isModalOpen} onOpenChange={open => !open && handleClose()}>
       <DialogContent className="text-accent-foreground w-full max-w-md gap-0 p-0">
         {/* Header */}
-        <DialogHeader className="px-5 py-4">
+        <DialogHeader className="border-border border-b px-5 py-4">
           <DialogTitle className="text-base font-medium">New chat</DialogTitle>
           <p className="text-muted-foreground text-sm">
             {selected.length === 0

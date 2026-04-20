@@ -24,9 +24,11 @@ import {
   SendFriendRequestType
 } from "@/validators/friends";
 import { useFriend } from "@/hooks/use-friend";
+import { useRouter } from "next/navigation";
 
 export function AddFriendModal() {
   const { close, isOpen, type } = useModal();
+  const router = useRouter();
   const isModalOpen = isOpen && type === "add-friend";
 
   const { isSendingFriendRequest, sendFriendRequest } = useFriend();
@@ -47,6 +49,7 @@ export function AddFriendModal() {
         toast.success(res.message || "Friend request sent successfully");
         form.reset();
         close();
+        router.refresh();
       } else {
         toast.error(res.message || "Failed to send friend request");
       }
@@ -80,13 +83,12 @@ export function AddFriendModal() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                   
-                      <Input
-                        {...field}
-                        aria-invalid={fieldState.invalid}
-                        className="h-10"
-                        placeholder="Enter username"
-                      />
+                    <Input
+                      {...field}
+                      aria-invalid={fieldState.invalid}
+                      className="h-10"
+                      placeholder="Enter username"
+                    />
 
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
