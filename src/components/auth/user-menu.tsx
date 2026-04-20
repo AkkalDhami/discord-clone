@@ -63,7 +63,7 @@ export function UserMenu({ name, username, image, email }: UserMenuProps) {
 
         <DropdownMenuItem
           onClick={handleLogout}
-          className="cursor-pointer text-red-500 focus:text-red-500">
+          className="cursor-pointer text-red-500 hover:bg-red-500/10 focus:text-red-500">
           Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

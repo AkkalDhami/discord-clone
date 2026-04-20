@@ -11,42 +11,43 @@ export function DirectChatHeader() {
   const pathname = usePathname();
   return (
     <div className="border-edge mt-4 flex w-full items-center justify-between gap-6 border-y px-4 py-2">
-      <div className="flex items-center gap-1 font-medium">
-        <IconUsers className="size-4" />
-        Friends
+      <div className="item-center flex gap-4">
+        <div className="flex items-center gap-1 font-medium">
+          <IconUsers className="size-4" />
+          Friends
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={"ghost"}
+            className={cn(
+              "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
+              pathname.includes("/friends/requests") &&
+                "bg-secondary text-accent-foreground"
+            )}
+            render={
+              <Link href={"/friends/requests"}>Friend Requests</Link>
+            }></Button>
+          <Button
+            variant={"ghost"}
+            className={cn(
+              "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
+              pathname.includes("/friends/all") &&
+                "bg-secondary text-accent-foreground"
+            )}
+            render={<Link href={"/friends/all"}>All Friends</Link>}></Button>
+          <Button
+            variant={"ghost"}
+            className={cn(
+              "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
+              pathname.includes("/friends/blocked") &&
+                "bg-secondary text-accent-foreground"
+            )}
+            render={
+              <Link href={"/friends/blocked"}>Blocked Friends</Link>
+            }></Button>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <Button
-          variant={"ghost"}
-          className={cn(
-            "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
-            pathname.includes("/friends/requests") &&
-              "bg-secondary text-accent-foreground"
-          )}
-          render={
-            <Link href={"/friends/requests"}>Friend Requests</Link>
-          }></Button>
-        <Button
-          variant={"ghost"}
-          className={cn(
-            "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
-            pathname.includes("/friends/all") &&
-              "bg-secondary text-accent-foreground"
-          )}
-          render={<Link href={"/friends/all"}>All Friends</Link>}></Button>
-        <Button
-          variant={"ghost"}
-          className={cn(
-            "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
-            pathname.includes("/friends/blocked") &&
-              "bg-secondary text-accent-foreground"
-          )}
-          render={
-            <Link href={"/friends/blocked"}>Blocked Friends</Link>
-          }></Button>
-
-        <AddFriendButton variant="icon" />
-      </div>
+      <AddFriendButton variant="icon" />
     </div>
   );
 }
