@@ -11,7 +11,7 @@ export default async function Page() {
   const currentUser = await currentAuthUser();
 
   if (!currentAuthUser) {
-    return redirect("/friends");
+    return redirect("/");
   }
 
   await dbConnect();
@@ -29,7 +29,7 @@ export default async function Page() {
         <h2 className="text-muted-primary border-edge mb-2 border-b p-3.5 font-normal">
           Friends - {friends.length}
         </h2>
-        <div className="grid space-y-2 px-2">
+        <div className="grid gap-2 px-2 md:grid-cols-2">
           {friends.map(f => (
             <FriendCard key={f._id.toString()} friend={f} />
           ))}

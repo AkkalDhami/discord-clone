@@ -2,7 +2,7 @@ import {
   FriendRequestCard,
   SentFriendRequestCard
 } from "@/components/friends/friend-request-card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Separator } from "@/components/ui/separator";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import FriendRequest from "@/models/friend-request.model";
@@ -36,31 +36,30 @@ export default async function Page() {
     .lean()) as unknown as FriendWithReciever[];
 
   return (
-    <section className="grid h-full grid-cols-1 pb-3">
-      <Tabs defaultValue="friend-request" className="w-full py-2">
-        <TabsList variant={"line"} className={"border-edge"}>
-          <TabsTrigger value="friend-request" className={"text-lg font-normal"}>
-            Friend Requests - {incomingFriendRequests.length}
-          </TabsTrigger>
-          <TabsTrigger value="sent-request" className={"text-lg font-normal"}>
-            Sent Requests - {outgoingFriendRequests.length}
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="friend-request">
-          <div className="grid space-y-2">
-            {incomingFriendRequests.map(f => (
-              <FriendRequestCard key={f._id.toString()} friendReq={f} />
-            ))}
-          </div>
-        </TabsContent>
-        <TabsContent value="sent-request">
-          <div className="grid space-y-2">
-            {outgoingFriendRequests.map(f => (
-              <SentFriendRequestCard key={f._id.toString()} friendReq={f} />
-            ))}
-          </div>
-        </TabsContent>
-      </Tabs>
+    <section className="grid h-full pb-3 md:grid-cols-2">
+      <div className="border-edge">
+        <h2 className={"border-edge border-b px-3 py-3 text-lg font-normal"}>
+          Friend Requests - {incomingFriendRequests.length}
+        </h2>
+        <div className="mt-2 space-y-2">
+          {incomingFriendRequests.map(f => (
+            <FriendRequestCard key={f._id.toString()} friendReq={f} />
+          ))}
+        </div>
+      </div>
+
+      <div className="border-edge border-l">
+        <h2 className={"border-edge border-b px-3 py-3 text-lg font-normal"}>
+          Sent Requests - {outgoingFriendRequests.length}
+        </h2>
+
+        <div className="mt-2 space-y-2">
+          {outgoingFriendRequests.map(f => (
+            <SentFriendRequestCard key={f._id.toString()} friendReq={f} />
+          ))}
+        </div>
+      </div>
+      {/* <Separator /> */}
     </section>
   );
 }
