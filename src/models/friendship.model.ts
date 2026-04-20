@@ -5,6 +5,9 @@ interface IFriendship {
 
   user: Types.ObjectId;
   friend: Types.ObjectId;
+
+  status: "active" | "block";
+
   createdAt: Date;
 }
 
@@ -19,6 +22,11 @@ const friendshipSchema = new Schema<IFriendship>(
       type: Schema.Types.ObjectId,
       ref: "Profile",
       required: true
+    },
+    status: {
+      type: String,
+      enum: ["active", "blocked"],
+      default: "active"
     }
   },
   { timestamps: { createdAt: true, updatedAt: false } }

@@ -1,5 +1,14 @@
 import mongoose, { Document, Model, Schema } from "mongoose";
 
+const CONVERSATION_TYPES = [
+  "direct",
+  "group",
+  "server",
+  "direct-server-member"
+] as const;
+
+export type ConversationTypes = (typeof CONVERSATION_TYPES)[number];
+
 export interface IConversation extends Document {
   _id: mongoose.Types.ObjectId;
 
@@ -8,7 +17,7 @@ export interface IConversation extends Document {
   participantsKey: string;
 
   participants: mongoose.Types.ObjectId[];
-  type: "direct" | "group";
+  type: ConversationTypes;
   name?: string;
 
   lastMessage?: mongoose.Types.ObjectId;
@@ -39,7 +48,7 @@ const conversationSchema = new Schema<IConversation>(
     },
     type: {
       type: String,
-      enum: ["direct", "group"],
+      enum: CONVERSATION_TYPES,
       required: true
     },
     lastMessage: {

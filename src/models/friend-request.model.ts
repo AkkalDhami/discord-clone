@@ -1,11 +1,6 @@
 import mongoose, { Schema, Types, Model } from "mongoose";
 
-const FRIEND_REQUEST_STATUS = [
-  "pending",
-  "accepted",
-  "rejected",
-  "blocked"
-] as const;
+const FRIEND_REQUEST_STATUS = ["pending", "accepted", "ignored"] as const;
 
 export type FriendRequestStatus = (typeof FRIEND_REQUEST_STATUS)[number];
 
