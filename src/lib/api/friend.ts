@@ -5,7 +5,7 @@ import {
 import { fetchWithAuth } from "@/lib/api/auth";
 
 export async function sendFriendRequest(data: SendFriendRequestType) {
-  const res = await fetchWithAuth("/api/friends/send", {
+  const res = await fetchWithAuth("/api/friends/requests/send", {
     method: "POST",
     body: JSON.stringify(data),
     credentials: "include"
@@ -15,8 +15,8 @@ export async function sendFriendRequest(data: SendFriendRequestType) {
 }
 
 export async function acceptFriendRequest(requestId: string) {
-  const res = await fetchWithAuth("/api/friends/accept", {
-    method: "POST",
+  const res = await fetchWithAuth("/api/friends/requests/accept", {
+    method: "PUT",
     body: JSON.stringify({ requestId }),
     credentials: "include"
   });
@@ -24,8 +24,8 @@ export async function acceptFriendRequest(requestId: string) {
   return res.json();
 }
 
-export async function rejectFriendRequest(data: UpdateFriendRequestStatusType) {
-  const res = await fetchWithAuth("/api/friends/requests", {
+export async function ignoreFriendRequest(data: UpdateFriendRequestStatusType) {
+  const res = await fetchWithAuth("/api/friends/requests/ignore", {
     method: "PUT",
     body: JSON.stringify(data),
     credentials: "include"

@@ -1,4 +1,4 @@
-import Conversation from "@/models/conversation.model";
+import Conversation, { ConversationTypes } from "@/models/conversation.model";
 import { Types } from "mongoose";
 
 async function findConversation({
@@ -10,7 +10,7 @@ async function findConversation({
   memberOneId: string;
   memberTwoId: string;
   serverId?: string;
-  type: "direct" | "group";
+  type: ConversationTypes;
 }) {
   try {
     // const [conversation] = await Conversation.aggregate([
@@ -91,7 +91,7 @@ async function createConversation({
   memberOneId: string;
   memberTwoId: string;
   serverId?: string;
-  type: "direct" | "group";
+  type: ConversationTypes;
 }) {
   try {
     const conversation = await Conversation.create({
@@ -115,7 +115,7 @@ export async function getOrCreateConversation2({
   memberOneId: string;
   memberTwoId: string;
   serverId?: string;
-  type: "direct" | "group";
+  type: ConversationTypes;
 }) {
   let conversation =
     (await findConversation({ memberOneId, memberTwoId, serverId, type })) ||
@@ -142,7 +142,7 @@ export async function getOrCreateConversation({
   memberOneId: string;
   memberTwoId: string;
   serverId?: string;
-  type: "direct" | "group";
+  type: ConversationTypes;
 }) {
   let conversation;
   const participants = [memberOneId, memberTwoId]
