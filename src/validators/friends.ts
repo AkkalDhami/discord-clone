@@ -5,10 +5,7 @@ export const SendFriendRequestSchema = z.object({
 });
 
 export const UpdateFriendRequestStatus = z.object({
-  requestId: z.string().min(1),
-  type: z.enum(["reject", "block", "unblock"], {
-    error: "Invalid request type"
-  })
+  requestId: z.string().min(1)
 });
 
 export type SendFriendRequestType = z.infer<typeof SendFriendRequestSchema>;
