@@ -33,3 +33,13 @@ export async function ignoreFriendRequest(data: UpdateFriendRequestStatusType) {
 
   return res.json();
 }
+
+export async function removeFriend(friendId: string) {
+  const res = await fetchWithAuth("/api/friends", {
+    method: "DELETE",
+    body: JSON.stringify({ friendId }),
+    credentials: "include"
+  });
+
+  return res.json();
+}
