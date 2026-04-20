@@ -17,27 +17,29 @@ export function DirectChatHeader() {
       </div>
       <div className="flex items-center gap-2">
         <Button
-          variant={"secondary"}
+          variant={"ghost"}
           className={cn(
-            "text-muted-foreground hover:bg-primary-500 px-3 hover:text-white",
+            "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
             pathname.includes("/friends/requests") &&
-              "bg-primary-500 text-white"
+              "bg-secondary text-accent-foreground"
           )}
           render={
             <Link href={"/friends/requests"}>Friend Requests</Link>
           }></Button>
         <Button
-          variant={"secondary"}
+          variant={"ghost"}
           className={cn(
-            "text-muted-foreground hover:bg-primary-500 px-3 hover:text-white",
-            pathname.includes("/friends/all") && "bg-primary-500 text-white"
+            "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
+            pathname.includes("/friends/all") &&
+              "bg-secondary text-accent-foreground"
           )}
           render={<Link href={"/friends/all"}>All Friends</Link>}></Button>
         <Button
-          variant={"secondary"}
+          variant={"ghost"}
           className={cn(
-            "text-muted-foreground hover:bg-primary-500 px-3 hover:text-white",
-            pathname.includes("/friends/blocked") && "bg-primary-500 text-white"
+            "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
+            pathname.includes("/friends/blocked") &&
+              "bg-secondary text-accent-foreground"
           )}
           render={
             <Link href={"/friends/blocked"}>Blocked Friends</Link>
