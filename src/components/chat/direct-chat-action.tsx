@@ -2,7 +2,11 @@
 
 import { ActionTooltip } from "@/components/common/action-tooltip";
 import { cn } from "@/lib/utils";
-import { IconBrandDiscordFilled } from "@tabler/icons-react";
+import {
+  IconBrandDiscordFilled,
+  IconMessageCircle,
+  IconMessageCircleFilled
+} from "@tabler/icons-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -24,7 +28,7 @@ export function DirectChatAction() {
             "bg-secondary group-hover:bg-primary-500 dark:group-hover:bg-primary-500 flex size-10 items-center justify-center rounded-xl transition-all sm:size-10",
             pathname.includes("/friends") && "bg-primary-500 text-white"
           )}>
-          <IconBrandDiscordFilled className="size-6" />
+          <IconMessageCircleFilled className="size-6" />
         </div>
       </Link>
     </ActionTooltip>

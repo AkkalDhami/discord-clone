@@ -8,11 +8,7 @@ import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { PartialProfile } from "@/types/friend";
 
-export function DirectChatItemSection({
-  friends
-}: {
-  friends: PartialProfile[];
-}) {
+export function DirectChatItemSection() {
   const { open } = useModal();
   const pathname = usePathname();
   return (
@@ -30,11 +26,7 @@ export function DirectChatItemSection({
         <ActionTooltip label="Add Friend" side="top" size="sm" align="center">
           <IconUserPlus
             className="text-muted-foreground hover:text-accent-foreground size-6 cursor-pointer p-0.5"
-            onClick={() =>
-              open("add-friend", {
-                friends
-              })
-            }
+            onClick={() => open("add-friend")}
           />
         </ActionTooltip>
       </Link>
