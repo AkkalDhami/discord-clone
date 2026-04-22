@@ -5,6 +5,7 @@ interface IFriendship {
 
   user: Types.ObjectId;
   friend: Types.ObjectId;
+  blockedBy: Types.ObjectId | null;
 
   status: "active" | "block";
 
@@ -22,6 +23,11 @@ const friendshipSchema = new Schema<IFriendship>(
       type: Schema.Types.ObjectId,
       ref: "Profile",
       required: true
+    },
+    blockedBy: {
+      type: Schema.Types.ObjectId,
+      ref: "Profile",
+      default: null
     },
     status: {
       type: String,

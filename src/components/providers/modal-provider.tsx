@@ -22,6 +22,7 @@ import { FileUploadModal } from "@/components/modals/file-upload-modal";
 import { AddFriendModal } from "@/components/modals/add-friend-modal";
 import { NewChatModal } from "@/components/modals/new-chat-modal";
 import { RemoveFriendModal } from "@/components/modals/remove-friend-modal";
+import { BlockFriendModal } from "@/components/modals/block-friend-modal";
 
 export function ModalProvider() {
   return (
@@ -38,6 +39,7 @@ export function ModalProvider() {
 
       <AddFriendModal />
       <RemoveFriendModal />
+      <BlockFriendModal />
 
       <MemberModal />
       <AddMemberModal />

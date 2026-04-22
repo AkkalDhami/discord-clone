@@ -428,7 +428,7 @@ function ChannelCard({
     <Link
       href={`/servers/${server._id}/channels/${channel._id}` as Route}
       className={cn(
-        "hover:bg-secondary group/channel flex w-full cursor-pointer items-center justify-between space-x-4 rounded-md mt-2 px-2 py-2",
+        "hover:bg-secondary group/channel flex w-full cursor-pointer items-center justify-between space-x-4 rounded-md mt-2 px-2 py-1.5",
         param.channelId === channel._id && "bg-secondary",
         className
       )}>
