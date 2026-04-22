@@ -1,40 +1,73 @@
+import { EmptyFriend } from "@/components/friends/empty-friend";
 import { FriendCard } from "@/components/friends/friend-card";
+import { FriendSearch } from "@/components/friends/friend-search";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
+
 import Friendship from "@/models/friendship.model";
-import { PopulatedFriendship } from "@/types/friend";
+import { PartialFriendship } from "@/types/friend";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function Page() {
+export default async function Page(props: PageProps<"/friends/all">) {
   const currentUser = await currentAuthUser();
 
-  if (!currentAuthUser) {
+  const searchParams: { q?: string } = await props.searchParams;
+
+  const q = searchParams?.q?.trim() || "";
+
+  const searchMatch = q
+    ? {
+        $or: [
+          { username: { $regex: q, $options: "i" } },
+          { name: { $regex: q, $options: "i" } },
+          { email: { $regex: q, $options: "i" } }
+        ]
+      }
+    : {};
+
+  if (!currentUser) {
     return redirect("/");
   }
 
   await dbConnect();
 
-  const friends = (await Friendship.find({
-    user: currentUser?.id
+  const rawData = await Friendship.find({
+    user: currentUser?.id,
+    status: "active"
   })
-    .populate("friend", "username email name _id avatar")
-    .populate("user", "username email name _id avatar")
-    .lean()) as unknown as PopulatedFriendship[];
+    .populate({
+      path: "friend",
+      match: searchMatch,
+      select: "username name email _id avatar"
+    })
+    .sort({ createdAt: -1 })
+    .lean();
+
+  const friends = rawData.filter(
+    r => r.friend
+  ) as unknown as PartialFriendship[];
 
   return (
     <section className="h-full">
-      <div className="">
-        <h2 className="text-muted-primary border-edge mb-2 border-b p-3.5 font-normal">
-          Friends - {friends.length}
-        </h2>
-        <div className="grid gap-2 px-2 md:grid-cols-2">
-          {friends.map(f => (
-            <FriendCard key={f._id.toString()} friend={f} />
-          ))}
-        </div>
-      </div>
+      {friends.length > 0 ? (
+        <>
+          <div className="border-edge border-b px-2 py-2">
+            <FriendSearch />
+          </div>
+          <h2 className="text-muted-primary border-edge mb-2 border-b p-2.5 font-normal">
+            All Friends - {friends.length}
+          </h2>
+          <div className="divide-edge border-edge divide-y border-t">
+            {friends.map(f => (
+              <FriendCard key={f._id.toString()} friend={JSON.stringify(f)} />
+            ))}
+          </div>
+        </>
+      ) : (
+        <EmptyFriend />
+      )}
     </section>
   );
 }
