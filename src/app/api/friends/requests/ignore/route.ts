@@ -52,6 +52,15 @@ export const PUT = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
+  if (dbFriendReq.receiver.toString() !== currentUser.id) {
+    return ApiResponse({
+      statusCode: STATUS_CODES.FORBIDDEN,
+      message:
+        "You are not authorized to perform this action on this friend request",
+      success: false
+    });
+  }
+
   const friendRequest = await FriendRequest.updateOne(
     {
       _id: friendRequestId
