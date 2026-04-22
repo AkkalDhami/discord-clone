@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { AddFriendButton } from "@/components/common/add-friend-button";
 import { cn } from "@/lib/utils";
 import { usePathname } from "next/navigation";
+import { NotificationBadge } from "@/components/common/notification-badge";
 
 export function DirectChatHeader() {
   const pathname = usePathname();
@@ -16,16 +17,19 @@ export function DirectChatHeader() {
           <IconUsers className="size-4" />
           Friends
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6">
           <Button
             variant={"ghost"}
             className={cn(
-              "text-muted-foreground hover:bg-secondary hover:text-accent-foreground px-3",
+              "text-muted-foreground hover:bg-secondary hover:text-accent-foreground relative px-3",
               pathname.includes("/friends/requests") &&
                 "bg-secondary text-accent-foreground"
             )}
             render={
-              <Link href={"/friends/requests"}>Friend Requests</Link>
+              <Link href={"/friends/requests"}>
+                Friend Requests
+                <NotificationBadge stat={1} />
+              </Link>
             }></Button>
           <Button
             variant={"ghost"}
