@@ -3,8 +3,24 @@ import { ChatHeader } from "@/components/layouts/chat-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
+import { IFile } from "@/interface";
+import { getOrCreateFriendConversation } from "@/lib/conversation";
+import { ConversationTypes } from "@/models/conversation.model";
 import Profile from "@/models/profile.model";
+import { PartialProfile } from "@/types/friend";
 import { redirect } from "next/navigation";
+
+export type ConversationType = {
+  _id: string;
+
+  participants: PartialProfile[];
+  admin: string;
+  type: ConversationTypes;
+
+  name?: string;
+  logo?: IFile;
+  lastMessage?: string;
+};
 
 export default async function Page(
   props: PageProps<"/conversations/[friendId]">
@@ -23,13 +39,25 @@ export default async function Page(
     _id: friendId
   });
 
-  console.log({
-    friend
-  });
+  // console.log({
+  //   friend
+  // });
 
   if (!friend) {
     return redirect("/friends/all");
   }
+
+  const conversation = await getOrCreateFriendConversation({
+    admin: currentUser.id,
+    participants: [currentUser.id, friend._id.toString()],
+    type: "direct"
+  });
+
+  if (!conversation) {
+    return redirect("/friends/all");
+  }
+
+  console.log({ conversation });
 
   return (
     <div className="border-edge h-full border-b pb-2.5">

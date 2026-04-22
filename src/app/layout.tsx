@@ -10,6 +10,7 @@ import { Toaster } from "react-hot-toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ModalProvider } from "@/components/providers/modal-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -50,10 +51,12 @@ export default function RootLayout({
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           <TooltipProvider>
             <SessionProvider>
-              <TanstackProvider>
-                <ModalProvider />
-                {children}
-              </TanstackProvider>
+              <NuqsAdapter>
+                <TanstackProvider>
+                  <ModalProvider />
+                  {children}
+                </TanstackProvider>
+              </NuqsAdapter>
             </SessionProvider>
           </TooltipProvider>
         </ThemeProvider>

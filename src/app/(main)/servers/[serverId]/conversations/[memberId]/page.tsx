@@ -1,10 +1,12 @@
 import { ChatInput } from "@/components/chat/chat-input";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import MemberRole from "@/enums/role.enum";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { Member as MemberIterface } from "@/interface";
 import { getOrCreateConversation } from "@/lib/conversation";
 import Member from "@/models/member.model";
+import Server from "@/models/server.model";
 import { Types } from "mongoose";
 import { redirect } from "next/navigation";
 
@@ -19,6 +21,19 @@ export default async function Page(
 
   const { params } = props;
   const { serverId, memberId } = await params;
+
+  const memberInDB = await Member.findOne({
+    _id: memberId,
+    serverId
+  });
+
+  if (!memberInDB) {
+    return redirect("/");
+  }
+
+  if (memberInDB?.role === MemberRole.ADMIN) {
+    return redirect(`/servers/${serverId}`);
+  }
 
   const [member] = (await Member.aggregate([
     {
