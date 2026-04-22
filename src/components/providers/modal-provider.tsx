@@ -23,6 +23,7 @@ import { AddFriendModal } from "@/components/modals/add-friend-modal";
 import { NewChatModal } from "@/components/modals/new-chat-modal";
 import { RemoveFriendModal } from "@/components/modals/remove-friend-modal";
 import { BlockFriendModal } from "@/components/modals/block-friend-modal";
+import { ProfileSidebar } from "@/components/layouts/profile-sidebar";
 
 export function ModalProvider() {
   return (
@@ -33,6 +34,8 @@ export function ModalProvider() {
       <DeleteServerModal />
 
       <FileUploadModal />
+
+      <ProfileSidebar />
 
       <InviteModal />
       <NewChatModal />

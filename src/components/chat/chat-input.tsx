@@ -28,6 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { IconMoodSmile, IconPlus, IconSend } from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
+import { cn } from "@/lib/utils";
 
 type ChatInputProps = {
   apiUrl: string;
@@ -37,7 +38,9 @@ type ChatInputProps = {
 };
 
 export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
-  const { open } = useModal();
+  const { open, isOpen, type: modalType } = useModal();
+
+  const isSidebarProfileOpen = isOpen && modalType === "profile-sidebar";
 
   const form = useForm<ChatInputType>({
     resolver: zodResolver(ChatInputSchema),
@@ -55,7 +58,7 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
   const isLoading = form.formState.isSubmitting;
 
   return (
-    <div className="px-3 py-2">
+    <div className={cn("px-3 py-2", isSidebarProfileOpen && "pr-82")}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
           <Controller
