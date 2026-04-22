@@ -24,6 +24,8 @@ export interface IConversation extends Document {
   logo?: IFile;
   lastMessage?: mongoose.Types.ObjectId;
 
+  deleted: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -57,6 +59,10 @@ const conversationSchema = new Schema<IConversation>(
       type: String,
       required: true
     },
+    deleted: {
+      type: Boolean,
+      default: false
+    },
     type: {
       type: String,
       enum: CONVERSATION_TYPES,
@@ -79,6 +85,8 @@ conversationSchema.index(
     partialFilterExpression: { type: "direct" }
   }
 );
+
+conversationSchema.index({ participants: 1, updatedAt: -1 });
 
 const Conversation: Model<IConversation> =
   mongoose.models.Conversation ||
