@@ -20,7 +20,8 @@ export type ModalType =
   | "file-upload"
   | "new-chat"
   | "add-friend"
-  | "remove-friend";
+  | "remove-friend"
+  | "block-friend";
 
 export interface ModalData {
   server?: Pick<
