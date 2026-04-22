@@ -21,9 +21,9 @@ export interface Profile {
   reActivateAvailableAt?: string;
 
   avatar?: {
-    public_id: string;
-    url: string;
-    size: number;
+    public_id?: string;
+    url?: string;
+    size?: number;
   };
 
   createdAt?: string;
@@ -100,6 +100,8 @@ export interface Friendship {
 
   user: PartialProfile;
   friend: PartialProfile;
+  blockedBy: PartialProfile;
+
   createdAt: string;
 }
 

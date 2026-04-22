@@ -17,7 +17,7 @@ export interface IConversation extends Document {
   participantsKey: string;
 
   participants: mongoose.Types.ObjectId[];
-  admin?: mongoose.Types.ObjectId;
+  admin: mongoose.Types.ObjectId;
   type: ConversationTypes;
 
   name?: string;
