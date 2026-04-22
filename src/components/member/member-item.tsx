@@ -19,14 +19,21 @@ export function MemberItem({
   const memberData = JSON.parse(member) as MemberInterface;
   return (
     <Link
-      href={`/servers/${memberData.serverId}/conversations/${memberData._id}`}
+      href={
+        userId === memberData.profileId
+          ? "#"
+          : `/servers/${memberData.serverId}/conversations/${memberData._id}`
+      }
       className={cn(
-        "hover:bg-secondary flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
+        "hover:bg-secondary relative flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
         "border-edge border-t last:border-b",
-        params.memberId === memberData._id && "bg-secondary",
-        userId === memberData.profileId &&
-          "pointer-events-none bg-indigo-500/10 dark:bg-indigo-500/20"
+        params.memberId === memberData._id &&
+          "bg-secondary pointer-events-none",
+        userId === memberData.profileId && "pointer-events-none"
       )}>
+      {userId === memberData.profileId && (
+        <div className="bg-primary-600 absolute top-2 right-3 size-2 rounded-full" />
+      )}
       <UserAvatar
         src={memberData.profile.avatar?.url}
         name={memberData.profile.name}
