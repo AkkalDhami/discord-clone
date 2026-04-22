@@ -10,12 +10,14 @@ import {
 import {
   IconChevronDown,
   IconDotsVertical,
-  IconUserPlus
+  IconUserPlus,
+  IconUsers
 } from "@tabler/icons-react";
 import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
 import { UserAvatar } from "../common/user-avatar";
 import { PartialProfile } from "@/types/friend";
 import { Server } from "@/interface";
+import { cn } from "@/lib/utils";
 
 type User = Omit<PartialProfile, "email"> & {
   memberSince: string;
@@ -171,12 +173,18 @@ function GroupSidebar({
   members
 }: Extract<ProfileSidebarProps, { type: "group" }>) {
   return (
-    <>
-      <Section title={`Members (${members.length})`}>
+    <aside>
+      <h2 className="border-edge text-muted-primary flex items-center gap-2 border-y py-3.5 pl-4 font-normal uppercase">
+        <IconUsers className="size-4" /> Members [{members?.length}]
+      </h2>
+      <div className="mt-2 flex flex-col">
         {members.map(m => (
           <div
             key={m._id}
-            className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
+            className={cn(
+              "hover:bg-secondary relative flex w-full items-center gap-2 px-3 py-3 transition",
+              "border-edge border-t last:border-b"
+            )}>
             <UserAvatar src={m.avatar?.url} name={m.name} />
             <div>
               <p>{m.name}</p>
@@ -184,24 +192,7 @@ function GroupSidebar({
             </div>
           </div>
         ))}
-      </Section>
-    </>
-  );
-}
-
-function Section({
-  title,
-  children
-}: {
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="space-y-2">
-      <p className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-        {title}
-      </p>
-      <div className="space-y-1">{children}</div>
-    </div>
+      </div>
+    </aside>
   );
 }
