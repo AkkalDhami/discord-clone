@@ -21,7 +21,8 @@ export async function DirectChatSidebar() {
   }
 
   const friends = (await Friendship.find({
-    user: currentUser?.id
+    user: currentUser?.id,
+    status: "active"
   })
     .populate("friend", "username email name _id avatar")
     .populate("user", "username email name _id avatar")
@@ -40,7 +41,7 @@ export async function DirectChatSidebar() {
       <DirectChatSidebarHeader />
       <DirectChatItemSection />
       <ScrollArea className={"h-[calc(100vh-120px)] pb-4"}>
-        <DirectChatSection friends={mappedFriends} />
+        <DirectChatSection friend={JSON.stringify(mappedFriends)} />
       </ScrollArea>
     </div>
   );
