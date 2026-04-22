@@ -41,10 +41,6 @@ export function NewChatModal() {
     [query, friends]
   );
 
-  console.log({
-    friends
-  });
-
   const isSelected = (id: string) => selected.some(u => u._id === id);
 
   const toggle = (friend: PartialProfile) => {
@@ -92,15 +88,14 @@ export function NewChatModal() {
           </p>
         </DialogHeader>
 
-        {/* Search + chips */}
         <div className="px-5 py-3">
           <div
-            className="border-border focus-within:ring-primary-500 flex cursor-text flex-wrap items-center gap-1.5 rounded-md border px-2.5 py-2 focus-within:ring-2"
+            className="border-edge focus-within:ring-primary-500 flex cursor-text flex-wrap items-center gap-1.5 rounded-md border px-2.5 py-2 focus-within:ring-2"
             onClick={() => inputRef.current?.focus()}>
             {selected.map(u => (
-              <span
+              <div
                 key={u._id}
-                className="bg-secondary flex items-center gap-1 rounded-md px-1 py-0.5 text-xs">
+                className="bg-secondary flex items-center gap-1 rounded-md border px-1 py-0.5 text-xs">
                 {u.name}
                 <button
                   type="button"
@@ -111,7 +106,7 @@ export function NewChatModal() {
                   className="text-muted-foreground hover:text-foreground cursor-pointer">
                   <IconX className="size-3" />
                 </button>
-              </span>
+              </div>
             ))}
             <input
               ref={inputRef}
@@ -148,12 +143,12 @@ export function NewChatModal() {
                     className={cn(
                       "flex size-4 items-center justify-center rounded border transition-colors",
                       sel
-                        ? "bg-foreground border-transparent"
+                        ? "bg-primary-500 border-transparent"
                         : "border-border bg-transparent"
                     )}>
                     {sel && (
                       <IconCheck
-                        className="text-background size-2.5"
+                        className="size-2.5 text-white"
                         strokeWidth={3}
                       />
                     )}
