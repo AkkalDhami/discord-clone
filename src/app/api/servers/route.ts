@@ -84,17 +84,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
         { session }
       );
 
-      const [videoCategory] = await Category.create(
-        [
-          {
-            name: "Video Channels",
-            serverId: serverDoc._id,
-            profileId: user.id
-          }
-        ],
-        { session }
-      );
-
       // 3. Create Channels
       await Channel.create(
         [
@@ -111,13 +100,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
             serverId: serverDoc._id,
             profileId: user.id,
             categoryId: voiceCategory._id
-          },
-          {
-            name: "General",
-            type: ChannelType.VIDEO,
-            serverId: serverDoc._id,
-            profileId: user.id,
-            categoryId: videoCategory._id
           }
         ],
         { session, ordered: true }
