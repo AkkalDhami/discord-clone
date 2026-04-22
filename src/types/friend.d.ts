@@ -1,34 +1,29 @@
 import { FriendRequest, IFile, Profile } from "@/interface";
 
 export type FriendWithSender = FriendRequest & {
-  sender: Pick<Profile, "_id" | "avatar" | "email" | "username" | "name">;
+  sender: PartialProfile;
 };
 
 export type FriendWithReciever = FriendRequest & {
-  receiver: Pick<Profile, "_id" | "avatar" | "email" | "username" | "name">;
+  receiver: PartialProfile;
 };
 
 export type FriendWithRecieverAndSender = FriendRequest & {
   receiver: Pick<Profile, "_id" | "avatar" | "email" | "username" | "name">;
-  sender: Pick<Profile, "_id" | "avatar" | "email" | "username" | "name">;
+  sender: PartialProfile;
 };
 
 export type PopulatedFriendship = {
   _id: string;
-  user: {
-    _id: string;
-    username: string;
-    email: string;
-    name: string;
-    avatar: IFile;
-  };
-  friend: {
-    _id: string;
-    username: string;
-    email: string;
-    name: string;
-    avatar: IFile;
-  };
+  user: PartialProfile;
+  friend: PartialProfile;
+  createdAt: Date;
+};
+
+export type PartialFriendship = {
+  _id: string;
+  blockedBy: string;
+  friend: PartialProfile;
   createdAt: Date;
 };
 
