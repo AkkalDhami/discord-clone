@@ -1,4 +1,4 @@
-import { FriendRequest, IFile, Profile } from "@/interface";
+import { FriendRequest, Profile } from "@/interface";
 
 export type FriendWithSender = FriendRequest & {
   sender: PartialProfile;

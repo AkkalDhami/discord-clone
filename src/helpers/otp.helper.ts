@@ -7,7 +7,7 @@ import {
   OTP_SPAM_LOCK_TIME
 } from "@/constants/auth-constants";
 import { STATUS_CODES } from "@/constants/status-codes";
-import { ApiResponse } from "@/interface/error";
+import { ApiResponse } from "@/interface/response";
 import { SendOtpType } from "@/types/auth";
 import { logger } from "@/utils/logger";
 import { generateOTP } from "./token.helper";
