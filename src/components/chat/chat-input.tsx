@@ -34,7 +34,7 @@ type ChatInputProps = {
   apiUrl: string;
   query: Record<string, unknown>;
   name: string;
-  type: "channel" | "member";
+  type: "channel" | "member" | "group";
 };
 
 export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
@@ -72,7 +72,7 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
                     disabled={isLoading}
                     id="chat-input"
                     className="no-scrollbar h-10 resize-none"
-                    placeholder={`Message  ${type === "channel" ? `#${name}` : `@${name}`}`}
+                    placeholder={`Message  ${type === "channel" ? `#${name}` : type === "group" ? `${name}` : `@${name}`}`}
                   />
                   <InputGroupAddon>
                     <IconPlus
