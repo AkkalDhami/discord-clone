@@ -8,6 +8,7 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { useModal } from "@/hooks/use-modal-store";
 import { UserAvatar } from "@/components/common/user-avatar";
@@ -15,19 +16,27 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { IconCheck, IconX } from "@tabler/icons-react";
 import { PartialProfile } from "@/types/friend";
+import { ConversationType } from "@/validators/conversation";
+import toast from "react-hot-toast";
+import { useConversation } from "@/hooks/use-conversaton";
+import { useRouter } from "next/navigation";
 
 const MAX = 10;
 
 export function NewChatModal() {
   const [query, setQuery] = useState("");
+  const router = useRouter();
+
   const [selected, setSelected] = useState<PartialProfile[]>([]);
   const [groupName, setGroupName] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const { createConversation, isConversationCreating } = useConversation();
+
   const { isOpen, type, close, data } = useModal();
   const isModalOpen = isOpen && type === "new-chat";
 
-  const { friends } = data;
+  const { friends, user } = data;
 
   const isGroup = selected.length > 1;
 
@@ -66,13 +75,26 @@ export function NewChatModal() {
     reset();
   };
 
-  const handleSubmit = () => {
-    const payload = {
-      type: isGroup ? "GROUP" : "DM",
-      members: selected.map(u => u._id),
-      groupName: isGroup ? groupName || null : null
+  const handleSubmit = async () => {
+    const payload: ConversationType = {
+      type: isGroup ? "group" : "direct",
+      participants: selected.map(u => u._id),
+      name: groupName,
+      admin: user?._id as string
     };
-    console.log(payload);
+    try {
+      const res = await createConversation(payload);
+      if (res.success) {
+        toast.success(res.message || "Conversation removed successfully");
+        router.refresh();
+        handleClose();
+      } else {
+        toast.error(res.message || "Failed to create conversation");
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Failed to create conversation");
+    }
   };
 
   return (
@@ -181,7 +203,15 @@ export function NewChatModal() {
             variant={"primary"}
             disabled={selected.length === 0}
             onClick={handleSubmit}>
-            {isGroup ? "Create group chat" : "Create chat"}
+            {isConversationCreating ? (
+              <>
+                <Spinner /> Creating...
+              </>
+            ) : isGroup ? (
+              "Create group chat"
+            ) : (
+              "Create chat"
+            )}
           </Button>
         </div>
       </DialogContent>
