@@ -23,7 +23,9 @@ import { AddFriendModal } from "@/components/modals/add-friend-modal";
 import { NewChatModal } from "@/components/modals/new-chat-modal";
 import { RemoveFriendModal } from "@/components/modals/remove-friend-modal";
 import { BlockFriendModal } from "@/components/modals/block-friend-modal";
+import { EditGroupModal } from "@/components/modals/edit-group-modal";
 import { ProfileSidebar } from "@/components/layouts/profile-sidebar";
+import { AddGroupMembersModal } from "@/components/modals/add-group-members-modal";
 
 export function ModalProvider() {
   return (
@@ -39,6 +41,8 @@ export function ModalProvider() {
 
       <InviteModal />
       <NewChatModal />
+      <EditGroupModal />
+      <AddGroupMembersModal />
 
       <AddFriendModal />
       <RemoveFriendModal />
