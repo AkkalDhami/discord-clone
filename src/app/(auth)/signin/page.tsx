@@ -34,11 +34,14 @@ import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { OAuthSignin } from "@/components/auth/oauth-signin";
+import { useUser } from "@/hooks/use-user-store";
 
 export default function Login(): React.JSX.Element {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { login, loginLoading } = useAuth();
   const router = useRouter();
+
+  const { setUser } = useUser();
 
   const form = useForm<SigninFormData>({
     resolver: zodResolver(SigninSchema),
@@ -54,8 +57,16 @@ export default function Login(): React.JSX.Element {
   async function onSubmit(values: SigninFormData) {
     try {
       const res = await login(values);
+
       if (res.success) {
         toast.success(res.message || "Login successful");
+        setUser({
+          id: res.data.user._id,
+          name: res.data.user.name,
+          username: res.data.user.username,
+          email: res.data.user.email,
+          avatar: res.data.user.avatar
+        });
         router.push("/");
       } else {
         toast.error(res.message || "Something went wrong.");

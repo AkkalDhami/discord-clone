@@ -1,5 +1,4 @@
 import { DirectChatSidebar } from "@/components/layouts/direct-chat-sidebar";
-import { ProfileSidebar } from "@/components/layouts/profile-sidebar";
 
 import { MobileDirectChatSidebar } from "@/components/layouts/mobile-direct-chat-sidebar";
 
