@@ -96,10 +96,13 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     statusCode: STATUS_CODES.CREATED,
     message: "User registered successfully",
     data: {
-      _id: newUser._id,
-      name: newUser.name,
-      email: newUser.email,
-      username: newUser.username
+      user: {
+        _id: newUser._id,
+        name: newUser.name,
+        email: newUser.email,
+        username: newUser.username,
+        avatar: newUser.avatar
+      }
     }
   });
 });

@@ -134,9 +134,13 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     statusCode: STATUS_CODES.OK,
     message: "User signed in successfully",
     data: {
-      _id: existingUser._id,
-      name: existingUser.name,
-      email: existingUser.email
+      user: {
+        _id: existingUser._id,
+        name: existingUser.name,
+        email: existingUser.email,
+        username: existingUser.username,
+        avatar: existingUser.avatar
+      }
     }
   });
 });
