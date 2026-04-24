@@ -4,7 +4,7 @@ import {
   CreateChannelSchemaType,
   EditChannelSchemaType
 } from "@/validators/channel";
-import { ApiResponse } from "@/interface/error";
+import { ApiResponse } from "@/interface/response";
 
 export function useChannel() {
   const queryClient = useQueryClient();

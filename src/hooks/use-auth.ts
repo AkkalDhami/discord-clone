@@ -1,23 +1,31 @@
 "use client";
 
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as authApi from "@/lib/api/auth";
 import {
   ForgotPasswordFormData,
   ResetPasswordFormData,
+  SigninFormData,
   VerifyResetOtpFormData
 } from "@/validators/auth";
-import { ApiResponse } from "@/interface/error";
+import {
+  ApiResponse,
+  GetMeResponse,
+  SigninResponse
+} from "@/interface/response";
 
 export function useAuth() {
   const queryClient = useQueryClient();
 
-  // const userQuery = useQuery({
-  //   queryKey: ["auth", "me"],
-  //   queryFn: authApi.getMe,
-  //   retry: false,
-  //   staleTime: 1000 * 60 * 5 // 5 min
-  // });
+  const userQuery = useQuery({
+    queryKey: ["auth", "me"],
+    queryFn: async () => {
+      const res = await authApi.getMe();
+      return res as GetMeResponse;
+    },
+    retry: false,
+    staleTime: 1000 * 60 * 5 // 5 min
+  });
 
   const signupMutation = useMutation({
     mutationFn: authApi.signup,
@@ -27,7 +35,10 @@ export function useAuth() {
   });
 
   const loginMutation = useMutation({
-    mutationFn: authApi.login,
+    mutationFn: async (data: SigninFormData) => {
+      const res = await authApi.login(data);
+      return res as SigninResponse;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     }
@@ -62,9 +73,9 @@ export function useAuth() {
   });
 
   return {
-    // user: userQuery.data?.data || null,
-    // isLoading: userQuery.isLoading,
-    // isAuthenticated: !!userQuery.data,
+    user: userQuery.data?.data?.user || null,
+    isUserLoading: userQuery.isLoading,
+    isAuthenticated: !!userQuery.data?.data?.user,
 
     login: loginMutation.mutateAsync,
 

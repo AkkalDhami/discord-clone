@@ -1,7 +1,7 @@
  
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as friendApi from "@/lib/api/friend";
-import { ApiResponse } from "@/interface/error";
+import { ApiResponse } from "@/interface/response";
 import {
   SendFriendRequestType,
   UpdateFriendRequestStatusType

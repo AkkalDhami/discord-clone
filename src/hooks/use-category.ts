@@ -4,7 +4,7 @@ import {
   CreateCategorySchemaType,
   EditCategorySchemaType
 } from "@/validators/category";
-import { ApiResponse } from "@/interface/error";
+import { ApiResponse } from "@/interface/response";
 
 export function useCategory() {
   const queryClient = useQueryClient();
