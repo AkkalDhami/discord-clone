@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 
 export function DirectChatAction() {
   const pathname = usePathname();
-
   return (
     <ActionTooltip label="Direct Chats" side="right" align="center">
       <Link href={"/friends"} className="group relative cursor-pointer">

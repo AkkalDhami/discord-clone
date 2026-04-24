@@ -26,8 +26,9 @@ import { Controller, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 import { SignupFormData, SignupSchema } from "@/validators/auth";
-import { Error } from "@/interface/error";
+import { Error } from "@/interface/response";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
+import { useUser } from "@/hooks/use-user-store";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { OAuthSignin } from "@/components/auth/oauth-signin";
@@ -35,12 +36,20 @@ import { OAuthSignin } from "@/components/auth/oauth-signin";
 export function SignupForm() {
   const { signup, signupLoading } = useAuth();
   const router = useRouter();
+  const { setUser } = useUser();
 
   async function onSubmit(values: SignupFormData) {
     try {
       const res = await signup(values);
       if (res.success) {
         toast.success(res.message || "Singup successful");
+        setUser({
+          id: res.user._id,
+          name: res.user.name,
+          username: res.user.username,
+          email: res.user.email,
+          avatar: res.user.avatar
+        });
         router.push("/signin");
       } else {
         toast.error(res.message || "Something went wrong.");
