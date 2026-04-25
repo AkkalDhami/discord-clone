@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as memberApi from "@/lib/api/member";
 import MemberRole from "@/enums/role.enum";
-import { ApiResponse } from "@/interface/error";
+import { ApiResponse } from "@/interface/response";
 
 export function useMember() {
   const queryClient = useQueryClient();
@@ -24,7 +24,7 @@ export function useMember() {
       return res as ApiResponse;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["server", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["members", "me"] });
     }
   });
 
@@ -40,7 +40,7 @@ export function useMember() {
       return res as ApiResponse;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["server", "me"] });
+      queryClient.invalidateQueries({ queryKey: ["members", "me"] });
     }
   });
 
