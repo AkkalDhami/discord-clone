@@ -62,8 +62,8 @@ export const PATCH = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const isParticipant = conversation.participants.some(participant =>
-    participant.toString() === user.id
+  const isParticipant = conversation.participants.some(
+    participant => participant.toString() === user.id
   );
 
   if (!isParticipant) {

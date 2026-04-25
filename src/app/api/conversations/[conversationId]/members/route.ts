@@ -7,7 +7,8 @@ import Profile from "@/models/profile.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 import {
-  ConversationAddMembersSchema
+  ConversationAddMembersSchema,
+  LeaveConversationSchema
 } from "@/validators/conversation";
 import { validateObjectId } from "@/utils/validate-objid";
 import { Types } from "mongoose";
@@ -40,7 +41,10 @@ export const PATCH = AsyncHandler(
     }
 
     const body = await req.json();
-    const validationResult = validateRequest(ConversationAddMembersSchema, body);
+    const validationResult = validateRequest(
+      ConversationAddMembersSchema,
+      body
+    );
 
     if (!validationResult.success) {
       return ApiResponse({
@@ -79,8 +83,8 @@ export const PATCH = AsyncHandler(
       });
     }
 
-    const isParticipant = conversation.participants.some(participant =>
-      participant.toString() === user.id
+    const isParticipant = conversation.participants.some(
+      participant => participant.toString() === user.id
     );
 
     if (!isParticipant) {
@@ -134,6 +138,95 @@ export const PATCH = AsyncHandler(
       success: true,
       data: updatedConversation,
       message: "Members added successfully"
+    });
+  }
+);
+
+export const PUT = AsyncHandler(
+  async (
+    req: NextRequest,
+    { params }: { params: Promise<{ conversationId: string }> }
+  ) => {
+    const body = await req.json();
+    const user = await currentAuthUser();
+
+    const { conversationId } = await params;
+
+    if (!user) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.UNAUTHORIZED,
+        message: "Unauthorized",
+        success: false
+      });
+    }
+
+    const validationResult = validateRequest(LeaveConversationSchema, body);
+
+    if (!validationResult.success) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Invalid request body",
+        success: false
+      });
+    }
+
+    const { participants } = validationResult.data;
+
+    if (!validateObjectId(conversationId)) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Invalid conversation id",
+        success: false
+      });
+    }
+
+    const conversation = await Conversation.findById(conversationId);
+
+    if (!conversation) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.NOT_FOUND,
+        message: "Conversation not found",
+        success: false
+      });
+    }
+
+    if (conversation.type !== "group") {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Only group conversations can be left",
+        success: false
+      });
+    }
+
+    const isParticipant = conversation.participants.some(
+      participant => participant.toString() === user.id
+    );
+
+    if (!isParticipant) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.UNAUTHORIZED,
+        message: "You are not authorized to leave this group",
+        success: false
+      });
+    }
+
+    const updatedConversation = await Conversation.findByIdAndUpdate(
+      conversationId,
+      {
+        $pull: {
+          participants: { $in: participants.map(id => new Types.ObjectId(id)) }
+        }
+      },
+      {
+        new: true
+      }
+    );
+
+    return ApiResponse({
+      statusCode: STATUS_CODES.OK,
+      success: true,
+      data: updatedConversation,
+      message: "Group conversation left successfully"
     });
   }
 );
