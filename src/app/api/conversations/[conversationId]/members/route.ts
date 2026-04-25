@@ -41,8 +41,11 @@ export const PATCH = AsyncHandler(
     }
 
     const body = await req.json();
+
+    console.log({ body });
+
     const validationResult = validateRequest(
-      ConversationAddMembersSchema,
+      ConversationAddMembersSchema.pick({ participants: true }),
       body
     );
 
@@ -160,6 +163,8 @@ export const PUT = AsyncHandler(
       });
     }
 
+    console.log({ body });
+
     const validationResult = validateRequest(LeaveConversationSchema, body);
 
     if (!validationResult.success) {
@@ -227,6 +232,109 @@ export const PUT = AsyncHandler(
       success: true,
       data: updatedConversation,
       message: "Group conversation left successfully"
+    });
+  }
+);
+
+export const DELETE = AsyncHandler(
+  async (
+    req: NextRequest,
+    { params }: { params: Promise<{ conversationId: string }> }
+  ) => {
+    await dbConnect();
+
+    const { conversationId } = await params;
+    const user = await currentAuthUser();
+
+    if (!user) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.UNAUTHORIZED,
+        message: "Unauthorized",
+        success: false
+      });
+    }
+
+    if (!validateObjectId(conversationId)) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Invalid conversation id",
+        success: false
+      });
+    }
+
+    const body = await req.json();
+    const validationResult = validateRequest(LeaveConversationSchema, body);
+
+    if (!validationResult.success) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Invalid request body",
+        success: false
+      });
+    }
+
+    const { participants } = validationResult.data;
+    const invalidIds = participants.filter(id => !validateObjectId(id));
+
+    if (invalidIds.length > 0) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "One or more participant ids are invalid",
+        success: false
+      });
+    }
+
+    const conversation = await Conversation.findById(conversationId);
+
+    if (!conversation) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.NOT_FOUND,
+        message: "Conversation not found",
+        success: false
+      });
+    }
+
+    if (conversation.type !== "group") {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Only group conversations can remove members",
+        success: false
+      });
+    }
+
+    if (conversation.admin.toString() !== user.id) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.UNAUTHORIZED,
+        message: "Only the group admin can remove members",
+        success: false
+      });
+    }
+
+    if (participants.includes(conversation.admin.toString())) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "Group admin cannot be removed",
+        success: false
+      });
+    }
+
+    const updatedConversation = await Conversation.findByIdAndUpdate(
+      conversationId,
+      {
+        $pull: {
+          participants: { $in: participants.map(id => new Types.ObjectId(id)) }
+        }
+      },
+      {
+        new: true
+      }
+    );
+
+    return ApiResponse({
+      statusCode: STATUS_CODES.OK,
+      success: true,
+      data: updatedConversation,
+      message: "Member removed successfully"
     });
   }
 );
