@@ -1,5 +1,7 @@
 import { InitialModal } from "@/components/modals/initial-modal";
 import { currentAuthUser } from "@/helpers/auth.helper";
+import Member from "@/models/member.model";
+import Server from "@/models/server.model";
 // import Member from "@/models/member.model";
 // import Server from "@/models/server.model";
 import { redirect } from "next/navigation";
@@ -9,21 +11,21 @@ export default async function Page() {
   if (!profile) {
     return redirect("/signin");
   }
-  // const member = await Member.findOne({
-  //   profileId: profile.id
-  // });
+  const member = await Member.findOne({
+    profileId: profile.id
+  });
 
-  // const server = await Server.findOne({
-  //   _id: member?.serverId
-  // });
+  const server = await Server.findOne({
+    _id: member?.serverId
+  });
 
-  // if (server && profile) {
-  //   return redirect(`/servers/${server._id}`);
-  // }
-
-  if(profile){
-    return redirect("/friends")
+  if (server && profile) {
+    return redirect(`/servers/${server._id}`);
   }
+
+  // if (profile) {
+  //   return redirect("/friends");
+  // }
 
   return (
     <div className="flex h-screen items-center justify-center">

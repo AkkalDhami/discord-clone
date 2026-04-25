@@ -86,8 +86,9 @@ export function NewChatModal() {
       const res = await createConversation(payload);
       if (res.success) {
         toast.success(res.message || "Conversation removed successfully");
-        router.refresh();
         handleClose();
+        router.push(`/conversations/${res?.data?._id}`);
+        router.refresh();
       } else {
         toast.error(res.message || "Failed to create conversation");
       }

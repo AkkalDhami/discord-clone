@@ -12,12 +12,12 @@ import { ModalProvider } from "@/components/providers/modal-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 
-const geistSans = Geist({
+const sans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"]
 });
 
-const geistMono = Geist_Mono({
+const mono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"]
 });
@@ -40,7 +40,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} font-sans ${geistMono.variable} h-full antialiased`}>
+      className={`${sans.variable} font-sans ${mono.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <ThemeProvider
           attribute="class"
@@ -50,14 +50,14 @@ export default function RootLayout({
           <Toaster position="top-center" reverseOrder={false} gutter={8} />
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           <TooltipProvider>
-            <SessionProvider>
-              <NuqsAdapter>
-                <TanstackProvider>
+            <TanstackProvider>
+              <SessionProvider>
+                <NuqsAdapter>
                   <ModalProvider />
                   {children}
-                </TanstackProvider>
-              </NuqsAdapter>
-            </SessionProvider>
+                </NuqsAdapter>
+              </SessionProvider>
+            </TanstackProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>

@@ -59,7 +59,7 @@ export function InitialModal() {
       <DialogTrigger>Open</DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Customize your server</DialogTitle>
+          <DialogTitle>Create Your Server</DialogTitle>
           <p className="text-muted-foreground">
             Give your server a personality with a name and an image. You can
             always change them later.

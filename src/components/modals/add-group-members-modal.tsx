@@ -6,10 +6,20 @@ import { useQuery } from "@tanstack/react-query";
 import { useForm, useWatch } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import { Field, FieldGroup, FieldLabel, FieldError } from "@/components/ui/field";
+import {
+  Field,
+  FieldGroup,
+  FieldLabel,
+  FieldError
+} from "@/components/ui/field";
 import { useModal } from "@/hooks/use-modal-store";
 import { useConversation } from "@/hooks/use-conversaton";
 import { fetchWithAuth } from "@/lib/api/auth";
@@ -18,17 +28,26 @@ import {
   type ConversationAddMembersType
 } from "@/validators/conversation";
 import { PartialProfile } from "@/types/friend";
+import { IconCheck } from "@tabler/icons-react";
+import { cn } from "@/lib/utils";
+import { UserAvatar } from "@/components/common/user-avatar";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useRouter } from "next/navigation";
 
 export function AddGroupMembersModal() {
   const { isOpen, type, close, data } = useModal();
   const isModalOpen = isOpen && type === "add-group-members";
-  const conversation = data?.conversation as {
-    _id: string;
-    name?: string;
-    participants?: PartialProfile[];
-  } | undefined;
+  const conversation = data?.conversation as
+    | {
+        _id: string;
+        name?: string;
+        participants?: PartialProfile[];
+      }
+    | undefined;
 
   const [query, setQuery] = useState("");
+
+  const router = useRouter();
 
   const form = useForm<ConversationAddMembersType>({
     resolver: zodResolver(ConversationAddMembersSchema),
@@ -58,25 +77,26 @@ export function AddGroupMembersModal() {
   );
 
   const friendProfiles = useMemo<PartialProfile[]>(() => {
-    return (friendsQuery.data?.data ?? [])
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      .map((record: any) => record.friend)
-      .filter(Boolean);
+    return (
+      (friendsQuery.data?.data ?? [])
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        .map((record: any) => record.friend)
+        .filter(Boolean)
+    );
   }, [friendsQuery.data]);
 
   const availableFriends = useMemo(
     () =>
-      friendProfiles.filter(
-        friend => !existingMemberIds.includes(friend._id)
-      ),
+      friendProfiles.filter(friend => !existingMemberIds.includes(friend._id)),
     [friendProfiles, existingMemberIds]
   );
 
   const filteredFriends = useMemo(
     () =>
-      availableFriends.filter(friend =>
-        friend.name.toLowerCase().includes(query.toLowerCase()) ||
-        friend.username.toLowerCase().includes(query.toLowerCase())
+      availableFriends.filter(
+        friend =>
+          friend.name.toLowerCase().includes(query.toLowerCase()) ||
+          friend.username.toLowerCase().includes(query.toLowerCase())
       ),
     [availableFriends, query]
   );
@@ -124,6 +144,7 @@ export function AddGroupMembersModal() {
       if (response.success) {
         toast.success(response.message || "Members added successfully");
         close();
+        router.refresh();
         return;
       }
 
@@ -139,7 +160,7 @@ export function AddGroupMembersModal() {
       <DialogContent className="text-accent-foreground w-full max-w-2xl gap-0 p-0">
         <DialogHeader className="px-5 py-4">
           <DialogTitle className="text-base font-medium">
-            Add members to group
+            Add Friends to group
           </DialogTitle>
           <p className="text-muted-foreground text-sm">
             Pick friends to add to {conversation?.name ?? "this group"}.
@@ -148,8 +169,7 @@ export function AddGroupMembersModal() {
 
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 px-5 pb-5"
-        >
+          className="space-y-4 px-5 pb-5">
           <FieldGroup>
             <Field>
               <FieldLabel>Search friends</FieldLabel>
@@ -160,15 +180,15 @@ export function AddGroupMembersModal() {
               />
             </Field>
 
-            <Field data-invalid={!!form.formState.errors.participants}>
+            <Field>
               <FieldLabel>Select members</FieldLabel>
-              <div className="grid gap-2">
+              <ScrollArea className="h-50 space-y-2">
                 {friendsQuery.isLoading ? (
-                  <div className="rounded-md border border-border p-4 text-sm text-muted-foreground">
+                  <div className="border-border text-muted-foreground rounded-md border p-4 text-sm">
                     Loading friends...
                   </div>
                 ) : filteredFriends.length === 0 ? (
-                  <div className="rounded-md border border-border p-4 text-sm text-muted-foreground">
+                  <div className="border-border text-muted-foreground rounded-md border p-4 text-sm">
                     {availableFriends.length === 0
                       ? "No friends available to add."
                       : "No matching friends found."}
@@ -181,30 +201,43 @@ export function AddGroupMembersModal() {
                         key={friend._id}
                         type="button"
                         onClick={() => toggleParticipant(friend._id)}
-                        className={`flex w-full items-center justify-between rounded-md border p-3 text-left transition hover:border-primary/80 ${
-                          isSelected
-                            ? "border-primary bg-primary/5"
-                            : "border-border bg-background"
-                        }`}
-                      >
-                        <div>
-                          <p className="text-sm font-medium">{friend.name}</p>
-                          <p className="text-muted-foreground text-xs">
-                            @{friend.username}
-                          </p>
+                        className={`flex cursor-pointer mt-2 w-full items-center justify-between rounded-md px-3 py-2 text-left transition ${
+                          isSelected ? "bg-secondary" : "hover:bg-secondary/60"
+                        }`}>
+                        <div className="flex items-center gap-2.5">
+                          <UserAvatar
+                            name={friend.name}
+                            src={friend.avatar?.url}
+                          />
+                          <div>
+                            <p className="text-sm">{friend.name}</p>
+                            <p className="text-muted-foreground text-xs">
+                              @{friend.username}
+                            </p>
+                          </div>
                         </div>
-                        <div className="text-xs font-medium text-primary">
-                          {isSelected ? "Selected" : "Add"}
+
+                        <div
+                          className={cn(
+                            "flex size-4 items-center justify-center rounded border transition-colors",
+                            isSelected
+                              ? "bg-primary-500 border-transparent"
+                              : "border-border bg-transparent"
+                          )}>
+                          {isSelected && (
+                            <IconCheck
+                              className="size-2.5 text-white"
+                              strokeWidth={3}
+                            />
+                          )}
                         </div>
                       </button>
                     );
                   })
                 )}
-              </div>
+              </ScrollArea>
               {form.formState.errors.participants && (
-                <FieldError
-                  errors={[form.formState.errors.participants]}
-                />
+                <FieldError errors={[form.formState.errors.participants]} />
               )}
             </Field>
           </FieldGroup>
@@ -213,13 +246,16 @@ export function AddGroupMembersModal() {
             <Button type="button" variant="outline" onClick={handleClose}>
               Cancel
             </Button>
-            <Button type="submit" variant="primary" disabled={isAddingGroupMembers}>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={isAddingGroupMembers}>
               {isAddingGroupMembers ? (
                 <>
                   <Spinner /> Adding...
                 </>
               ) : (
-                "Add members"
+                "Add"
               )}
             </Button>
           </div>

@@ -61,15 +61,18 @@ export default function Login(): React.JSX.Element {
       if (res.success) {
         toast.success(res.message || "Login successful");
         setUser({
-          id: res.data.user._id,
+          id: res.data.user.id,
           name: res.data.user.name,
           username: res.data.user.username,
           email: res.data.user.email,
           avatar: res.data.user.avatar
         });
         router.push("/");
+        form.reset();
+        return;
       } else {
         toast.error(res.message || "Something went wrong.");
+        return;
       }
     } catch (e) {
       const error = e as { data?: { message?: string } };
