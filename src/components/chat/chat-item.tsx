@@ -32,7 +32,7 @@ export function GroupChatItem({ c }: { c: PopulatedConversation }) {
         <div className="relative flex items-center gap-2">
           <GroupChatLogo conversation={c} />
 
-          <div className="ml-0">
+          <div className="ml-2">
             <h3 className="line-clamp-1 text-sm font-medium">{displayName}</h3>
             <p className="text-muted-foreground text-xs">
               {participants.length + 1} Members
@@ -67,16 +67,17 @@ export function GroupChatLogo({
       className={cn("size-8", className)}
     />
   ) : (
-    <div className="relative flex gap-0">
-      {conversation?.participants?.slice(0, 2).map((participant, index) => (
+    <div className="relative h-8 w-7">
+      {conversation?.participants?.slice(0, 3).map((participant, index) => (
         <UserAvatar
           key={participant._id}
           src={participant?.avatar?.url}
           name={participant?.name}
           className={cn(
-            "border-background size-7 border-2",
-            index === 0 && "z-10 -translate-y-2",
-            index === 1 && "z-20 -translate-x-3 translate-y-2",
+            "border-background absolute size-7 border-2",
+            index === 0 && "top-2 -left-1 z-10",
+            index === 1 && "-top-1 left-3 z-20",
+            index === 2 && "top-3 left-3 z-30",
             className
           )}
         />

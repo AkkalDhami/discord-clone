@@ -40,7 +40,7 @@ export function ChatHeaderAction({
             <IconVideo className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
           </ActionTooltip>
           <ActionTooltip
-            label={type === "group" ? "Add members" : "Add Friends to DM"}
+            label={type === "group" ? "Invite Friends" : "Add Friends to DM"}
             side="bottom">
             <IconUsersPlus
               onClick={() =>

@@ -38,27 +38,6 @@ export function SignupForm() {
   const router = useRouter();
   const { setUser } = useUser();
 
-  async function onSubmit(values: SignupFormData) {
-    try {
-      const res = await signup(values);
-      if (res.success) {
-        toast.success(res.message || "Singup successful");
-        setUser({
-          id: res.user._id,
-          name: res.user.name,
-          username: res.user.username,
-          email: res.user.email,
-          avatar: res.user.avatar
-        });
-        router.push("/signin");
-      } else {
-        toast.error(res.message || "Something went wrong.");
-      }
-    } catch (error: unknown) {
-      toast.error((error as Error)?.data?.message || "Something went wrong.");
-    }
-  }
-
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
     useState<boolean>(false);
@@ -73,6 +52,35 @@ export function SignupForm() {
       username: ""
     }
   });
+
+  async function onSubmit(values: SignupFormData) {
+    try {
+      const res = await signup(values);
+
+      if (res.success) {
+        toast.success(res.message || "Singup successful");
+        setUser({
+          id: res.user?.id,
+          name: res.user?.name,
+          username: res?.user.username,
+          email: res.user?.email,
+          avatar: res.user?.avatar
+        });
+        form.reset();
+
+        router.push("/signin");
+        return;
+      } else {
+        toast.error(res.message || "Something went wrong.");
+        return;
+      }
+    } catch (error: unknown) {
+
+      console.log({ error });
+
+      toast.error((error as Error)?.data?.message || "Something went wrong.");
+    }
+  }
 
   const isLoading = form.formState.isSubmitting || signupLoading;
 
