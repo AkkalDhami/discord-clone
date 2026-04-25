@@ -1,4 +1,5 @@
 import { ChatInput } from "@/components/chat/chat-input";
+import { GroupChatWelcome } from "@/components/chat/group-chat-welcome";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import dbConnect from "@/configs/db";
@@ -200,10 +201,32 @@ export default async function Page(
               username: u.username,
               email: u.email,
               avatar: u.avatar
-            }))
+            })),
+          adminId:
+            !friend && groupConversation && groupConversation.admin.toString()
         }}
       />
-      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.1rem)]"></ScrollArea>
+      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.1rem)]">
+        <GroupChatWelcome
+          conversation={{
+            _id: groupConversation?._id?.toString() as string,
+            name: groupConversation?.name,
+            logo: groupConversation?.logo,
+            participants: groupUsers?.map(p => ({
+              _id: p._id.toString(),
+              email: p.email,
+              name: p.name,
+              username: p.username,
+              avatar: {
+                ...p.avatar
+              }
+            })) as unknown as PartialProfile[],
+
+            admin: groupConversation?.admin.toString() as string,
+            type: groupConversation?.type as ConversationTypes
+          }}
+        />
+      </ScrollArea>
       <ChatInput
         apiUrl={`/api/messages`}
         query={{

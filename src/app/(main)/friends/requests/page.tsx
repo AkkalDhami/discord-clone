@@ -25,7 +25,7 @@ export default async function Page(props: PageProps<"/friends/requests">) {
   await dbConnect();
 
   if (!currentUser) {
-    return redirect("/friends");
+    return redirect("/signin");
   }
 
   const searchParams: { q?: string } = await props.searchParams;

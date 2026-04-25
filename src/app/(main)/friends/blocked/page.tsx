@@ -15,6 +15,10 @@ export default async function Page(props: PageProps<"/friends/blocked">) {
 
   const searchParams: { q?: string } = await props.searchParams;
 
+  if (!currentUser) {
+    return redirect("/signin");
+  }
+  
   const q = searchParams?.q?.trim() || "";
 
   const searchMatch = q
@@ -27,9 +31,6 @@ export default async function Page(props: PageProps<"/friends/blocked">) {
       }
     : {};
 
-  if (!currentUser) {
-    return redirect("/friends");
-  }
 
   await dbConnect();
 
