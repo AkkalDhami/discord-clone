@@ -39,7 +39,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
       <DropdownMenu>
         <DropdownMenuTrigger
           className={
-            "mx-2 flex-1 justify-between border-none bg-transparent hover:bg-neutral-200 focus:outline-none dark:bg-transparent"
+            "bg-secondary/20 mx-2 flex-1 justify-between border-none hover:bg-neutral-200 focus:outline-none dark:bg-transparent"
           }
           render={
             <Button variant="ghost" className={"flex items-center gap-1"}>

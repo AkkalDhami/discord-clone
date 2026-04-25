@@ -19,7 +19,7 @@ export async function DirectChatSidebar() {
   const currentUser = await currentAuthUser();
 
   if (!currentAuthUser) {
-    return redirect("/");
+    return redirect("/signin");
   }
 
   const friends = (await Friendship.find({
@@ -80,10 +80,10 @@ export async function DirectChatSidebar() {
   // console.log({ conversations });
 
   return (
-    <div className="text-primary border-edge bg-background mb-4 flex h-full w-full flex-col border-b pt-12.75 pb-4 md:pt-0">
+    <div className="text-primary bg-background flex h-full w-full flex-col pt-12.75 md:pt-0">
       <DirectChatSidebarHeader />
       <DirectChatItemSection />
-      <ScrollArea className={"h-[calc(100vh-120px)] pb-4"}>
+      <ScrollArea className={"h-[calc(100vh-120px)] border-b pb-4 mb-4 border-edge"}>
         <DirectChatSection
           friend={JSON.stringify(mappedFriends)}
           conversations={JSON.stringify(conversations)}

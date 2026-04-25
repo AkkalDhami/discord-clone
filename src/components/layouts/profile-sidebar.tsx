@@ -280,7 +280,8 @@ function DirectProfileSidebar({
 }
 
 function GroupSidebar({
-  members
+  members,
+  adminId
 }: Extract<SidebarProfileData, { type: "group" }>) {
   const { user } = useUser();
 
@@ -319,6 +320,9 @@ function GroupSidebar({
               <h3 className="flex items-center gap-2 font-normal">
                 {m.name}
                 {m._id === user?.id && (
+                  <div className="bg-primary-600 absolute top-2 right-3 size-2 rounded-full" />
+                )}
+                {m._id === adminId && (
                   <IconCrownFilled className="size-4 text-orange-500" />
                 )}
               </h3>

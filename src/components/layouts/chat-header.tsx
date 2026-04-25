@@ -43,8 +43,9 @@ export function ChatHeader({
   return (
     <div
       className={cn(
-        "border-edge mt-3.75 flex items-center justify-between border-y px-4 pt-3 pb-3",
-        isSidebarOpen && "pr-84"
+        "border-edge mt-4 flex items-center justify-between border-y px-4 pt-3 pb-3",
+        isSidebarOpen && "pr-84",
+        type === "group" && "pb-2 pt-2"
       )}>
       {/* <div className="border-edge fixed top-6 z-10 flex w-[calc(100vw-20rem)] items-center border-y bg-neutral-100 px-4 py-3 pr-110 dark:bg-neutral-950"> */}
       <div className="relative flex items-center gap-2 px-8 md:px-0">
@@ -66,7 +67,7 @@ export function ChatHeader({
         {type === "group" && conversation && (
           <div className="flex items-center">
             <GroupChatLogo conversation={conversation} className="size-6" />
-            <div className="ml-0">
+            <div className="ml-4">
               <h3 className="line-clamp-1 text-sm font-medium">
                 {displayName}
               </h3>
@@ -75,6 +76,10 @@ export function ChatHeader({
               </p>
             </div>
           </div>
+        )}
+
+        {type !== "group" && (
+          <span className="text-base font-normal">{name}</span>
         )}
       </div>
 

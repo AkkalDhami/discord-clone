@@ -2,7 +2,6 @@
 
 import { FriendWithReciever, FriendWithSender } from "@/types/friend";
 import { UserAvatar } from "@/components/common/user-avatar";
-import { Button } from "@/components/ui/button";
 import { timeAgo } from "@/utils/date";
 import { useFriend } from "@/hooks/use-friend";
 import toast from "react-hot-toast";
@@ -10,7 +9,7 @@ import { FriendRequestStatus } from "@/models/friend-request.model";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { ActionTooltip } from "../common/action-tooltip";
-import { IconCheck, IconLoader2, IconSend, IconX } from "@tabler/icons-react";
+import { IconCheck, IconSend, IconX } from "@tabler/icons-react";
 
 export const FriendRequestStatusMap: Record<FriendRequestStatus, string> = {
   accepted:
@@ -85,32 +84,28 @@ export function SentFriendRequestCard({ friend }: { friend: string }) {
               </div>
               <div className="flex items-center gap-4">
                 {friendReq.status === "ignored" && (
-                  <>
-                    {isSendingFriendRequest ? (
-                      <IconLoader2 className="text-muted-foreground size-10 animate-spin cursor-not-allowed rounded-full bg-neutral-500/10 p-2" />
-                    ) : (
-                      <ActionTooltip label="Send Request" size="sm">
-                        <IconSend
-                          onClick={onSend}
-                          className="size-10 cursor-pointer rounded-full bg-green-500/10 p-2 text-green-600"
-                        />
-                      </ActionTooltip>
-                    )}
-                  </>
+                  <ActionTooltip label="Send Request" size="sm">
+                    <IconSend
+                      onClick={onSend}
+                      className={cn(
+                        "size-10 cursor-pointer rounded-full bg-green-500/10 p-2 text-green-600",
+                        (isSendingFriendRequest || isCancellingFriendRequest) &&
+                          "cursor-not-allowed opacity-50"
+                      )}
+                    />
+                  </ActionTooltip>
                 )}
                 {friendReq.status === "pending" && (
-                  <>
-                    {isCancellingFriendRequest ? (
-                      <IconLoader2 className="text-muted-foreground size-10 animate-spin cursor-not-allowed rounded-full bg-neutral-500/10 p-2" />
-                    ) : (
-                      <ActionTooltip label="Cancel Request" size="sm">
-                        <IconX
-                          onClick={onCancel}
-                          className="size-10 cursor-pointer rounded-full bg-red-500/10 p-2 text-red-600"
-                        />
-                      </ActionTooltip>
-                    )}
-                  </>
+                  <ActionTooltip label="Cancel Request" size="sm">
+                    <IconX
+                      onClick={onCancel}
+                      className={cn(
+                        "size-10 cursor-pointer rounded-full bg-red-500/10 p-2 text-red-600",
+                        (isSendingFriendRequest || isCancellingFriendRequest) &&
+                          "cursor-not-allowed opacity-50"
+                      )}
+                    />
+                  </ActionTooltip>
                 )}
                 <div className="space-y-1">
                   <p
@@ -195,26 +190,27 @@ export function FriendRequestCard({ friend }: { friend: string }) {
               </p>
             </div>
             <div className="flex gap-2">
-              {isAcceptingFriendRequest ? (
-                <IconLoader2 className="text-muted-foreground size-10 animate-spin cursor-not-allowed rounded-full bg-neutral-500/10 p-2" />
-              ) : (
-                <ActionTooltip label="Accept" size="sm">
-                  <IconCheck
-                    onClick={onAccept}
-                    className="size-10 cursor-pointer rounded-full bg-green-500/10 p-2 text-green-600"
-                  />
-                </ActionTooltip>
-              )}
-              {isRejectingFriendRequest ? (
-                <IconLoader2 className="text-muted-foreground size-10 animate-spin cursor-not-allowed rounded-full bg-neutral-500/10 p-2" />
-              ) : (
-                <ActionTooltip label="Ignore" size="sm">
-                  <IconX
-                    onClick={onReject}
-                    className="size-10 cursor-pointer rounded-full bg-red-500/10 p-2 text-red-600"
-                  />
-                </ActionTooltip>
-              )}
+              <ActionTooltip label="Accept" size="sm">
+                <IconCheck
+                  onClick={onAccept}
+                  className={cn(
+                    "size-10 cursor-pointer rounded-full bg-green-500/10 p-2 text-green-600",
+                    (isAcceptingFriendRequest || isRejectingFriendRequest) &&
+                      "cursor-not-allowed opacity-50"
+                  )}
+                />
+              </ActionTooltip>
+
+              <ActionTooltip label="Ignore" size="sm">
+                <IconX
+                  onClick={onReject}
+                  className={cn(
+                    "size-10 cursor-pointer rounded-full bg-red-500/10 p-2 text-red-600",
+                    (isAcceptingFriendRequest || isRejectingFriendRequest) &&
+                      "cursor-not-allowed opacity-50"
+                  )}
+                />
+              </ActionTooltip>
             </div>
           </div>
         </div>
