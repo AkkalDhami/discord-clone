@@ -9,14 +9,14 @@ import { debounce, useQueryState } from "nuqs";
 import { IconSearch, IconX } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 
-export function FriendSearch() {
+export function FriendSearch({ className }: { className?: string }) {
   const [search, setSearch] = useQueryState("q", {
     defaultValue: "",
     shallow: false
   });
 
   return (
-    <InputGroup>
+    <InputGroup className={cn(className)}>
       <InputGroupInput
         placeholder="Search friends..."
         value={search}
@@ -27,7 +27,7 @@ export function FriendSearch() {
         }
         onKeyUp={e => {
           if (e.key === "Enter") {
-            setSearch(e.target.value);
+            e.preventDefault();
           }
         }}
       />
