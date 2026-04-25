@@ -116,7 +116,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
 
   const { name, type, participants } = validationResult.data;
 
-  const mappedIds = participants
+  const mappedIds = [...participants, user.id]
     .map(id => new Types.ObjectId(id))
     .sort((a, b) => a.toString().localeCompare(b.toString()));
 
@@ -137,7 +137,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   }
 
   const conversation = await Conversation.create({
-    participants,
+    participants: [...participants, user.id],
     type,
     admin: user.id,
     name,
