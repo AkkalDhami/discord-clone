@@ -6,7 +6,12 @@ import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import {
@@ -26,11 +31,13 @@ export function EditGroupModal() {
   const router = useRouter();
   const { isOpen, type, close, data } = useModal();
   const isModalOpen = isOpen && type === "edit-group";
-  const conversation = data?.conversation as {
-    _id: string;
-    name?: string;
-    type?: string;
-  } | undefined;
+  const conversation = data?.conversation as
+    | {
+        _id: string;
+        name?: string;
+        type?: string;
+      }
+    | undefined;
 
   const { updateConversation, isConversationUpdating } = useConversation();
 
@@ -81,7 +88,9 @@ export function EditGroupModal() {
     <Dialog open={isModalOpen} onOpenChange={open => !open && handleClose()}>
       <DialogContent className="text-accent-foreground w-full max-w-md gap-0 p-0">
         <DialogHeader className="px-5 py-4">
-          <DialogTitle className="text-base font-medium">Edit group</DialogTitle>
+          <DialogTitle className="text-base font-medium">
+            Edit group
+          </DialogTitle>
           <p className="text-muted-foreground text-sm">
             Change the group chat name.
           </p>
@@ -89,8 +98,7 @@ export function EditGroupModal() {
 
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4 px-5 pb-5"
-        >
+          className="space-y-4 px-5 pb-5">
           <FieldGroup>
             <Controller
               name="name"
@@ -118,8 +126,7 @@ export function EditGroupModal() {
             <Button
               type="submit"
               variant="primary"
-              disabled={isConversationUpdating || !form.formState.isDirty}
-            >
+              disabled={isConversationUpdating || !form.formState.isDirty}>
               {isConversationUpdating ? (
                 <>
                   <Spinner /> Saving...
