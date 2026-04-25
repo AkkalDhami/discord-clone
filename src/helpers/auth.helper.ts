@@ -15,7 +15,7 @@ import { logger } from "@/utils/logger";
 
 export const cookieOptions = {
   httpOnly: true,
-  secure: true,
+  secure: process.env.NODE_ENV === "production",
   sameSite: "lax",
   path: "/"
 } as const;
@@ -101,11 +101,11 @@ export const currentAuthUser = async () => {
     const userData = {
       id: user.id,
       name: user.name,
+      username: user.username,
       email: user.email,
       avatar: user.avatar,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
-      username: user.username
+      updatedAt: user.updatedAt
     };
 
     return userData;

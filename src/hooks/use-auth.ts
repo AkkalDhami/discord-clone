@@ -1,6 +1,11 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery
+} from "@tanstack/react-query";
 import * as authApi from "@/lib/api/auth";
 import {
   ForgotPasswordFormData,
@@ -17,7 +22,7 @@ import {
 export function useAuth() {
   const queryClient = useQueryClient();
 
-  const userQuery = useQuery({
+  const userQuery = useSuspenseQuery({
     queryKey: ["auth", "me"],
     queryFn: async () => {
       const res = await authApi.getMe();
@@ -73,7 +78,8 @@ export function useAuth() {
   });
 
   return {
-    user: userQuery.data?.data?.user || null,
+    user: userQuery.data?.data?.user,
+    error: userQuery.error,
     isUserLoading: userQuery.isLoading,
     isAuthenticated: !!userQuery.data?.data?.user,
 
