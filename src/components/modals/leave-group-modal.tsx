@@ -54,8 +54,9 @@ export function LeaveGroupModal() {
         <DialogHeader>
           <DialogTitle>Leave &apos;{conversation?.name}&apos;</DialogTitle>
           <DialogDescription className={"text-base"}>
-            Are you sure you want to leave <strong>{conversation?.name}</strong>? You
-            won&apos;t be able to re-join this conversation unless you are re-invited.
+            Are you sure you want to leave <strong>{conversation?.name}</strong>
+            ? You won&apos;t be able to re-join this conversation unless you are
+            re-invited.
           </DialogDescription>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">

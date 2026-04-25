@@ -1,10 +1,14 @@
 "use client";
 
-
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { IconX } from "@tabler/icons-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { useModal } from "@/hooks/use-modal-store";
@@ -85,25 +89,27 @@ export function KickGroupMemberModal() {
               return (
                 <div
                   key={participant._id}
-                  className="flex items-center justify-between gap-3 rounded-lg border border-border bg-muted p-3">
+                  className="border-border bg-muted flex items-center justify-between gap-3 rounded-lg border p-3">
                   <div>
                     <p className="font-medium">{participant.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       @{participant.username}
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
                     {isGroupAdmin && (
-                      <span className="rounded-full bg-primary/10 px-2 py-1 text-xs text-primary">
+                      <span className="bg-primary/10 text-primary rounded-full px-2 py-1 text-xs">
                         Admin
                       </span>
                     )}
                     <Button
                       type="button"
                       variant="ghost"
-                      disabled={!isAdmin || isGroupAdmin || isKickingGroupMember}
+                      disabled={
+                        !isAdmin || isGroupAdmin || isKickingGroupMember
+                      }
                       onClick={() => onKickMember(participant._id)}
-                      className="h-9 w-9 rounded-full p-0 text-destructive">
+                      className="text-destructive h-9 w-9 rounded-full p-0">
                       <IconX className="size-4" />
                     </Button>
                   </div>

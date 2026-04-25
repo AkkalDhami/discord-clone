@@ -201,7 +201,7 @@ export function AddGroupMembersModal() {
                         key={friend._id}
                         type="button"
                         onClick={() => toggleParticipant(friend._id)}
-                        className={`flex cursor-pointer mt-2 w-full items-center justify-between rounded-md px-3 py-2 text-left transition ${
+                        className={`mt-2 flex w-full cursor-pointer items-center justify-between rounded-md px-3 py-2 text-left transition ${
                           isSelected ? "bg-secondary" : "hover:bg-secondary/60"
                         }`}>
                         <div className="flex items-center gap-2.5">

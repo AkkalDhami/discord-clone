@@ -80,7 +80,9 @@ export function SearchConversation() {
             {groupedItems.map(group => (
               <CommandGroup key={group.value} heading={group.value}>
                 {group.items.map(item => (
-                  <CommandItem key={item.value} onClick={() => handleItemClick(item)}>
+                  <CommandItem
+                    key={item.value}
+                    onClick={() => handleItemClick(item)}>
                     {item.label}
                   </CommandItem>
                 ))}

@@ -23,7 +23,7 @@ export default async function Page(props: PageProps<"/invite/[inviteCode]">) {
   if (!server) {
     return redirect("/");
   }
-  
+
   const members = await Member.find({ serverId: server._id });
 
   const profileMatch = await Member.findOne({

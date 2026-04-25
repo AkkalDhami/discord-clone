@@ -46,7 +46,7 @@ export default function Page(): React.JSX.Element {
 
   const { otp, setOtp } = useUser();
 
-  const router = useRouter()
+  const router = useRouter();
 
   const form = useForm<ForgotPasswordFormData>({
     resolver: zodResolver(ForgotPasswordSchema),
@@ -92,7 +92,7 @@ export default function Page(): React.JSX.Element {
         toast.success(res.message || "Password reset otp verified");
         setOtp(null);
         setOtpCode("");
-        router.push("/reset-password")
+        router.push("/reset-password");
       } else {
         toast.error(res.message || "Something went wrong.");
       }

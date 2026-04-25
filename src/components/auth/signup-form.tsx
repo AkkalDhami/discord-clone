@@ -75,7 +75,6 @@ export function SignupForm() {
         return;
       }
     } catch (error: unknown) {
-
       console.log({ error });
 
       toast.error((error as Error)?.data?.message || "Something went wrong.");

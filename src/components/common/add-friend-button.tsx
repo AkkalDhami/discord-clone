@@ -23,7 +23,7 @@ export function AddFriendButton({
       ) : (
         <>
           <IconUserPlus
-            className="text-white size-6 cursor-pointer p-0.5"
+            className="size-6 cursor-pointer p-0.5 text-white"
             onClick={() => open("add-friend")}
           />
         </>

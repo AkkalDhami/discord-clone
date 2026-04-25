@@ -83,7 +83,8 @@ export async function DirectChatSidebar() {
     <div className="text-primary bg-background flex h-full w-full flex-col pt-12.75 md:pt-0">
       <DirectChatSidebarHeader />
       <DirectChatItemSection />
-      <ScrollArea className={"h-[calc(100vh-120px)] border-b pb-4 mb-4 border-edge"}>
+      <ScrollArea
+        className={"border-edge mb-4 h-[calc(100vh-120px)] border-b pb-4"}>
         <DirectChatSection
           friend={JSON.stringify(mappedFriends)}
           conversations={JSON.stringify(conversations)}

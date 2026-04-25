@@ -27,7 +27,6 @@ export const verifyPassword = async (
   hashedPassword: string
 ) => argon2.verify(hashedPassword, password);
 
-
 export const setAuthCookies = async (
   accessToken: string,
   refreshToken: string

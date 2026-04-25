@@ -24,7 +24,6 @@ export function EmptyFriend({
   const pathname = usePathname();
   const params = new URLSearchParams(searchParams.toString());
 
-
   function clearSearch() {
     params.delete("q");
     router.replace(`${pathname}?${params.toString()}` as Route);

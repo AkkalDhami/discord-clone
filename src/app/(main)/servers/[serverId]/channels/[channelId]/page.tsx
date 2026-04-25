@@ -56,7 +56,7 @@ export default async function Page(
   }
 
   return (
-    <div className="flex h-full border-y flex-col">
+    <div className="flex h-full flex-col border-y">
       <ChatHeader
         serverId={serverId}
         name={channel.name}

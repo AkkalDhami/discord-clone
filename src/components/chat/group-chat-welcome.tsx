@@ -28,34 +28,33 @@ export function GroupChatWelcome({
 
   return (
     <div className="flex flex-col space-y-3 p-5">
-        {conversation?.logo?.url ? (
-          <UserAvatar
-            src={conversation?.logo?.url}
-            name={conversation?.name}
-            className={"size-12"}
-          />
-        ) : (
-          <div className="relative w-14 h-18">
-            {conversation?.participants
-              ?.slice(0, 3)
-              .map((participant, index) => (
-                <UserAvatar
-                  key={participant._id}
-                  src={participant?.avatar?.url}
-                  name={participant?.name}
-                  className={cn(
-                    "border-background absolute size-14 border-4",
-                    index === 0 && "top-2 -left-2 z-10",
-                    index === 1 && "-top-2 left-8 z-20",
-                    index === 2 && "top-8 left-8 z-30"
-                  )}
-                />
-              ))}
-          </div>
-        )}
-      <h2 className="text-3xl mt-2 font-medium">{displayName}</h2>
+      {conversation?.logo?.url ? (
+        <UserAvatar
+          src={conversation?.logo?.url}
+          name={conversation?.name}
+          className={"size-12"}
+        />
+      ) : (
+        <div className="relative h-18 w-14">
+          {conversation?.participants?.slice(0, 3).map((participant, index) => (
+            <UserAvatar
+              key={participant._id}
+              src={participant?.avatar?.url}
+              name={participant?.name}
+              className={cn(
+                "border-background absolute size-14 border-4",
+                index === 0 && "top-2 -left-2 z-10",
+                index === 1 && "-top-2 left-8 z-20",
+                index === 2 && "top-8 left-8 z-30"
+              )}
+            />
+          ))}
+        </div>
+      )}
+      <h2 className="mt-2 text-3xl font-medium">{displayName}</h2>
       <p className="text-muted-primary text-lg">
-        Welcome to the beginning of <span className="text-accent-foreground">{displayName}</span> group.
+        Welcome to the beginning of{" "}
+        <span className="text-accent-foreground">{displayName}</span> group.
       </p>
 
       <div className="flex items-center gap-4">
