@@ -3,9 +3,14 @@ import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { PopulatedConversation } from "@/components/chat/direct-chat-section";
+import { IconX } from "@tabler/icons-react";
+import { useModal } from "@/hooks/use-modal-store";
 
 export function GroupChatItem({ c }: { c: PopulatedConversation }) {
   const params = useParams();
+
+  const { open } = useModal();
+
   const participants = c?.participants ?? [];
 
   if (c.type !== "group" || participants.length === 0) {
@@ -17,22 +22,33 @@ export function GroupChatItem({ c }: { c: PopulatedConversation }) {
     : "@" + participants.map(member => member.username).join(", @");
 
   return (
-    <div key={c._id} className="px-3">
-      <Link
-        href={`/conversations/${c._id}`}
-        className={cn(
-          "hover:bg-secondary relative flex w-full items-center rounded-md p-2",
-          params.friendId === c._id && "bg-secondary"
-        )}>
-        <GroupChatLogo conversation={c} />
+    <div
+      key={c._id}
+      className={cn(
+        "hover:bg-secondary group relative flex w-full items-center justify-between rounded-md p-2",
+        params.friendId === c._id && "bg-secondary"
+      )}>
+      <Link href={`/conversations/${c._id}`} className="w-full flex-1">
+        <div className="relative flex items-center gap-2">
+          <GroupChatLogo conversation={c} />
 
-        <div className="ml-0">
-          <h3 className="text-sm font-medium line-clamp-1">{displayName}</h3>
-          <p className="text-muted-foreground text-xs">
-            {participants.length + 1} Members
-          </p>
+          <div className="ml-0">
+            <h3 className="line-clamp-1 text-sm font-medium">{displayName}</h3>
+            <p className="text-muted-foreground text-xs">
+              {participants.length + 1} Members
+            </p>
+          </div>
         </div>
       </Link>
+      <IconX
+        onClick={() => {
+          open("leave-group", {
+            conversation: c
+            // leftUser: participants[0]
+          });
+        }}
+        className="text-muted-foreground hover:text-accent-foreground size-6 cursor-pointer p-1 opacity-0 group-hover:opacity-100"
+      />
     </div>
   );
 }
@@ -78,7 +94,7 @@ export function FriendChatItem({ c }: { c: PopulatedConversation }) {
   }
 
   return (
-    <div className="px-3">
+    <div className="">
       <Link
         href={`/conversations/${participant._id}`}
         className={cn(
@@ -91,7 +107,9 @@ export function FriendChatItem({ c }: { c: PopulatedConversation }) {
           className="size-8"
         />
         <div className="ml-2">
-          <h3 className="text-sm font-medium line-clamp-1">{participant?.name}</h3>
+          <h3 className="line-clamp-1 text-sm font-medium">
+            {participant?.name}
+          </h3>
           <p className="text-muted-foreground text-xs">
             @{participant?.username}
           </p>

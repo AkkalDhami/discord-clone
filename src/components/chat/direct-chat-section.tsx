@@ -76,7 +76,7 @@ export function DirectChatSection({
           </ActionTooltip>
         </div>
 
-        <div className="mt-3 space-y-1.5">
+        <div className="mt-3 space-y-1.5 px-3">
           {filteredConversations.length > 0 &&
             filteredConversations.map(c => {
               if (c.type === "direct") {

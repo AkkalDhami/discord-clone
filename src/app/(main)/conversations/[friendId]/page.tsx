@@ -3,12 +3,14 @@ import { ChatHeader } from "@/components/layouts/chat-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
-import { IFile } from "@/interface";
-import { getOrCreateFriendConversation } from "@/lib/conversation";
-import { ConversationTypes } from "@/models/conversation.model";
+import { IFile, Server } from "@/interface";
+import {
+  getFriendConversation,
+  getOrCreateFriendConversation
+} from "@/lib/conversation";
+import Conversation, { ConversationTypes } from "@/models/conversation.model";
 import Member from "@/models/member.model";
 import Profile from "@/models/profile.model";
-import Server from "@/models/server.model";
 import { PartialProfile } from "@/types/friend";
 import { Types } from "mongoose";
 import { redirect } from "next/navigation";
@@ -42,7 +44,11 @@ export default async function Page(
     _id: friendId
   });
 
-  if (!friend) {
+  const conversationInDb = await Conversation.findOne({
+    _id: friendId
+  });
+
+  if (!friend && !conversationInDb) {
     return redirect("/friends/all");
   }
 
@@ -68,26 +74,102 @@ export default async function Page(
     }
   ]);
 
+  const mutualServers = (await Member.aggregate([
+    {
+      $match: {
+        profileId: {
+          $in: [
+            new Types.ObjectId(currentUser.id),
+            new Types.ObjectId(friendId)
+          ]
+        }
+      }
+    },
+    {
+      $group: {
+        _id: "$serverId",
+        users: { $addToSet: "$profileId" }
+      }
+    },
+    {
+      $match: {
+        users: {
+          $all: [
+            new Types.ObjectId(currentUser.id),
+            new Types.ObjectId(friendId)
+          ]
+        }
+      }
+    },
+    {
+      $lookup: {
+        from: "servers",
+        localField: "_id",
+        foreignField: "_id",
+        as: "server"
+      }
+    },
+    { $unwind: "$server" },
+    {
+      $replaceRoot: { newRoot: "$server" }
+    }
+  ])) as unknown as Server[];
+
+  console.log({ mutualServers });
+
   const conversation = await getOrCreateFriendConversation({
+    cId: conversationInDb?._id?.toString(),
     admin: currentUser.id,
-    participants: [currentUser.id, friend._id.toString()],
+    participants: [currentUser.id, ...(friend?._id?.toString() ?? [])],
     type: "direct"
   });
 
-  if (!conversation) {
+  const rawGroupConversation = await getFriendConversation({
+    cId: conversationInDb?._id?.toString(),
+    participants: [currentUser.id],
+    type: "group"
+  });
+
+  if (!conversation && !rawGroupConversation) {
     return redirect("/friends/all");
   }
 
-  // console.log({ servers });
+  const { conversation: groupConversation, users: groupUsers } =
+    rawGroupConversation || {};
+
+  const mappedUsersName =
+    groupUsers
+      ?.filter(p => p._id.toString() !== currentUser.id)
+      .map(p => p.name)
+      .join(", ") || "";
 
   return (
     <div className="border-edge h-full border-b pb-2.5">
       <ChatHeader
-        name={friend.name}
-        type="friend"
+        name={friend?.name ?? groupConversation?.name ?? mappedUsersName}
+        type={
+          !friend && groupConversation?.type === "group" ? "group" : "friend"
+        }
         imageUrl={friend?.avatar?.url}
+        conversation={{
+          _id: groupConversation?._id?.toString() as string,
+          name: groupConversation?.name,
+          logo: groupConversation?.logo,
+          participants: groupUsers?.map(p => ({
+            _id: p._id.toString(),
+            email: p.email,
+            name: p.name,
+            username: p.username,
+            avatar: {
+              ...p.avatar
+            }
+          })) as unknown as PartialProfile[],
+
+          admin: groupConversation?.admin.toString() as string,
+          type: groupConversation?.type as ConversationTypes
+        }}
         sidebarProfile={{
-          type: "direct",
+          type: !friend && groupConversation ? "group" : "direct",
           servers:
             servers.length > 0
               ? servers?.map(s => ({
@@ -97,16 +179,28 @@ export default async function Page(
                   name: s?.name
                 }))
               : [],
-          friend: {
-            _id: friend._id.toString(),
-            name: friend.name,
-            username: friend.username,
-            email: friend.email,
-            avatar: { ...friend.avatar },
-            memberSince: friend.createdAt.toDateString()
-          },
+          friend: friend
+            ? {
+                _id: friend._id.toString(),
+                name: friend.name,
+                username: friend.username,
+                email: friend.email,
+                avatar: friend.avatar,
+                memberSince: friend.createdAt.toDateString()
+              }
+            : undefined,
           mutualFriends: [],
-          mutualServers: []
+          mutualServers: mutualServers || [],
+          members:
+            !friend &&
+            groupConversation &&
+            groupUsers?.map(u => ({
+              _id: u._id.toString(),
+              name: u.name,
+              username: u.username,
+              email: u.email,
+              avatar: u.avatar
+            }))
         }}
       />
       <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.1rem)]"></ScrollArea>
@@ -115,8 +209,8 @@ export default async function Page(
         query={{
           friend
         }}
-        name={friend.username}
-        type="member"
+        name={friend?.username ?? groupConversation?.name ?? mappedUsersName}
+        type={groupConversation?.type === "group" ? "group" : "member"}
       />
     </div>
   );
