@@ -76,7 +76,6 @@ async function findConversation({
       ...(serverId && { serverId: new Types.ObjectId(serverId) }),
       participants
     });
-    console.log({ c: conversation });
 
     return conversation;
   } catch (error) {
@@ -85,26 +84,27 @@ async function findConversation({
   }
 }
 
-async function findDirectFriendConversation({
+export async function getFriendConversation({
   participants,
-  type
+  type,
+  cId
 }: {
+  cId?: string;
   participants: string[];
   type: ConversationTypes;
 }) {
   try {
-    // const mappedIds = participants
-    //   .map(id => new Types.ObjectId(id))
-    //   .sort((a, b) => a.toString().localeCompare(b.toString()));
-
-    // const participantsKey = mappedIds.join("_");
-
-    const conversation = await Conversation.findOne({
-      type,
-      participants: {
-        $all: participants
-      }
-    });
+    const conversation = cId
+      ? await Conversation.findOne({
+          _id: cId,
+          type
+        })
+      : await Conversation.findOne({
+          type,
+          participants: {
+            $all: participants
+          }
+        });
 
     const users = await Profile.find({
       _id: { $in: conversation?.participants }
@@ -117,7 +117,7 @@ async function findDirectFriendConversation({
   }
 }
 
-async function createDirectFriendConversation({
+async function createFriendConversation({
   participants,
   type,
   name,
@@ -152,16 +152,19 @@ export async function getOrCreateFriendConversation({
   participants,
   type,
   admin,
-  name
+  name,
+  cId
 }: {
   participants: string[];
   admin: string;
   name?: string;
   type: ConversationTypes;
+  cId?: string;
 }): Promise<ConversationType | null> {
   await dbConnect();
 
-  const result = await findDirectFriendConversation({
+  const result = await getFriendConversation({
+    cId,
     participants,
     type
   });
@@ -170,7 +173,7 @@ export async function getOrCreateFriendConversation({
   let conversation = result?.conversation;
 
   if (!conversation) {
-    conversation = await createDirectFriendConversation({
+    conversation = await createFriendConversation({
       participants,
       admin,
       type,

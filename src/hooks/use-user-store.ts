@@ -5,11 +5,11 @@ import { persist } from "zustand/middleware";
 
 interface AuthData {
   user: {
-    id: number;
+    id: string;
     name: string;
     username: string;
     email: string;
-    avatar: IFile;
+    avatar?: IFile;
   } | null;
   otp: {
     type: OtpType;
@@ -31,7 +31,7 @@ export const useUser = create<AuthStore>()(
       setOtp: otp => set({ otp })
     }),
     {
-      name: "discord-by-akkal-auth-storage"
+      name: "discord-by-akkal-user-storage"
     }
   )
 );

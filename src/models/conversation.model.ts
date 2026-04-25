@@ -1,12 +1,6 @@
+import { CONVERSATION_TYPES } from "@/constants";
 import { IFile } from "@/interface";
 import mongoose, { Document, Model, Schema } from "mongoose";
-
-const CONVERSATION_TYPES = [
-  "direct",
-  "group",
-  "server",
-  "direct-server-member"
-] as const;
 
 export type ConversationTypes = (typeof CONVERSATION_TYPES)[number];
 
