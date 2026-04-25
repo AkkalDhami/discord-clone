@@ -4,7 +4,8 @@ import * as conversationApi from "@/lib/api/conversation";
 import { ApiResponse } from "@/interface/response";
 import {
   ConversationType,
-  ConversationUpdateType
+  ConversationUpdateType,
+  LeaveConversationType
 } from "@/validators/conversation";
 
 export function useConversation() {
@@ -50,12 +51,42 @@ export function useConversation() {
     }
   });
 
+  const removeGroupMembersMutation = useMutation({
+    mutationFn: async (data: LeaveConversationType) => {
+      const res = await conversationApi.removeGroupMembers(data);
+      return res as ApiResponse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["conversation"] });
+    }
+  });
+
+  const kickGroupMemberMutation = useMutation({
+    mutationFn: async (data: LeaveConversationType) => {
+      const res = await conversationApi.kickGroupMember(data);
+      return res as ApiResponse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["conversation"] });
+    }
+  });
+
   return {
     createConversation: createConversationMutation.mutateAsync,
     isConversationCreating: createConversationMutation.isPending,
+
     updateConversation: updateConversationMutation.mutateAsync,
     isConversationUpdating: updateConversationMutation.isPending,
+
     addGroupMembers: addGroupMembersMutation.mutateAsync,
-    isAddingGroupMembers: addGroupMembersMutation.isPending
+    isAddingGroupMembers: addGroupMembersMutation.isPending,
+
+    removeGroupMembers: removeGroupMembersMutation.mutateAsync,
+    isRemovingGroupMembers: removeGroupMembersMutation.isPending,
+
+    kickGroupMember: kickGroupMemberMutation.mutateAsync,
+    isKickingGroupMember: kickGroupMemberMutation.isPending
   };
 }
