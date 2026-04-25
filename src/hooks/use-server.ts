@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as serverApi from "@/lib/api/server";
 import { EditServerSchemaType } from "@/validators/server";
-import { ApiResponse } from "@/interface/error";
+import { ApiResponse } from "@/interface/response";
 
 export function useServer() {
   const queryClient = useQueryClient();

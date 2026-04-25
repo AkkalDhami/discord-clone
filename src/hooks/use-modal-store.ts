@@ -1,4 +1,4 @@
-import { Category, Channel, Member, Profile, Server } from "@/interface";
+import { Category, Channel, IFile, Member, Server } from "@/interface";
 import { PartialProfile } from "@/types/friend";
 import { create } from "zustand";
 
@@ -21,7 +21,30 @@ export type ModalType =
   | "new-chat"
   | "add-friend"
   | "remove-friend"
-  | "block-friend";
+  | "block-friend"
+  | "edit-group"
+  | "leave-group"
+  | "kick-group-members"
+  | "add-group-members"
+  | "profile-sidebar";
+
+type User = PartialProfile & {
+  memberSince: string;
+};
+
+export type SidebarProfileData =
+  | {
+      type: "direct";
+      friend: User;
+      servers: Pick<Server, "_id" | "name" | "logo" | "inviteCode">[] | [];
+      mutualServers: Server[] | [];
+      mutualFriends: User[] | [];
+    }
+  | {
+      type: "group";
+      members: User[];
+      adminId: string;
+    };
 
 export interface ModalData {
   server?: Pick<
@@ -35,8 +58,22 @@ export interface ModalData {
     private: boolean;
   };
   member?: Member;
+  user?: PartialProfile;
   friends?: PartialProfile[];
   friend?: PartialProfile;
+  sidebarProfile?: SidebarProfileData;
+  conversation?: {
+    _id: string;
+    name?: string;
+    logo?: IFile;
+    participants?: PartialProfile[];
+    admin?: string;
+    type?: string;
+  };
+
+  leftUser?: {
+    _id: string;
+  };
 }
 
 export interface ModalStore {
