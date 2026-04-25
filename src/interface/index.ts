@@ -20,11 +20,7 @@ export interface Profile {
   deletedAt?: string;
   reActivateAvailableAt?: string;
 
-  avatar?: {
-    public_id?: string;
-    url?: string;
-    size?: number;
-  };
+  avatar?: IFile;
 
   createdAt?: string;
   updatedAt?: string;
@@ -90,9 +86,9 @@ export interface Channel {
 }
 
 export interface IFile {
-  public_id: string;
-  url: string;
-  size: number;
+  public_id?: string;
+  url?: string;
+  size?: number;
 }
 
 export interface Friendship {
