@@ -3,7 +3,9 @@ import dbConnect from "@/configs/db";
 import { STATUS_CODES } from "@/constants/status-codes";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import FriendRequest from "@/models/friend-request.model";
+import Conversation from "@/models/conversation.model";
 import Friendship from "@/models/friendship.model";
+import Message from "@/models/message.model";
 import Profile from "@/models/profile.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
@@ -73,20 +75,42 @@ export const DELETE = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
+  const directConversations = await Conversation.find({
+    type: "direct",
+    participants: {
+      $all: [currentUser.id, friendId]
+    }
+  }).select("_id");
+
+  const conversationIds = directConversations.map(
+    conversation => conversation._id
+  );
+
   await Promise.all([
-    await Friendship.deleteOne({
+    Friendship.deleteOne({
       friend: friendId,
       user: currentUser.id
     }),
 
-    await Friendship.deleteOne({
+    Friendship.deleteOne({
       friend: currentUser.id,
       user: friendId
     }),
 
-    await FriendRequest.deleteOne({
-      $or: [{ sender: currentUser.id }, { sender: friendId }]
-    })
+    FriendRequest.deleteOne({
+      $or: [
+        { sender: currentUser.id, receiver: friend._id },
+        { sender: friend._id, receiver: currentUser.id }
+      ]
+    }),
+
+    conversationIds.length > 0
+      ? Message.deleteMany({ conversationId: { $in: conversationIds } })
+      : Promise.resolve(),
+
+    conversationIds.length > 0
+      ? Conversation.deleteMany({ _id: { $in: conversationIds } })
+      : Promise.resolve()
   ]);
 
   return ApiResponse({
@@ -159,6 +183,14 @@ export const PUT = AsyncHandler(async (req: NextRequest) => {
     return ApiResponse({
       statusCode: STATUS_CODES.FORBIDDEN,
       message: "You are not allowed to perform this action.",
+      success: false
+    });
+  }
+
+  if (type === "block" && friendship.blockedBy?.toString() === currentUser.id) {
+    return ApiResponse({
+      statusCode: STATUS_CODES.BAD_REQUEST,
+      message: "User is already blocked.",
       success: false
     });
   }

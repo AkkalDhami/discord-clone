@@ -3,6 +3,7 @@ import { STATUS_CODES } from "@/constants/status-codes";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { validateRequest } from "@/lib/validation";
 import Conversation from "@/models/conversation.model";
+import Message from "@/models/message.model";
 import Profile from "@/models/profile.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
@@ -163,9 +164,10 @@ export const PUT = AsyncHandler(
       });
     }
 
-    console.log({ body });
-
-    const validationResult = validateRequest(LeaveConversationSchema, body);
+    const validationResult = validateRequest(
+      LeaveConversationSchema.pick({ participants: true }),
+      body
+    );
 
     if (!validationResult.success) {
       return ApiResponse({
@@ -263,7 +265,10 @@ export const DELETE = AsyncHandler(
     }
 
     const body = await req.json();
-    const validationResult = validateRequest(LeaveConversationSchema, body);
+    const validationResult = validateRequest(
+      LeaveConversationSchema.pick({ participants: true }),
+      body
+    );
 
     if (!validationResult.success) {
       return ApiResponse({
@@ -297,7 +302,7 @@ export const DELETE = AsyncHandler(
     if (conversation.type !== "group") {
       return ApiResponse({
         statusCode: STATUS_CODES.BAD_REQUEST,
-        message: "Only group conversations can remove members",
+        message: "Only group conversations can kick members",
         success: false
       });
     }
@@ -305,7 +310,7 @@ export const DELETE = AsyncHandler(
     if (conversation.admin.toString() !== user.id) {
       return ApiResponse({
         statusCode: STATUS_CODES.UNAUTHORIZED,
-        message: "Only the group admin can remove members",
+        message: "Only the group admin can kick members",
         success: false
       });
     }
@@ -313,7 +318,7 @@ export const DELETE = AsyncHandler(
     if (participants.includes(conversation.admin.toString())) {
       return ApiResponse({
         statusCode: STATUS_CODES.BAD_REQUEST,
-        message: "Group admin cannot be removed",
+        message: "Group admin cannot be kicked",
         success: false
       });
     }
@@ -330,11 +335,33 @@ export const DELETE = AsyncHandler(
       }
     );
 
+    if (
+      updatedConversation &&
+      updatedConversation.participants.length <= 1 &&
+      updatedConversation.participants.some(
+        participant => participant.toString() === user.id
+      )
+    ) {
+      await Promise.all([
+        Message.deleteMany({
+          conversationId: new Types.ObjectId(conversationId)
+        }),
+        Conversation.deleteOne({ _id: conversationId })
+      ]);
+
+      return ApiResponse({
+        statusCode: STATUS_CODES.OK,
+        success: true,
+        message:
+          "Member kicked successfully and conversation deleted because no other participants remain"
+      });
+    }
+
     return ApiResponse({
       statusCode: STATUS_CODES.OK,
       success: true,
       data: updatedConversation,
-      message: "Member removed successfully"
+      message: "Member kicked successfully"
     });
   }
 );

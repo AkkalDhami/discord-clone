@@ -88,7 +88,7 @@ export const PATCH = AsyncHandler(async (req: NextRequest) => {
     statusCode: STATUS_CODES.OK,
     success: true,
     data: updatedConversation,
-    message: "Group conversation updated successfully"
+    message: "Group updated successfully"
   });
 });
 
