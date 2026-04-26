@@ -37,6 +37,7 @@ import { cn } from "@/lib/utils";
 import { SidebarProfileData, useModal } from "@/hooks/use-modal-store";
 import { useUser } from "@/hooks/use-user-store";
 import Link from "next/link";
+import { PartialProfile } from "@/types/friend";
 
 export function ProfileSidebar() {
   const { isOpen, data, type } = useModal();
@@ -51,7 +52,7 @@ export function ProfileSidebar() {
 
   return (
     isSidebarOpen && (
-      <aside className="border-edge no-scrollbar bg-popover fixed right-1 z-20 flex h-full w-80 flex-col overflow-y-auto border-x pt-4">
+      <aside className="border-edge no-scrollbar bg-popover fixed right-1 z-20 mb-6 flex h-full w-80 flex-col overflow-y-auto border-x border-b pt-4">
         {sidebarProfile.type === "direct" ? (
           <DirectProfileSidebar {...sidebarProfile} />
         ) : (
@@ -67,11 +68,9 @@ function DirectProfileSidebar({
   mutualServers,
   friend,
   servers
-}: Extract<
+}: Pick<
   SidebarProfileData,
-  {
-    type: "direct";
-  }
+  "mutualFriends" | "mutualServers" | "friend" | "servers"
 >) {
   const { isOpen, close, type, open } = useModal();
 
@@ -106,8 +105,8 @@ function DirectProfileSidebar({
 
         <div className="flex justify-between">
           <div>
-            <h2 className="text-lg font-medium">{friend.name}</h2>
-            <p className="text-muted-foreground text-sm">@{friend.username}</p>
+            <h2 className="text-lg font-medium">{friend?.name}</h2>
+            <p className="text-muted-foreground text-sm">@{friend?.username}</p>
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger
@@ -122,8 +121,9 @@ function DirectProfileSidebar({
                   </DropdownMenuSubTrigger>
                   <DropdownMenuPortal>
                     <DropdownMenuSubContent className={"space-y-1.5"}>
-                      {servers.length > 0 &&
-                        servers.map(({ _id, logo, inviteCode, name }) => (
+                      {servers &&
+                        servers.length > 0 &&
+                        servers?.map(({ _id, logo, inviteCode, name }) => (
                           <DropdownMenuItem
                             key={_id}
                             className={"flex items-center gap-3 px-1.5 py-2"}>
@@ -171,9 +171,7 @@ function DirectProfileSidebar({
                 <DropdownMenuItem
                   onClick={() => {
                     open("block-friend", {
-                      friend: {
-                        ...friend
-                      }
+                      friend: friend as PartialProfile
                     });
                   }}
                   className={cn("flex items-center justify-between gap-3")}>
@@ -184,9 +182,7 @@ function DirectProfileSidebar({
                 <DropdownMenuItem
                   onClick={() => {
                     open("remove-friend", {
-                      friend: {
-                        ...friend
-                      }
+                      friend: friend as PartialProfile
                     });
                   }}
                   className={cn("flex items-center justify-between gap-3")}>
@@ -200,7 +196,7 @@ function DirectProfileSidebar({
 
         <div className="bg-muted rounded-lg p-3">
           <p className="text-muted-primary text-xs font-normal">Member Since</p>
-          <p className="mt-1 text-sm">{friend.memberSince}</p>
+          <p className="mt-1 text-sm">{friend?.memberSince}</p>
         </div>
 
         <div className="bg-muted divide-y divide-neutral-500/30 rounded-lg py-2">
@@ -210,7 +206,7 @@ function DirectProfileSidebar({
                 <Button
                   variant="ghost"
                   className="text-muted-primary w-full font-normal">
-                  Mutual Servers — {mutualServers.length}
+                  Mutual Servers — {mutualServers && mutualServers.length}
                   <IconChevronDown className="ml-auto -rotate-90 group-data-panel-open/button:rotate-0" />
                 </Button>
               }
@@ -218,27 +214,28 @@ function DirectProfileSidebar({
 
             <CollapsibleContent className="flex w-full flex-col items-start gap-2 bg-transparent p-2.5 pt-0 text-sm">
               <div className="mt-3 w-full space-y-2">
-                {mutualServers.map(server => (
-                  <Link
-                    key={server._id}
-                    href={`/servers/${server._id}`}
-                    className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
-                    <div className="bg-primary-500 flex h-10 w-10 items-center justify-center rounded-xl font-normal text-white">
-                      {server.logo ? (
-                        <Image
-                          src={server.logo}
-                          alt={server.name}
-                          width={40}
-                          height={40}
-                          className="rounded-lg object-cover object-center"
-                        />
-                      ) : (
-                        removeLeadingEmoji(server.name).slice(0, 1)
-                      )}
-                    </div>
-                    <h3 className="text-lg font-normal">{server.name}</h3>
-                  </Link>
-                ))}
+                {mutualServers &&
+                  mutualServers.map(server => (
+                    <Link
+                      key={server._id}
+                      href={`/servers/${server._id}`}
+                      className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
+                      <div className="bg-primary-500 flex h-10 w-10 items-center justify-center rounded-xl font-normal text-white">
+                        {server.logo ? (
+                          <Image
+                            src={server.logo}
+                            alt={server.name}
+                            width={40}
+                            height={40}
+                            className="rounded-lg object-cover object-center"
+                          />
+                        ) : (
+                          removeLeadingEmoji(server.name).slice(0, 1)
+                        )}
+                      </div>
+                      <h3 className="text-lg font-normal">{server.name}</h3>
+                    </Link>
+                  ))}
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -249,7 +246,7 @@ function DirectProfileSidebar({
                 <Button
                   variant="ghost"
                   className="text-muted-primary w-full font-normal">
-                  Mutual Friends — {mutualFriends.length}
+                  Mutual Friends — {mutualFriends && mutualFriends.length}
                   <IconChevronDown className="ml-auto -rotate-90 group-data-panel-open/button:rotate-0" />
                 </Button>
               }
@@ -257,19 +254,20 @@ function DirectProfileSidebar({
 
             <CollapsibleContent className="flex w-full flex-col items-start gap-2 bg-transparent p-2.5 pt-0 text-sm">
               <div className="mt-3 w-full space-y-2">
-                {mutualFriends.map(f => (
-                  <div
-                    key={f._id}
-                    className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
-                    <UserAvatar src={f.avatar?.url} name={f.name} />
-                    <div>
-                      <p>{f.name}</p>
-                      <p className="text-muted-foreground text-xs">
-                        @{f.username}
-                      </p>
+                {mutualFriends &&
+                  mutualFriends.map(f => (
+                    <div
+                      key={f._id}
+                      className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
+                      <UserAvatar src={f.avatar?.url} name={f.name} />
+                      <div>
+                        <p>{f.name}</p>
+                        <p className="text-muted-foreground text-xs">
+                          @{f.username}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -282,7 +280,7 @@ function DirectProfileSidebar({
 function GroupSidebar({
   members,
   adminId
-}: Extract<SidebarProfileData, { type: "group" }>) {
+}: Pick<SidebarProfileData, "members" | "adminId">) {
   const { user } = useUser();
 
   const { isOpen, close, type } = useModal();
@@ -290,47 +288,51 @@ function GroupSidebar({
   const isSidebarOpen = isOpen && type === "profile-sidebar";
 
   return (
-    <aside>
-      <div className="border-edge flex items-center justify-between border-y py-2.5 pl-4">
-        <h2 className="text-muted-primary flex items-center gap-2 font-normal uppercase">
-          <IconUsers className="size-4" /> Members [{members?.length}]
-        </h2>
-        <Button
-          size="icon"
-          onClick={() => {
-            if (isSidebarOpen) {
-              close();
-            }
-          }}
-          variant="ghost"
-          className="rounded-lg">
-          <IconX size={16} />
-        </Button>
-      </div>
-      <div className="mt-2 flex flex-col">
-        {members.map(m => (
-          <div
-            key={m._id}
-            className={cn(
-              "hover:bg-secondary relative flex w-full items-center gap-2 px-3 py-3 transition",
-              "border-edge border-t last:border-b"
-            )}>
-            <UserAvatar src={m.avatar?.url} name={m.name} />
-            <div>
-              <h3 className="flex items-center gap-2 font-normal">
-                {m.name}
-                {m._id === user?.id && (
-                  <div className="bg-primary-600 absolute top-2 right-3 size-2 rounded-full" />
-                )}
-                {m._id === adminId && (
-                  <IconCrownFilled className="size-4 text-orange-500" />
-                )}
-              </h3>
-              <p className="text-muted-foreground text-xs">@{m.username}</p>
-            </div>
-          </div>
-        ))}
-      </div>
-    </aside>
+    members &&
+    members?.length > 0 && (
+      <aside>
+        <div className="border-edge flex items-center justify-between border-y py-2.5 pl-4">
+          <h2 className="text-muted-primary flex items-center gap-2 font-normal uppercase">
+            <IconUsers className="size-4" /> Members [{members?.length}]
+          </h2>
+          <Button
+            size="icon"
+            onClick={() => {
+              if (isSidebarOpen) {
+                close();
+              }
+            }}
+            variant="ghost"
+            className="rounded-lg">
+            <IconX size={16} />
+          </Button>
+        </div>
+        <div className="mt-2 flex flex-col">
+          {members.length > 0 &&
+            members?.map(m => (
+              <div
+                key={m._id}
+                className={cn(
+                  "hover:bg-secondary relative flex w-full items-center gap-2 px-3 py-3 transition",
+                  "border-edge border-t last:border-b"
+                )}>
+                <UserAvatar src={m.avatar?.url} name={m.name} />
+                <div>
+                  <h3 className="flex items-center gap-2 font-normal">
+                    {m.name}
+                    {m._id === user?.id && (
+                      <div className="bg-primary-600 absolute top-2 right-3 size-2 rounded-full" />
+                    )}
+                    {m._id === adminId && (
+                      <IconCrownFilled className="size-4 text-orange-500" />
+                    )}
+                  </h3>
+                  <p className="text-muted-foreground text-xs">@{m.username}</p>
+                </div>
+              </div>
+            ))}
+        </div>
+      </aside>
+    )
   );
 }
