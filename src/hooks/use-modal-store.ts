@@ -32,19 +32,17 @@ type User = PartialProfile & {
   memberSince: string;
 };
 
-export type SidebarProfileData =
-  | {
-      type: "direct";
-      friend: User;
-      servers: Pick<Server, "_id" | "name" | "logo" | "inviteCode">[] | [];
-      mutualServers: Server[] | [];
-      mutualFriends: User[] | [];
-    }
-  | {
-      type: "group";
-      members: User[];
-      adminId: string;
-    };
+export type SidebarProfileData = {
+  type: "direct" | "group";
+
+  friend?: User;
+  servers?: Pick<Server, "_id" | "name" | "logo" | "inviteCode">[] | [];
+  mutualServers?: Server[] | [];
+  mutualFriends?: User[] | [];
+
+  members?: User[] | [];
+  adminId?: string;
+};
 
 export interface ModalData {
   server?: Pick<
