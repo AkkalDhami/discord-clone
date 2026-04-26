@@ -43,8 +43,6 @@ export const PATCH = AsyncHandler(
 
     const body = await req.json();
 
-    console.log({ body });
-
     const validationResult = validateRequest(
       ConversationAddMembersSchema.pick({ participants: true }),
       body

@@ -80,7 +80,7 @@ export async function DirectChatSidebar() {
   // console.log({ conversations });
 
   return (
-    <div className="text-primary bg-background flex h-full w-full flex-col pt-12.75 md:pt-0">
+    <div className="text-primary flex h-full w-full flex-col pt-8.5 md:pt-0">
       <DirectChatSidebarHeader />
       <DirectChatItemSection />
       <ScrollArea
