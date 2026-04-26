@@ -1,5 +1,8 @@
-import { ChatInput } from "@/components/chat/chat-input";
-import { GroupChatWelcome } from "@/components/chat/group-chat-welcome";
+import { BlockedUserChatInput, ChatInput } from "@/components/chat/chat-input";
+import {
+  DirectChatWelcome,
+  GroupChatWelcome
+} from "@/components/chat/chat-welcome";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import dbConnect from "@/configs/db";
@@ -10,6 +13,7 @@ import {
   getOrCreateFriendConversation
 } from "@/lib/conversation";
 import Conversation, { ConversationTypes } from "@/models/conversation.model";
+import Friendship from "@/models/friendship.model";
 import Member from "@/models/member.model";
 import Profile from "@/models/profile.model";
 import { PartialProfile } from "@/types/friend";
@@ -43,6 +47,11 @@ export default async function Page(
 
   const friend = await Profile.findOne({
     _id: friendId
+  });
+
+  const friendship = await Friendship.findOne({
+    user: currentUser.id,
+    friend: friendId
   });
 
   const conversationInDb = await Conversation.findOne({
@@ -116,7 +125,7 @@ export default async function Page(
     }
   ])) as unknown as Server[];
 
-  console.log({ mutualServers });
+  // console.log({ mutualServers });
 
   const conversation = await getOrCreateFriendConversation({
     cId: conversationInDb?._id?.toString(),
@@ -170,14 +179,14 @@ export default async function Page(
           type: groupConversation?.type as ConversationTypes
         }}
         sidebarProfile={{
-          type: !friend && groupConversation ? "group" : "direct",
+          type: groupConversation ? "group" : "direct",
           servers:
             servers.length > 0
               ? servers?.map(s => ({
-                  _id: s?._id?.toString(),
-                  inviteCode: s?.inviteCode,
-                  logo: s?.logo,
-                  name: s?.name
+                  _id: s?._id?.toString() as string,
+                  inviteCode: s?.inviteCode as string,
+                  logo: s?.logo as string,
+                  name: s?.name as string
                 }))
               : [],
           friend: friend
@@ -193,48 +202,75 @@ export default async function Page(
           mutualFriends: [],
           mutualServers: mutualServers || [],
           members:
-            !friend &&
-            groupConversation &&
-            groupUsers?.map(u => ({
-              _id: u._id.toString(),
-              name: u.name,
-              username: u.username,
-              email: u.email,
-              avatar: u.avatar
-            })),
-          adminId:
-            !friend && groupConversation && groupConversation.admin.toString()
+            !friend && groupConversation
+              ? groupUsers?.map(u => ({
+                  _id: u._id.toString(),
+                  name: u.name,
+                  username: u.username,
+                  email: u.email,
+                  memberSince: u.createdAt?.toDateString(),
+                  avatar: u.avatar
+                }))
+              : [],
+          adminId: groupConversation?.admin.toString()
         }}
       />
-      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.1rem)]">
-        <GroupChatWelcome
-          conversation={{
-            _id: groupConversation?._id?.toString() as string,
-            name: groupConversation?.name,
-            logo: groupConversation?.logo,
-            participants: groupUsers?.map(p => ({
-              _id: p._id.toString(),
-              email: p.email,
-              name: p.name,
-              username: p.username,
-              avatar: {
-                ...p.avatar
-              }
-            })) as unknown as PartialProfile[],
 
-            admin: groupConversation?.admin.toString() as string,
-            type: groupConversation?.type as ConversationTypes
-          }}
-        />
+      <ScrollArea className="h-[calc(100vh-12rem)] px-4 pt-3 sm:h-[calc(100vh-11.1rem)]">
+        {groupConversation?.type !== "direct" && friend && friendship ? (
+          <DirectChatWelcome
+            friend={{
+              _id: friend?._id?.toString(),
+              email: friend?.email,
+              name: friend?.name,
+              username: friend?.username,
+              avatar: {
+                ...friend?.avatar
+              }
+            }}
+            friendship={{
+              _id: friendship?._id.toString() as string,
+              blockedBy: friendship?.blockedBy?.toString() as string,
+              status: friendship?.status as "active" | "blocked"
+            }}
+          />
+        ) : (
+          <GroupChatWelcome
+            conversation={{
+              _id: groupConversation?._id?.toString() as string,
+              name: groupConversation?.name,
+              logo: groupConversation?.logo,
+              participants: groupUsers?.map(p => ({
+                _id: p._id.toString(),
+                email: p.email,
+                name: p.name,
+                username: p.username,
+                avatar: {
+                  ...p.avatar
+                }
+              })) as unknown as PartialProfile[],
+
+              admin: groupConversation?.admin.toString() as string,
+              type: groupConversation?.type as ConversationTypes
+            }}
+          />
+        )}
       </ScrollArea>
-      <ChatInput
-        apiUrl={`/api/messages`}
-        query={{
-          friend
-        }}
-        name={friend?.username ?? groupConversation?.name ?? mappedUsersName}
-        type={groupConversation?.type === "group" ? "group" : "member"}
-      />
+
+      {friendship?.status === "blocked" ? (
+        friend && <BlockedUserChatInput />
+      ) : (
+        <ChatInput
+          apiUrl={`/api/messages`}
+          query={{
+            friend
+          }}
+          name={friend?.username ?? groupConversation?.name ?? mappedUsersName}
+          type={
+            !friend && groupConversation?.type === "group" ? "group" : "member"
+          }
+        />
+      )}
     </div>
   );
 }

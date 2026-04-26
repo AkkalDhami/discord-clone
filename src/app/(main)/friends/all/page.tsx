@@ -33,7 +33,7 @@ export default async function Page(props: PageProps<"/friends/all">) {
     : {};
 
   if (!currentUser) {
-    return redirect("/");
+    return redirect("/signin");
   }
 
   await dbConnect();
@@ -64,7 +64,7 @@ export default async function Page(props: PageProps<"/friends/all">) {
               <SortFriend />
             </div>
           </div>
-          <h2 className="text-muted-primary border-edge mb-2 border-b p-2.5 font-normal">
+          <h2 className="text-muted-primary mb-2 p-2.5 font-normal">
             All Friends - {friends.length}
           </h2>
           <div className="divide-edge border-edge divide-y border-t">
