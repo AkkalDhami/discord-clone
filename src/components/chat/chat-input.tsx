@@ -72,7 +72,7 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
                     disabled={isLoading}
                     id="chat-input"
                     className="no-scrollbar h-10 resize-none"
-                    placeholder={`Message  ${type === "channel" ? `#${name}` : type === "group" ? `${name}` : `@${name}`}`}
+                    placeholder={`Message  ${type === "channel" ? `#${name}` : type === "member" ? `@${name}` : `${name}`}`}
                   />
                   <InputGroupAddon>
                     <IconPlus
@@ -139,6 +139,24 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
           />
         </FieldGroup>
       </form>
+    </div>
+  );
+}
+
+export function BlockedUserChatInput() {
+  const { isOpen, type: modalType } = useModal();
+
+  const isSidebarProfileOpen = isOpen && modalType === "profile-sidebar";
+  return (
+    <div
+      className={cn(
+        "bg-secondary/60 border border-edge mx-4 mt-4.5 flex items-center justify-between rounded-lg px-6 py-5",
+        isSidebarProfileOpen && "pr-82"
+      )}>
+      <p className="text-center font-medium">
+        You cannot send messages to this user because you have blocked them or
+        they have blocked you.
+      </p>
     </div>
   );
 }

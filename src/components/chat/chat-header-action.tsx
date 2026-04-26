@@ -8,10 +8,13 @@ import {
   IconUserCircle,
   IconUsers,
   IconUsersPlus,
-  IconVideo
+  IconVideo,
+  IconHammer
 } from "@tabler/icons-react";
 import { ChatHeaderType } from "@/components/layouts/chat-header";
 import { SidebarProfileData, useModal } from "@/hooks/use-modal-store";
+import { PartialProfile } from "@/types/friend";
+import { useUser } from "@/hooks/use-user-store";
 
 export function ChatHeaderAction({
   type,
@@ -22,12 +25,15 @@ export function ChatHeaderAction({
   sidebarProfile?: SidebarProfileData;
   conversation?: {
     _id: string;
-    name?: string;
-    type?: string;
+    participants: PartialProfile[];
+    admin: string;
   };
 }) {
   const { open, isOpen, close, type: modalType } = useModal();
   const isSidebarOpen = isOpen && modalType === "profile-sidebar";
+
+  const { user } = useUser();
+  const isGroupAdmin = user?.id && conversation?.admin === user.id;
 
   return (
     <div className="flex items-center gap-3">
@@ -39,25 +45,29 @@ export function ChatHeaderAction({
           <ActionTooltip label="Start Video Call" side="bottom">
             <IconVideo className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
           </ActionTooltip>
-          <ActionTooltip
-            label={type === "group" ? "Invite Friends" : "Add Friends to DM"}
-            side="bottom">
-            <IconUsersPlus
-              onClick={() =>
-                type === "group" && conversation?._id
-                  ? open("add-group-members", { conversation })
-                  : undefined
-              }
-              className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
-            />
-          </ActionTooltip>
           {type === "group" && conversation?._id && (
-            <ActionTooltip label="Edit group" side="bottom">
-              <IconPencil
-                onClick={() => open("edit-group", { conversation })}
-                className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
-              />
-            </ActionTooltip>
+            <>
+              <ActionTooltip label={"Invite Friends"} side="bottom">
+                <IconUsersPlus
+                  onClick={() => open("add-group-members", { conversation })}
+                  className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
+                />
+              </ActionTooltip>
+              <ActionTooltip label="Edit group" side="bottom">
+                <IconPencil
+                  onClick={() => open("edit-group", { conversation })}
+                  className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
+                />
+              </ActionTooltip>
+              {isGroupAdmin && (
+                <ActionTooltip label="Kick Members" side="bottom">
+                  <IconHammer
+                    onClick={() => open("kick-group-members", { conversation })}
+                    className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
+                  />
+                </ActionTooltip>
+              )}
+            </>
           )}
         </>
       )}
