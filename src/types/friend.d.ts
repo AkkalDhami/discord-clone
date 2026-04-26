@@ -23,8 +23,9 @@ export type PopulatedFriendship = {
 export type PartialFriendship = {
   _id: string;
   blockedBy: string;
+  status: "active" | "blocked";
   friend: PartialProfile;
-  createdAt: Date;
+  createdAt?: Date;
 };
 
 export type PartialProfile = Pick<

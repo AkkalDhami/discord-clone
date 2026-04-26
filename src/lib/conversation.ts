@@ -108,7 +108,7 @@ export async function getFriendConversation({
 
     const users = await Profile.find({
       _id: { $in: conversation?.participants }
-    }).select("username _id email name avatar");
+    }).select("username _id email name avatar createdAt");
 
     return { conversation, users };
   } catch (error) {

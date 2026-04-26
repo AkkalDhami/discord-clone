@@ -7,7 +7,7 @@ interface IFriendship {
   friend: Types.ObjectId;
   blockedBy: Types.ObjectId | null;
 
-  status: "active" | "block";
+  status: "active" | "blocked";
 
   createdAt: Date;
 }
