@@ -87,7 +87,9 @@ export function NewChatModal() {
       if (res.success) {
         toast.success(res.message || "Conversation removed successfully");
         handleClose();
-        router.push(`/conversations/${res?.data?._id}`);
+        router.push(
+          `/conversations/${isGroup ? res?.data?._id : selected[0]._id}`
+        );
         router.refresh();
       } else {
         toast.error(res.message || "Failed to create conversation");
