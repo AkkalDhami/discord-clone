@@ -33,6 +33,7 @@ import { EditGroupModal } from "@/components/modals/edit-group-modal";
 import { AddGroupMembersModal } from "@/components/modals/add-group-members-modal";
 import { KickGroupMemberModal } from "@/components/modals/kick-group-member-modal";
 import { LeaveGroupModal } from "@/components/modals/leave-group-modal";
+import { DeleteConversationModal } from "@/components/modals/delete-conversation-modal";
 
 export function ModalProvider() {
   return (
@@ -50,6 +51,7 @@ export function ModalProvider() {
       <NewChatModal />
       <EditGroupModal />
       <KickGroupMemberModal />
+      <DeleteConversationModal />
 
       <AddGroupMembersModal />
       <LeaveGroupModal />

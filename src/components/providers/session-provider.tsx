@@ -14,7 +14,7 @@ function SessionStateSync({ children }: { children: React.ReactNode }) {
     console.error({ error });
   }
 
-  console.log({ user });
+  // console.log({ user });
 
   useEffect(() => {
     if (user) {

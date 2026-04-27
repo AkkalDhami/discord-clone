@@ -41,7 +41,7 @@ export default function RootLayout({
       lang="en"
       suppressHydrationWarning
       className={`${sans.variable} font-sans ${mono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
+      <body className="selection:bg-primary-600 flex min-h-full flex-col selection:text-white">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
