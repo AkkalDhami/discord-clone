@@ -18,7 +18,7 @@ export function MobileDirectChatSidebar() {
       <SheetContent
         side="left"
         className={
-          "flex flex-row items-center gap-0 pt-12 data-[side=left]:w-[98%]"
+          "flex flex-row items-center gap-0 border-transparent pt-12 data-[side=left]:w-[98%]"
         }>
         <NavigationSidebar className="border-edge p-2 pt-3" />
         <div className="flex-1 pt-4 pr-1">

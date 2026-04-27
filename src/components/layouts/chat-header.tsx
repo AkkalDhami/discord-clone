@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { SidebarProfileData, useModal } from "@/hooks/use-modal-store";
 import { GroupChatLogo } from "@/components/chat/chat-item";
 import { PopulatedConversation } from "@/components/chat/direct-chat-section";
+import { ActionTooltip } from "@/components/common/action-tooltip";
 
 export type ChatHeaderType = "channel" | "member" | "friend" | "group";
 
@@ -28,7 +29,7 @@ export function ChatHeader({
   sidebarProfile,
   conversation
 }: ChatHeaderProps) {
-  const { isOpen, type: modalType } = useModal();
+  const { isOpen, type: modalType, open } = useModal();
   const isSidebarOpen = isOpen && modalType === "profile-sidebar";
 
   const displayName = conversation?.name
@@ -44,10 +45,9 @@ export function ChatHeader({
     <div
       className={cn(
         "border-edge mt-4 flex items-center justify-between border-y px-4 pt-3 pb-3",
-        isSidebarOpen && "pr-84",
-        type === "group" && "pt-2 pb-2"
+        isSidebarOpen && "lg:pr-84",
+        type === "group" && "pt-1.5 pb-1.5"
       )}>
-      {/* <div className="border-edge fixed top-6 z-10 flex w-[calc(100vw-20rem)] items-center border-y bg-neutral-100 px-4 py-3 pr-110 dark:bg-neutral-950"> */}
       <div className="relative flex items-center gap-2 px-8 md:px-0">
         {type === "channel" && (
           <>
@@ -65,17 +65,23 @@ export function ChatHeader({
           <UserAvatar name={name} src={imageUrl} className="size-6" />
         )}
         {type === "group" && conversation && (
-          <div className="flex items-center">
-            <GroupChatLogo conversation={conversation} className="size-6" />
-            <div className="ml-4">
-              <h3 className="line-clamp-1 text-sm font-medium">
-                {displayName}
-              </h3>
-              <p className="text-muted-foreground text-xs">
-                {conversation?.participants.length} Members
-              </p>
+          <ActionTooltip label="Edit group" side="bottom">
+            <div
+              onClick={() =>
+                open("edit-group", {
+                  conversation
+                })
+              }
+              className="hover:bg-secondary flex cursor-pointer items-center rounded-lg px-2 py-0.5">
+              <GroupChatLogo conversation={conversation} className="size-6" />
+              <div className="ml-1 flex flex-col items-start sm:ml-4">
+                <h3 className="text-sm font-medium">{displayName}</h3>
+                <p className="text-muted-foreground hidden text-xs sm:flex">
+                  {conversation?.participants.length} Members
+                </p>
+              </div>
             </div>
-          </div>
+          </ActionTooltip>
         )}
 
         {type !== "group" && (

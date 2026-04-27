@@ -40,21 +40,20 @@ import Link from "next/link";
 import { PartialProfile } from "@/types/friend";
 
 export function ProfileSidebar() {
-  const { isOpen, data, type } = useModal();
+  const { isOpen, type, data } = useModal();
 
   const isSidebarOpen = isOpen && type === "profile-sidebar";
 
   const { sidebarProfile } = data;
 
-  if (!sidebarProfile) {
-    return;
-  }
-
   return (
     isSidebarOpen && (
-      <aside className="border-edge no-scrollbar bg-popover fixed right-1 z-20 mb-6 flex h-full w-80 flex-col overflow-y-auto border-x border-b pt-4">
-        {sidebarProfile.type === "direct" ? (
-          <DirectProfileSidebar {...sidebarProfile} />
+      <aside
+        className={cn(
+          "border-edge no-scrollbar bg-popover fixed right-1 z-20 mb-6 flex h-full w-80 flex-col overflow-y-auto border-x border-b pt-4"
+        )}>
+        {sidebarProfile?.type === "direct" ? (
+          <DirectProfileSidebar />
         ) : (
           <GroupSidebar {...sidebarProfile} />
         )}
@@ -63,18 +62,16 @@ export function ProfileSidebar() {
   );
 }
 
-function DirectProfileSidebar({
-  mutualFriends,
-  mutualServers,
-  friend,
-  servers
-}: Pick<
-  SidebarProfileData,
-  "mutualFriends" | "mutualServers" | "friend" | "servers"
->) {
-  const { isOpen, close, type, open } = useModal();
+function DirectProfileSidebar() {
+  const { isOpen, close, type, open, data } = useModal();
 
   const isSidebarOpen = isOpen && type === "profile-sidebar";
+
+  const { sidebarProfile } = data;
+  const friend = sidebarProfile?.friend;
+  const mutualFriends = sidebarProfile?.mutualFriends || [];
+  const mutualServers = sidebarProfile?.mutualServers || [];
+  const servers = sidebarProfile?.servers || [];
 
   return (
     <>
