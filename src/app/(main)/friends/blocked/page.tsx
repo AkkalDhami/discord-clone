@@ -1,6 +1,6 @@
-import { EmptyFriend } from "@/components/friends/empty-friend";
-import { BlockedFriendCard } from "@/components/friends/friend-card";
-import { FriendSearch } from "@/components/friends/friend-search";
+import { EmptyFriend } from "@/components/friend/empty-friend";
+import { BlockedFriendCard } from "@/components/friend/friend-card";
+import { FriendSearch } from "@/components/friend/friend-search";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
 

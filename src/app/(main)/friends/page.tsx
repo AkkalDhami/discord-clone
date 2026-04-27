@@ -1,4 +1,4 @@
-import { EmptyFriend } from "@/components/friends/empty-friend";
+import { EmptyFriend } from "@/components/friend/empty-friend";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Friendship from "@/models/friendship.model";
 import { redirect } from "next/navigation";

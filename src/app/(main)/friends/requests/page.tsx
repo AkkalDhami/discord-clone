@@ -1,9 +1,9 @@
-import { EmptyFriend } from "@/components/friends/empty-friend";
+import { EmptyFriend } from "@/components/friend/empty-friend";
 import {
   FriendRequestCard,
   SentFriendRequestCard
-} from "@/components/friends/friend-request-card";
-import { FriendSearch } from "@/components/friends/friend-search";
+} from "@/components/friend/friend-request-card";
+import { FriendSearch } from "@/components/friend/friend-search";
 import { Button } from "@/components/ui/button";
 import {
   Collapsible,
@@ -118,12 +118,12 @@ export default async function Page(props: PageProps<"/friends/requests">) {
               <CollapsibleTrigger
                 className={"w-full text-start"}
                 render={
-                  <h2
-                    className={
-                      "border-edge text-muted-primary cursor-pointer border-b px-3 py-3 text-lg font-normal"
-                    }>
+                  <Button
+                    variant="ghost"
+                    className="text-muted-primary w-full font-normal">
                     Sent Requests - {outgoing.length}
-                  </h2>
+                    <IconChevronDown className="ml-auto -rotate-90 group-data-panel-open/button:rotate-0" />
+                  </Button>
                 }></CollapsibleTrigger>
               <CollapsibleContent className={"w-full"}>
                 <div className="mt-2 space-y-2">
