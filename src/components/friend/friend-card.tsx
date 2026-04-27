@@ -62,6 +62,7 @@ export function FriendCard({ friend }: { friend: string }) {
           <ActionTooltip label="More" size="sm">
             <DropdownMenu>
               <DropdownMenuTrigger
+                nativeButton={false}
                 render={
                   <IconDotsVertical className="hover:text-accent-foreground bg-background text-muted-foreground flex size-10 cursor-pointer items-center justify-center rounded-full p-2" />
                 }></DropdownMenuTrigger>
