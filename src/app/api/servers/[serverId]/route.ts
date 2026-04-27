@@ -8,6 +8,7 @@ import Channel from "@/models/channel.model";
 import Member from "@/models/member.model";
 
 import Server from "@/models/server.model";
+import { utapi } from "@/server/uploadting";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 import { EditServerSchema, EditServerSchemaType } from "@/validators/server";
@@ -64,16 +65,15 @@ export const PATCH = AsyncHandler(
       });
     }
 
-    const server = await Server.findByIdAndUpdate(
-      serverId,
-      {
-        name,
-        logo
-      },
-      {
-        new: true
-      }
-    );
+    if (logo && existingServer?.logo) {
+      const logoArray = existingServer?.logo?.split("/");
+      await utapi.deleteFiles(logoArray[logoArray.length - 1]);
+    }
+
+    const server = await Server.findByIdAndUpdate(serverId, {
+      name,
+      logo
+    });
 
     return ApiResponse({
       statusCode: STATUS_CODES.OK,
@@ -156,6 +156,10 @@ export const DELETE = AsyncHandler(
         await Member.deleteMany({ serverId: existingServer._id }, { session });
 
         await Server.findByIdAndDelete(existingServer._id, { session });
+
+        const logo = existingServer?.logo?.split("/");
+
+        await utapi.deleteFiles(logo[logo.length - 1]);
       });
 
       return ApiResponse({
