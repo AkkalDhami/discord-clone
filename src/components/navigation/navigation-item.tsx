@@ -33,14 +33,14 @@ export function NavigationItem({ id, logo, name }: NavigationItemProps) {
           <div className="group relative mx-3 flex size-10 overflow-hidden">
             {logo ? (
               <img
-                className="size-9 rounded-xl object-cover object-center sm:size-10"
+                className="size-10 rounded-xl object-cover object-center"
                 src={logo}
                 alt={name}
               />
             ) : (
               <div
                 className={cn(
-                  "bg-secondary flex size-9 items-center justify-center rounded-xl text-lg font-medium transition-all hover:bg-indigo-500 hover:text-white sm:size-10 dark:hover:bg-indigo-500",
+                  "bg-secondary flex size-10 items-center justify-center rounded-xl text-lg font-medium transition-all hover:bg-indigo-500 hover:text-white dark:hover:bg-indigo-500",
                   params?.serverId === id && "bg-indigo-500 text-white"
                 )}>
                 {removeLeadingEmoji(name)?.charAt(0)?.toUpperCase()}

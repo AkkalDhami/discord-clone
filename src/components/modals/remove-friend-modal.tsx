@@ -14,6 +14,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useFriend } from "@/hooks/use-friend";
+import { UserAvatar } from "../common/user-avatar";
 
 export function RemoveFriendModal() {
   const { close, isOpen, type, data } = useModal();
@@ -50,16 +51,26 @@ export function RemoveFriendModal() {
       }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Remove &lsquo;{friend.name}&rsquo;</DialogTitle>
+          <DialogTitle>Remove Friend</DialogTitle>
           <DialogDescription className={"text-base"}>
-            Are you sure you want to remove{" "}
-            <strong className="text-muted-primary font-medium">
-              &lsquo;@{friend.username}&rsquo;
-            </strong>{" "}
-            from your friends?
+            Are you sure you want to remove this friend?
+            <div className="mt-1 flex items-center gap-1.5">
+              <UserAvatar
+                name={friend.name}
+                src={friend.avatar?.url}
+                className="size-10"
+              />
+              <div className="flex w-full flex-col">
+                <h3 className="text-accent-foreground text-[15px]">
+                  {friend.name}
+                </h3>
+
+                <p className="text-muted-primary text-xs">@{friend.username}</p>
+              </div>
+            </div>
           </DialogDescription>
 
-          <ul className="text-muted-foreground list-disc list-inside mt-3 space-y-2 text-sm">
+          <ul className="text-muted-foreground border-edge mt-1 list-inside list-disc space-y-2 border-y py-2 text-sm">
             <li className="flex items-start gap-2">
               <span className="mt-2 size-1.5 shrink-0 rounded-full bg-red-500" />
               <span>
@@ -110,7 +121,7 @@ export function RemoveFriendModal() {
             type="button"
             onClick={close}
             variant={"outline"}
-            className={"h-10 py-2 text-base font-medium"}>
+            className={"h-9 py-2 text-base font-medium"}>
             Cancel
           </Button>
           <Button
@@ -118,7 +129,7 @@ export function RemoveFriendModal() {
             variant={"destructive"}
             disabled={isRemovingFriend}
             onClick={onLeaveServer}
-            className={"h-10 py-2 text-base font-medium"}>
+            className={"h-9 py-2 text-base font-medium"}>
             {isRemovingFriend ? (
               <>
                 <Spinner /> Removing...

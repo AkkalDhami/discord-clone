@@ -249,7 +249,7 @@ export function AddGroupMembersModal() {
             <Button
               type="submit"
               variant="primary"
-              disabled={isAddingGroupMembers}>
+              disabled={isAddingGroupMembers || filteredFriends.length === 0}>
               {isAddingGroupMembers ? (
                 <>
                   <Spinner /> Adding...

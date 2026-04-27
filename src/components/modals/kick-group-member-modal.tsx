@@ -101,7 +101,15 @@ export function KickGroupMemberModal() {
                   </div>
                   <div className="flex items-center gap-2">
                     {isGroupAdmin && (
-                      <IconCrownFilled className="size-4 text-orange-500" />
+                      <button
+                        type="button"
+                        disabled={
+                          !isAdmin || isGroupAdmin || isKickingGroupMember
+                        }
+                        onClick={() => onKickMember(participant._id)}
+                        className="flex size-9 items-center justify-center rounded-full bg-orange-500/10 p-0 text-orange-600">
+                        <IconCrownFilled className="size-4" />
+                      </button>
                     )}
 
                     {!isGroupAdmin && (

@@ -14,37 +14,35 @@ import { useModal } from "@/hooks/use-modal-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useConversation } from "@/hooks/use-conversaton";
-import { useUser } from "@/hooks/use-user-store";
 
-export function LeaveGroupModal() {
+export function DeleteConversationModal() {
   const { close, isOpen, type, data } = useModal();
   const router = useRouter();
-  const isModalOpen = isOpen && type === "leave-group";
+  const isModalOpen = isOpen && type === "delete-conversation";
 
-  const { removeGroupMembers, isRemovingGroupMembers } = useConversation();
+  const { deleteConversation, isDeletingConversation } = useConversation();
+
   const { conversation } = data;
-  const { user } = useUser();
-  if (!conversation || !user) {
+  if (!conversation) {
     return;
   }
 
   const onLeaveServer = async () => {
     try {
-      const res = await removeGroupMembers({
-        conversationId: conversation?._id?.toString(),
-        participants: [user?.id as string]
+      const res = await deleteConversation({
+        conversationId: conversation._id
       });
+
       if (res?.success) {
         close();
-        toast.success(res.message);
-        router.push("/conversations");
         router.refresh();
+        toast.success(res.message || "Group conversation deleted successfully");
       } else {
-        toast.error(res.message);
+        toast.error(res.message || "Failed to delete group conversation");
       }
     } catch (error) {
       console.log({ error });
-      toast.error("Failed to leave conversation");
+      toast.error("Failed to delete group conversation");
     }
   };
   return (
@@ -55,12 +53,20 @@ export function LeaveGroupModal() {
       }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Leave &apos;{conversation?.name}&apos;</DialogTitle>
+          <DialogTitle>
+            Delete &lsquo;{conversation?.name || "Group Conversation"}&rsquo;
+          </DialogTitle>
           <DialogDescription className={"text-base"}>
-            Are you sure you want to leave <strong>{conversation?.name}</strong>
-            ? You won&apos;t be able to re-join this conversation unless you are
-            re-invited.
+            Are you sure you want to delete{" "}
+            <strong className="text-muted-primary font-medium">
+              &lsquo;{conversation?.name || "Group"}&rsquo;
+            </strong>{" "}
           </DialogDescription>
+
+          <p className="text-base">
+            All messages, users, and related data in the group will be
+            permanently deleted. This action cannot be undone.
+          </p>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
           <Button
@@ -73,15 +79,15 @@ export function LeaveGroupModal() {
           <Button
             type="button"
             variant={"destructive"}
-            disabled={isRemovingGroupMembers}
+            disabled={isDeletingConversation}
             onClick={onLeaveServer}
             className={"h-10 py-2 text-base font-medium"}>
-            {isRemovingGroupMembers ? (
+            {isDeletingConversation ? (
               <>
-                <Spinner /> Leaving...
+                <Spinner /> Deleting...
               </>
             ) : (
-              "Leave Group"
+              "Delete"
             )}
           </Button>
         </div>

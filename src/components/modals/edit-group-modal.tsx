@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,20 +12,15 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  Field,
-  FieldGroup,
-  FieldLabel,
-  FieldError
-} from "@/components/ui/field";
+import { FieldGroup } from "@/components/ui/field";
 import { useModal } from "@/hooks/use-modal-store";
 import { useConversation } from "@/hooks/use-conversaton";
 import {
   ConversationUpdateSchema,
   type ConversationUpdateType
 } from "@/validators/conversation";
+import { EmojiInput } from "@/components/common/emoji-input";
 
 export function EditGroupModal() {
   const router = useRouter();
@@ -100,22 +95,11 @@ export function EditGroupModal() {
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4 px-5 pb-5">
           <FieldGroup>
-            <Controller
-              name="name"
+            <EmojiInput
+              label="Group name"
               control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Group name</FieldLabel>
-                  <Input
-                    {...field}
-                    placeholder="Enter a new group name"
-                    aria-invalid={fieldState.invalid}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
+              name="name"
+              placeholder="Enter a new group name"
             />
           </FieldGroup>
 
