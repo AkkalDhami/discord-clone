@@ -14,7 +14,7 @@ export default async function Layout({
       <aside className="border-edge bg-background fixed inset-y-0 z-20 hidden h-full w-80 flex-col border-x pt-4 sm:w-86 md:flex">
         <DirectChatSidebar />
       </aside>
-      <div className="bg-background fixed top-6 left-2 z-20 md:hidden">
+      <div className="bg-background fixed top-5 left-2 z-20 sm:top-6 md:hidden">
         <MobileDirectChatSidebar />
       </div>
       <div className="border-edge mr-1 flex-1 overflow-x-auto border-r md:pl-86">
