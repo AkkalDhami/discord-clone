@@ -131,8 +131,7 @@ export const PATCH = AsyncHandler(
             $each: newIds.map(id => new Types.ObjectId(id))
           }
         }
-      },
-      { new: true }
+      }
     );
 
     return ApiResponse({
@@ -209,8 +208,8 @@ export const PUT = AsyncHandler(
 
     if (!isParticipant) {
       return ApiResponse({
-        statusCode: STATUS_CODES.UNAUTHORIZED,
-        message: "You are not authorized to leave this group",
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "You are not a member of this group",
         success: false
       });
     }
@@ -221,9 +220,6 @@ export const PUT = AsyncHandler(
         $pull: {
           participants: { $in: participants.map(id => new Types.ObjectId(id)) }
         }
-      },
-      {
-        new: true
       }
     );
 
@@ -231,7 +227,7 @@ export const PUT = AsyncHandler(
       statusCode: STATUS_CODES.OK,
       success: true,
       data: updatedConversation,
-      message: "Group conversation left successfully"
+      message: "You left the group"
     });
   }
 );
@@ -327,9 +323,6 @@ export const DELETE = AsyncHandler(
         $pull: {
           participants: { $in: participants.map(id => new Types.ObjectId(id)) }
         }
-      },
-      {
-        new: true
       }
     );
 
@@ -363,3 +356,5 @@ export const DELETE = AsyncHandler(
     });
   }
 );
+
+// https://yinfzs62id.ufs.sh/f/BeQ0UK7dOo0s2xn53ciDyls97t2KU6gY3QRHIpmiX5FEjrJc
