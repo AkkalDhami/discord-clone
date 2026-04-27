@@ -12,6 +12,7 @@ import { useFriend } from "@/hooks/use-friend";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Spinner } from "@/components/ui/spinner";
+import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
 
 export function GroupChatWelcome({
   conversation
@@ -32,29 +33,37 @@ export function GroupChatWelcome({
       "...";
 
   return (
-    <div className="flex flex-col py-4 space-y-3">
+    <div className="flex flex-col space-y-3 px-4 py-4">
       {conversation?.logo?.url ? (
         <UserAvatar
           src={conversation?.logo?.url}
-          name={conversation?.name}
-          className={"size-12"}
+          name={removeLeadingEmoji(conversation?.name || "")}
+          className={"size-14 text-3xl"}
         />
       ) : (
-        <div className="relative ml-4 h-18 w-14">
-          {conversation?.participants?.slice(0, 3).map((participant, index) => (
-            <UserAvatar
-              key={participant._id}
-              src={participant?.avatar?.url}
-              name={participant?.name}
-              className={cn(
-                "border-background absolute size-14 border-4",
-                index === 0 && "top-2 -left-2 z-10",
-                index === 1 && "-top-2 left-8 z-20",
-                index === 2 && "top-8 left-8 z-30"
-              )}
-            />
-          ))}
-        </div>
+        <>
+          <UserAvatar
+            name={removeLeadingEmoji(conversation?.name || "")}
+            className={"size-14 text-3xl sm:hidden"}
+          />
+          <div className="relative ml-4 hidden h-18 w-14 sm:block">
+            {conversation?.participants
+              ?.slice(0, 3)
+              .map((participant, index) => (
+                <UserAvatar
+                  key={participant._id}
+                  src={participant?.avatar?.url}
+                  name={participant?.name}
+                  className={cn(
+                    "border-background absolute size-14 border-4",
+                    index === 0 && "top-2 -left-2 z-10",
+                    index === 1 && "-top-2 left-8 z-20",
+                    index === 2 && "top-8 left-8 z-30"
+                  )}
+                />
+              ))}
+          </div>
+        </>
       )}
       <h2 className="mt-2 text-3xl font-medium">{displayName}</h2>
       <p className="text-muted-primary text-lg">
@@ -62,7 +71,7 @@ export function GroupChatWelcome({
         <span className="text-accent-foreground">{displayName}</span> group.
       </p>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         <Button
           variant={"primary"}
           onClick={() => {
@@ -120,21 +129,21 @@ export function DirectChatWelcome({
   }
 
   return (
-    <div className="flex flex-col space-y-3">
+    <div className="flex flex-col space-y-3 px-4">
       <UserAvatar
         src={friend?.avatar?.url}
         name={friend?.name}
         className={"size-14"}
       />
 
-      <h2 className="mt-2 text-3xl font-medium">{friend?.name}</h2>
+      <h2 className="text-3xl font-medium">{friend?.name}</h2>
       <h2 className="text-xl font-normal">@{friend?.username}</h2>
       <p className="text-muted-primary text-lg">
         This is the beginning of your direct message history with{" "}
         <span className="text-accent-foreground">@{friend.username}</span>.
       </p>
 
-      <div className="flex items-center gap-4">
+      <div className="flex flex-wrap items-center gap-3">
         <Button
           variant={"outline"}
           onClick={() => {

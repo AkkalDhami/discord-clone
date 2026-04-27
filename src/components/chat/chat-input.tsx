@@ -29,16 +29,22 @@ import { Controller, useForm } from "react-hook-form";
 import { IconMoodSmile, IconPlus, IconSend } from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { cn } from "@/lib/utils";
+import { useMessage } from "@/hooks/use-message";
+import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 type ChatInputProps = {
-  apiUrl: string;
   query: Record<string, unknown>;
   name: string;
-  type: "channel" | "member" | "group";
+  type: "channel" | "member" | "group" | "friend";
 };
+//conversationId
 
-export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
+export function ChatInput({ query, name, type }: ChatInputProps) {
   const { open, isOpen, type: modalType } = useModal();
+  const router = useRouter();
+
+  const { createMessage, isMessageCreating } = useMessage();
 
   const isSidebarProfileOpen = isOpen && modalType === "profile-sidebar";
 
@@ -49,16 +55,34 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
     }
   });
 
-  const onSubmit = (data: ChatInputType) => {
-    console.log(data);
+  const onSubmit = async (data: ChatInputType) => {
+    try {
+      const res = await createMessage({
+        content: data.content,
+        conversationId: query.conversationId as string
+      });
+      console.log(res);
 
-    form.reset();
+      if (res.success) {
+        toast.success(res.message || "Message sent successfully");
+        form.reset();
+        return;
+      } else {
+        toast.error(res.message || "Failed to send message");
+        return;
+      }
+    } catch (error) {
+      console.error({ error });
+      toast.error("Failed to send message");
+    } finally {
+      router.refresh();
+    }
   };
 
-  const isLoading = form.formState.isSubmitting;
+  const isLoading = form.formState.isSubmitting || isMessageCreating;
 
   return (
-    <div className={cn("px-3 py-2", isSidebarProfileOpen && "pr-82")}>
+    <div className={cn("px-3 py-2", isSidebarProfileOpen && "lg:pr-82")}>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <FieldGroup>
           <Controller
@@ -73,6 +97,12 @@ export function ChatInput({ apiUrl, query, name, type }: ChatInputProps) {
                     id="chat-input"
                     className="no-scrollbar h-10 resize-none"
                     placeholder={`Message  ${type === "channel" ? `#${name}` : type === "member" ? `@${name}` : `${name}`}`}
+                    onKeyUp={e => {
+                      if (e.key === "Enter" && e.ctrlKey) {
+                        e.preventDefault();
+                        form.handleSubmit(onSubmit)();
+                      }
+                    }}
                   />
                   <InputGroupAddon>
                     <IconPlus
@@ -150,8 +180,8 @@ export function BlockedUserChatInput() {
   return (
     <div
       className={cn(
-        "bg-secondary/60 border border-edge mx-4 mt-4.5 flex items-center justify-between rounded-lg px-6 py-5",
-        isSidebarProfileOpen && "pr-82"
+        "bg-secondary/60 border-edge mx-4 mt-4.5 flex items-center justify-between rounded-lg border px-6 py-5",
+        isSidebarProfileOpen && "lg:pr-82"
       )}>
       <p className="text-center font-medium">
         You cannot send messages to this user because you have blocked them or

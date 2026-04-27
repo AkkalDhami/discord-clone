@@ -5,6 +5,7 @@ import { UserAvatar } from "@/components/common/user-avatar";
 import { PopulatedConversation } from "@/components/chat/direct-chat-section";
 import { IconX } from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
+import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
 
 export function GroupChatItem({ c }: { c: PopulatedConversation }) {
   const params = useParams();
@@ -44,7 +45,6 @@ export function GroupChatItem({ c }: { c: PopulatedConversation }) {
         onClick={() => {
           open("leave-group", {
             conversation: c
-            // leftUser: participants[0]
           });
         }}
         className="text-muted-foreground hover:text-accent-foreground size-6 cursor-pointer p-1 opacity-0 group-hover:opacity-100"
@@ -63,26 +63,33 @@ export function GroupChatLogo({
   return conversation?.logo?.url ? (
     <UserAvatar
       src={conversation?.logo?.url}
-      name={conversation?.name}
+      name={removeLeadingEmoji(conversation?.name || "")}
       className={cn("size-8", className)}
     />
   ) : (
-    <div className="relative h-8 w-7">
-      {conversation?.participants?.slice(0, 3).map((participant, index) => (
-        <UserAvatar
-          key={participant._id}
-          src={participant?.avatar?.url}
-          name={participant?.name}
-          className={cn(
-            "border-background absolute size-7 border-2",
-            index === 0 && "top-2 -left-1 z-10",
-            index === 1 && "-top-1 left-3 z-20",
-            index === 2 && "top-3 left-3 z-30",
-            className
-          )}
-        />
-      ))}
-    </div>
+    <>
+      <UserAvatar
+        name={removeLeadingEmoji(conversation?.name || "")}
+        className={cn("size-8 sm:hidden", className)}
+      />
+
+      <div className="relative hidden h-8 w-7 sm:block">
+        {conversation?.participants?.slice(0, 3).map((participant, index) => (
+          <UserAvatar
+            key={participant._id}
+            src={participant?.avatar?.url}
+            name={participant?.name}
+            className={cn(
+              "border-background absolute size-7 border-2",
+              index === 0 && "top-2 -left-1 z-10",
+              index === 1 && "-top-1 left-3 z-20",
+              index === 2 && "top-3 left-3 z-30",
+              className
+            )}
+          />
+        ))}
+      </div>
+    </>
   );
 }
 

@@ -13,7 +13,7 @@ export function DirectChatAction() {
       <Link href={"/friends"} className="group relative cursor-pointer">
         <div
           className={cn(
-            "bg-primary absolute top-1/2 -left-8.5 w-1 -translate-y-1/2 rounded-r-full transition-all",
+            "bg-primary absolute top-[2px] -left-8.5 w-1 rounded-r-full transition-all",
             !(
               pathname.includes("/friends") ||
               pathname.includes("/conversations")
@@ -25,7 +25,7 @@ export function DirectChatAction() {
         />
         <div
           className={cn(
-            "bg-secondary group-hover:bg-primary-500 dark:group-hover:bg-primary-500 flex size-10 items-center justify-center rounded-xl transition-all sm:size-10",
+            "bg-secondary group-hover:bg-primary-500 dark:group-hover:bg-primary-500 flex size-11 items-center justify-center rounded-xl transition-all",
             (pathname.includes("/friends") ||
               pathname.includes("/conversations")) &&
               "bg-primary-500 text-white"
