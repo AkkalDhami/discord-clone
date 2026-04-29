@@ -20,6 +20,10 @@ linkify.add("localhost:", {
   }
 });
 
+linkify.set({
+  fuzzyEmail: false
+});
+
 export function renderMessageLinks(text: string) {
   const matches = linkify.match(text);
 

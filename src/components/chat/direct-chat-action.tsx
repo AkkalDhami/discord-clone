@@ -17,7 +17,7 @@ export function DirectChatAction() {
             !(
               pathname.includes("/friends") ||
               pathname.includes("/conversations")
-            ) && "group-hover:h-5",
+            ) && "group-hover:top-1/2 group-hover:h-5",
             (pathname.includes("/friends") ||
               pathname.includes("/conversations")) &&
               "h-9"

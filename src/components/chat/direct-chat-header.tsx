@@ -11,7 +11,7 @@ import { NotificationBadge } from "@/components/common/notification-badge";
 export function DirectChatHeader() {
   const pathname = usePathname();
   return (
-    <div className="border-edge mt-4 flex w-full items-center justify-between gap-6 border-y px-4 py-2 pl-12">
+    <div className="border-edge mt-4 flex w-full items-center justify-between gap-6 border-y px-4 py-2 pl-12 sm:pl-4">
       <div className="item-center flex gap-3 sm:gap-4">
         <div className="flex items-center gap-1 font-medium">
           <IconUsers className="size-4" />

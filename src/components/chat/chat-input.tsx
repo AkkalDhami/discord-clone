@@ -25,26 +25,33 @@ import {
 } from "@/components/ui/emoji-picker";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, useForm } from "react-hook-form";
-import { IconMoodSmile, IconPlus, IconSend } from "@tabler/icons-react";
+import { Controller, useForm, useWatch } from "react-hook-form";
+import {
+  IconMoodSmile,
+  IconPlus,
+  IconSend,
+  IconUserKey
+} from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { cn } from "@/lib/utils";
 import { useMessage } from "@/hooks/use-message";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation";
+
+import { useQueryClient } from "@tanstack/react-query";
+import { PartialProfile } from "@/types/friend";
 
 type ChatInputProps = {
   query: Record<string, unknown>;
   name: string;
   type: "channel" | "member" | "group" | "friend";
 };
-//conversationId
 
 export function ChatInput({ query, name, type }: ChatInputProps) {
-  const { open, isOpen, type: modalType } = useModal();
-  const router = useRouter();
+  const queryClient = useQueryClient();
 
-  const { createMessage, isMessageCreating } = useMessage();
+  const { open, isOpen, type: modalType } = useModal();
+
+  const { createMessage } = useMessage();
 
   const isSidebarProfileOpen = isOpen && modalType === "profile-sidebar";
 
@@ -61,11 +68,21 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
         content: data.content,
         conversationId: query.conversationId as string
       });
-      console.log(res);
+
+      form.reset();
+      form.setFocus("content");
 
       if (res.success) {
-        toast.success(res.message || "Message sent successfully");
-        form.reset();
+        await queryClient.invalidateQueries({
+          queryKey: ["messages", query.conversationId]
+        });
+        requestAnimationFrame(() => {
+          const container = document.getElementById("messages-container");
+          container?.scrollTo({
+            top: container?.scrollHeight ?? 0,
+            behavior: "smooth"
+          });
+        });
         return;
       } else {
         toast.error(res.message || "Failed to send message");
@@ -74,12 +91,13 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
     } catch (error) {
       console.error({ error });
       toast.error("Failed to send message");
-    } finally {
-      router.refresh();
     }
   };
 
-  const isLoading = form.formState.isSubmitting || isMessageCreating;
+  const content = useWatch({
+    control: form.control,
+    name: "content"
+  });
 
   return (
     <div className={cn("px-3 py-2", isSidebarProfileOpen && "lg:pr-82")}>
@@ -93,7 +111,6 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
                 <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input items-start in-data-[slot=combobox-content]:focus-within:border-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0 [[data-slot=input-group-control]:focus-visible]:border-none">
                   <InputGroupTextarea
                     {...field}
-                    disabled={isLoading}
                     id="chat-input"
                     className="no-scrollbar h-10 resize-none"
                     placeholder={`Message  ${type === "channel" ? `#${name}` : type === "member" ? `@${name}` : `${name}`}`}
@@ -158,10 +175,31 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
                     </Popover>
                     <InputGroupButton
                       type="submit"
-                      disabled={isLoading}
-                      className={"rounded-lg px-2 py-4.5"}>
-                      <IconSend className="text-muted-foreground hover:bg-secondary size-5 cursor-pointer rounded-lg" />
+                      className={"group rounded-lg px-2 py-4.5"}>
+                      <IconSend
+                        title="Ctrl + Enter"
+                        className="text-muted-foreground group-hover:bg-secondary group-hover:text-accent-foreground size-5 cursor-pointer rounded-lg"
+                      />
                     </InputGroupButton>
+                    {type === "group" && (
+                      <InputGroupButton
+                        type="button"
+                        onClick={() => {
+                          open("private-user", {
+                            privateMessage: {
+                              conversationId: query.conversationId as string,
+                              participants:
+                                query.participants as PartialProfile[],
+                              content
+                            }
+                          });
+                          form.reset();
+                          form.setFocus("content");
+                        }}
+                        className={"rounded-lg px-2 py-4.5"}>
+                        <IconUserKey className="text-primary-500 size-5 cursor-pointer rounded-lg" />
+                      </InputGroupButton>
+                    )}
                   </InputGroupAddon>
                 </InputGroup>
               </Field>

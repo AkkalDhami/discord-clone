@@ -27,7 +27,7 @@ export default function ThemeToggle({ className }: { className?: string }) {
       variant="ghost"
       size="icon-lg"
       className={cn(
-        "primary-ring rounded-lg bg-transparent dark:bg-transparent dark:hover:bg-transparent",
+        "primary-ring rounded-lg bg-transparent hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent",
         className
       )}
       onClick={toggleTheme}>
