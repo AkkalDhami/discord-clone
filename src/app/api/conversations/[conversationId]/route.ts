@@ -1,6 +1,7 @@
 import { STATUS_CODES } from "@/constants/status-codes";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Conversation from "@/models/conversation.model";
+import Message from "@/models/message.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 import { validateObjectId } from "@/utils/validate-objid";
@@ -65,10 +66,10 @@ export const DELETE = AsyncHandler(
     await Promise.all([
       Conversation.deleteOne({
         _id: conversationId
+      }),
+      Message.deleteMany({
+        conversation: conversationId
       })
-      // Message.deleteMany({
-      //   conversation: conversationId
-      // })
     ]);
 
     return ApiResponse({

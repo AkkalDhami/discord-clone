@@ -78,9 +78,6 @@ export const PATCH = AsyncHandler(async (req: NextRequest) => {
     conversationId,
     {
       name
-    },
-    {
-      new: true
     }
   );
 
