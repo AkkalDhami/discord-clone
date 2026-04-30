@@ -85,6 +85,7 @@ export function AddFriendModal() {
                   <Field data-invalid={fieldState.invalid}>
                     <Input
                       {...field}
+                      autoComplete="off"
                       aria-invalid={fieldState.invalid}
                       className="h-10"
                       placeholder="Enter username"
