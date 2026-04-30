@@ -67,7 +67,7 @@ export default function Login(): React.JSX.Element {
           email: res.data.user.email,
           avatar: res.data.user.avatar
         });
-        router.push("/");
+        router.push("/friends");
         form.reset();
         return;
       } else {

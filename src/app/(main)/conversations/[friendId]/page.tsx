@@ -9,7 +9,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { FriendType } from "@/hooks/use-modal-store";
-import { IFile, IMessage, Server } from "@/interface";
+import { IFile, Server } from "@/interface";
 import {
   getFriendConversation,
   getOrCreateFriendConversation
@@ -18,7 +18,6 @@ import Conversation, { ConversationTypes } from "@/models/conversation.model";
 import Friendship from "@/models/friendship.model";
 
 import Member from "@/models/member.model";
-import Message from "@/models/message.model";
 import Profile from "@/models/profile.model";
 import { PartialProfile } from "@/types/friend";
 import { Types } from "mongoose";
@@ -187,7 +186,7 @@ export default async function Page(
   const isDirectChat = !!friend;
   let directConversation = null;
   let rawGroupConversation = null;
-  let rawMessages = [];
+  let conversationId = null;
 
   if (isDirectChat) {
     directConversation = await getOrCreateFriendConversation({
@@ -195,61 +194,16 @@ export default async function Page(
       participants: [currentUser.id, friend!._id.toString()],
       type: "direct"
     });
+    conversationId = directConversation?._id?.toString();
 
     // console.log({ directConversation });
-
-    rawMessages = await Message.aggregate([
-      {
-        $match: {
-          conversation: new Types.ObjectId(directConversation?._id?.toString())
-        }
-      },
-      {
-        $sort: { createdAt: 1 }
-      },
-      {
-        $limit: 50
-      },
-      {
-        $lookup: {
-          from: "profiles",
-          localField: "sender",
-          foreignField: "_id",
-          as: "sender"
-        }
-      },
-      { $unwind: "$sender" }
-    ]);
   } else {
     rawGroupConversation = await getFriendConversation({
       cId: conversationInDb?._id?.toString(),
       participants: [currentUser.id],
       type: "group"
     });
-
-    rawMessages = await Message.aggregate([
-      {
-        $match: {
-          conversation: new Types.ObjectId(conversationInDb?._id?.toString()),
-          deleted: false
-        }
-      },
-      {
-        $sort: { createdAt: 1 }
-      },
-      {
-        $limit: 50
-      },
-      {
-        $lookup: {
-          from: "profiles",
-          localField: "sender",
-          foreignField: "_id",
-          as: "sender"
-        }
-      },
-      { $unwind: "$sender" }
-    ]);
+    conversationId = rawGroupConversation?.conversation?._id?.toString();
   }
 
   if (!directConversation && !rawGroupConversation) {
@@ -291,7 +245,15 @@ export default async function Page(
 
   // console.log({ parsedFriend });
 
-  const messages = JSON.parse(JSON.stringify(rawMessages)) as IMessage[];
+  const filteredParticipants = groupUsers
+    ?.filter(p => p._id.toString() !== currentUser.id)
+    .map(p => ({
+      _id: p._id.toString(),
+      name: p.name,
+      username: p.username,
+      email: p.email,
+      avatar: { ...p.avatar }
+    }));
 
   return (
     <div className="border-edge h-full border-b pb-2.5">
@@ -394,7 +356,7 @@ export default async function Page(
           />
         )}
 
-        <MessagesSection messages={messages} />
+        <MessagesSection conversationId={conversationId as string} />
       </ScrollArea>
 
       {friendship?.status === "blocked" ? (
@@ -405,7 +367,8 @@ export default async function Page(
             friendId: friend?._id?.toString(),
             conversationId:
               groupConversation?._id?.toString() ??
-              directConversation?._id?.toString()
+              directConversation?._id?.toString(),
+            participants: filteredParticipants
           }}
           name={friend?.username ?? groupConversation?.name ?? mappedUsersName}
           type={
