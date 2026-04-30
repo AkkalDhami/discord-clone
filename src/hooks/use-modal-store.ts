@@ -1,6 +1,14 @@
-import { Category, Channel, IFile, Member, Server } from "@/interface";
+import {
+  Category,
+  Channel,
+  IFile,
+  IMessage,
+  Member,
+  Server
+} from "@/interface";
 import { PartialProfile } from "@/types/friend";
 import { create } from "zustand";
+import { devtools } from "zustand/middleware";
 
 export type ModalType =
   | "create-server"
@@ -23,24 +31,30 @@ export type ModalType =
   | "remove-friend"
   | "block-friend"
   | "edit-group"
+  | "delete-conversation"
   | "leave-group"
   | "kick-group-members"
   | "add-group-members"
-  | "profile-sidebar";
+  | "profile-sidebar"
+  | "edit-message"
+  | "delete-message"
+  | "private-user";
 
-type User = PartialProfile & {
+export type FriendType = PartialProfile & {
   memberSince: string;
 };
+
+type PartialServer = Pick<Server, "_id" | "name" | "logo" | "inviteCode">;
 
 export type SidebarProfileData = {
   type: "direct" | "group";
 
-  friend?: User;
-  servers?: Pick<Server, "_id" | "name" | "logo" | "inviteCode">[] | [];
-  mutualServers?: Server[] | [];
-  mutualFriends?: User[] | [];
+  friend?: FriendType;
+  servers?: PartialServer[] | [];
+  mutualServers?: PartialServer[] | [];
+  mutualFriends?: PartialProfile[] | [];
 
-  members?: User[] | [];
+  members?: PartialProfile[] | [];
   adminId?: string;
 };
 
@@ -69,9 +83,13 @@ export interface ModalData {
     type?: string;
   };
 
-  leftUser?: {
-    _id: string;
+  privateMessage?: {
+    conversationId: string;
+    participants: PartialProfile[] | [];
+    content: string;
   };
+
+  message?: IMessage;
 }
 
 export interface ModalStore {
@@ -82,19 +100,22 @@ export interface ModalStore {
   close: () => void;
 }
 
-export const useModal = create<ModalStore>(set => ({
-  type: null,
-  isOpen: false,
-  data: {},
-  open: (type, data = {}) =>
-    set({
-      type,
-      isOpen: true,
-      data
-    }),
-  close: () =>
-    set({
-      type: null,
-      isOpen: false
-    })
-}));
+export const useModal = create<ModalStore>()(
+  devtools(set => ({
+    type: null,
+    isOpen: false,
+    data: {},
+    open: (type, data = {}) =>
+      set({
+        type,
+        isOpen: true,
+        data
+      }),
+    close: () =>
+      set({
+        type: null,
+        isOpen: false,
+        data: {}
+      })
+  }))
+);

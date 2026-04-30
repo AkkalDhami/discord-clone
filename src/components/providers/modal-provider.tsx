@@ -35,6 +35,11 @@ import { KickGroupMemberModal } from "@/components/modals/kick-group-member-moda
 import { LeaveGroupModal } from "@/components/modals/leave-group-modal";
 import { DeleteConversationModal } from "@/components/modals/delete-conversation-modal";
 
+import { EditMessageModal } from "@/components/modals/edit-message-modal";
+import { DeleteMessageModal } from "@/components/modals/delete-message-modal";
+
+import { PrivateUserModal } from "@/components/modals/private-user-modal";
+
 export function ModalProvider() {
   return (
     <>
@@ -71,6 +76,11 @@ export function ModalProvider() {
       <CreateCategoryModal />
       <EditCategoryModal />
       <DeleteCategoryModal />
+
+      <EditMessageModal />
+      <DeleteMessageModal />
+
+      <PrivateUserModal />
     </>
   );
 }
