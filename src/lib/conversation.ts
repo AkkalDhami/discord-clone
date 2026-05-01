@@ -4,92 +4,14 @@ import Conversation, { ConversationTypes } from "@/models/conversation.model";
 import Profile from "@/models/profile.model";
 import { Types } from "mongoose";
 
-async function findConversation({
-  memberOneId,
-  memberTwoId,
-  serverId,
-  type
-}: {
-  memberOneId: string;
-  memberTwoId: string;
-  serverId?: string;
-  type: ConversationTypes;
-}) {
-  try {
-    // const [conversation] = await Conversation.aggregate([
-    //   {
-    //     $match: {
-    //       type,
-    //       ...(serverId && { serverId: new Types.ObjectId(serverId) }),
-    //       participants: [
-    //         new Types.ObjectId(memberOneId),
-    //         new Types.ObjectId(memberTwoId)
-    //       ]
-    //     }
-    //   },
-
-    //   {
-    //     $match: {
-    //       $expr: { $eq: [{ $size: "$participants" }, 2] }
-    //     }
-    //   },
-
-    //   {
-    //     $lookup: {
-    //       from: "members",
-    //       let: { memberIds: "$participants" },
-    //       pipeline: [
-    //         {
-    //           $match: {
-    //             $expr: { $in: ["$_id", "$$memberIds"] }
-    //           }
-    //         },
-
-    //         // 🔗 Join Profile using profileId
-    //         {
-    //           $lookup: {
-    //             from: "profiles",
-    //             localField: "profileId",
-    //             foreignField: "_id",
-    //             as: "profile"
-    //           }
-    //         },
-
-    //         {
-    //           $unwind: {
-    //             path: "$profile",
-    //             preserveNullAndEmptyArrays: true
-    //           }
-    //         }
-    //       ],
-    //       as: "participants"
-    //     }
-    //   }
-    // ]);
-
-    const participants = [memberOneId, memberTwoId]
-      .map(id => new Types.ObjectId(id))
-      .sort((a, b) => a.toString().localeCompare(b.toString()));
-
-    const conversation = await Conversation.findOne({
-      type,
-      ...(serverId && { serverId: new Types.ObjectId(serverId) }),
-      participants
-    });
-
-    return conversation;
-  } catch (error) {
-    console.log(error);
-    return null;
-  }
-}
-
 export async function getFriendConversation({
   participants,
   type,
-  cId
+  cId,
+  participantsKey
 }: {
   cId?: string;
+  participantsKey?: string;
   participants: string[];
   type: ConversationTypes;
 }) {
@@ -97,13 +19,16 @@ export async function getFriendConversation({
     const conversation = cId
       ? await Conversation.findOne({
           _id: cId,
-          type
+          type,
+          deleted: false
         })
       : await Conversation.findOne({
           type,
           participants: {
             $all: participants
-          }
+          },
+          participantsKey,
+          deleted: false
         });
 
     const users = await Profile.find({
@@ -121,19 +46,16 @@ async function createFriendConversation({
   participants,
   type,
   name,
+  participantsKey,
   admin
 }: {
   participants: string[];
   admin: string;
   name?: string;
   type: ConversationTypes;
+  participantsKey: string;
 }) {
   try {
-    const mappedIds = participants
-      .map(id => new Types.ObjectId(id))
-      .sort((a, b) => a.toString().localeCompare(b.toString()));
-
-    const participantsKey = mappedIds.join("_");
     const conversation = await Conversation.create({
       participants,
       type,
@@ -163,10 +85,29 @@ export async function getOrCreateFriendConversation({
 }): Promise<ConversationType | null> {
   await dbConnect();
 
+  if (!participants.every(id => Types.ObjectId.isValid(id))) {
+    console.log("Invalid participants:", participants);
+    return null;
+  }
+
+  if (!Types.ObjectId.isValid(admin)) {
+    console.log("Invalid admin:", admin);
+    return null;
+  }
+
+  const participantObjectIds = participants
+    .map(id => new Types.ObjectId(id))
+    .sort((a, b) => a.toString().localeCompare(b.toString()));
+
+  const participantsKey = participantObjectIds
+    .map(id => id.toString())
+    .join("_");
+
   const result = await getFriendConversation({
     cId,
-    participants,
-    type
+    participants: participantObjectIds.map(id => id.toString()),
+    type,
+    participantsKey
   });
 
   const users = result?.users;
@@ -174,59 +115,95 @@ export async function getOrCreateFriendConversation({
 
   if (!conversation) {
     conversation = await createFriendConversation({
-      participants,
+      participants: participantObjectIds.map(id => id.toString()),
       admin,
       type,
-      name
+      name,
+      participantsKey
     });
   }
 
-  if (!conversation || !users) {
-    return null;
-  }
+  if (!conversation || !users) return null;
 
   return {
-    _id: conversation?._id?.toString(),
-    participants: users?.map(u => ({
-      _id: u?._id.toString(),
-      name: u?.name,
-      username: u?.username,
-      email: u?.email,
-      avatar: u?.avatar
+    _id: conversation._id.toString(),
+    participants: users.map(u => ({
+      _id: u._id.toString(),
+      name: u.name,
+      username: u.username,
+      email: u.email,
+      avatar: u.avatar
     })),
-    logo: conversation?.logo,
-    name: conversation?.name,
-    admin: conversation?.admin?.toString(),
-    type: conversation?.type,
+    logo: conversation.logo,
+    name: conversation.name,
+    admin: conversation.admin.toString(),
+    type: conversation.type,
     lastMessage: conversation.lastMessage?.toString()
   };
 }
 
-// export async function getOrCreateConversation2({
-//   memberOneId,
-//   memberTwoId,
-//   serverId,
-//   type
+// export async function getOrCreateFriendConversation({
+//   participants,
+//   type,
+//   admin,
+//   name,
+//   cId
 // }: {
-//   memberOneId: string;
-//   memberTwoId: string;
-//   serverId?: string;
+//   participants: string[];
+//   admin: string;
+//   name?: string;
 //   type: ConversationTypes;
-// }) {
-//   let conversation =
-//     (await findConversation({ memberOneId, memberTwoId, serverId, type })) ||
-//     (await createConversation({ memberOneId, memberTwoId, serverId, type }));
+//   cId?: string;
+// }): Promise<ConversationType | null> {
+//   await dbConnect();
+
+//   const mappedIds =
+//     participants?.length > 0
+//       ? participants
+//           ?.map(id => new Types.ObjectId(id))
+//           .sort((a, b) => a.toString().localeCompare(b.toString()))
+//       : [];
+
+//   const participantsKey = mappedIds.length > 0 ? mappedIds.join("_") : "";
+
+//   const result = await getFriendConversation({
+//     cId,
+//     participants,
+//     type
+//   });
+
+//   const users = result?.users;
+//   let conversation = result?.conversation;
 
 //   if (!conversation) {
-//     conversation = await createConversation({
-//       memberOneId,
-//       memberTwoId,
-//       serverId,
-//       type
+//     conversation = await createFriendConversation({
+//       participants,
+//       admin,
+//       type,
+//       name,
+//       participantsKey
 //     });
 //   }
 
-//   return conversation;
+//   if (!conversation || !users) {
+//     return null;
+//   }
+
+//   return {
+//     _id: conversation?._id?.toString(),
+//     participants: users?.map(u => ({
+//       _id: u?._id.toString(),
+//       name: u?.name,
+//       username: u?.username,
+//       email: u?.email,
+//       avatar: u?.avatar
+//     })),
+//     logo: conversation?.logo,
+//     name: conversation?.name,
+//     admin: conversation?.admin?.toString(),
+//     type: conversation?.type,
+//     lastMessage: conversation.lastMessage?.toString()
+//   };
 // }
 
 export async function getOrCreateConversation({

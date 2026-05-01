@@ -8,6 +8,7 @@ export interface IConversation extends Document {
   _id: mongoose.Types.ObjectId;
 
   serverId?: mongoose.Types.ObjectId;
+  channelId?: mongoose.Types.ObjectId;
   participantsKey: string;
 
   participants: mongoose.Types.ObjectId[];
@@ -33,6 +34,10 @@ const conversationSchema = new Schema<IConversation>(
     serverId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Server"
+    },
+    channelId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Channel"
     },
     admin: {
       type: mongoose.Schema.Types.ObjectId,
@@ -73,10 +78,20 @@ const conversationSchema = new Schema<IConversation>(
 );
 
 conversationSchema.index(
-  { participantsKey: 1, serverId: 1 },
+  { participantsKey: 1 },
   {
     unique: true,
-    partialFilterExpression: { type: "direct" }
+    partialFilterExpression: {
+      type: { $in: ["group", "direct", "direct-server-member"] }
+    }
+  }
+);
+
+conversationSchema.index(
+  { serverId: 1, channelId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { type: "server" }
   }
 );
 
