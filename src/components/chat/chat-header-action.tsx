@@ -12,7 +12,8 @@ import {
   IconHammer,
   IconTrash,
   IconMenu2,
-  IconX
+  IconX,
+  IconPencil
 } from "@tabler/icons-react";
 import {
   Sheet,
@@ -102,6 +103,7 @@ export function ChatHeaderAction({
           </ActionTooltip>
         </>
       )}
+
       <div className="hidden items-center gap-3 lg:flex">
         {(type === "friend" || type === "group") && (
           <>
@@ -142,6 +144,18 @@ export function ChatHeaderAction({
               </>
             )}
           </>
+        )}
+        {type === "group" && conversation && isGroupAdmin && (
+          <ActionTooltip label="Edit group" side="bottom">
+            <IconPencil
+              onClick={() =>
+                open("edit-group", {
+                  conversation
+                })
+              }
+              className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
+            />
+          </ActionTooltip>
         )}
       </div>
 
@@ -197,6 +211,19 @@ export function ChatHeaderAction({
                       </Button>
                       {isGroupAdmin && (
                         <>
+                          <Button
+                            variant={"ghost"}
+                            onClick={() =>
+                              open("edit-group", {
+                                conversation
+                              })
+                            }
+                            className="group flex h-10 justify-start gap-4 py-2">
+                            <IconPencil className="text-muted-foreground group-hover:text-accent-foreground size-7 cursor-pointer p-1" />
+                            <span className="text-muted-foreground group-hover:text-accent-foreground text-lg font-medium">
+                              Edit Group
+                            </span>
+                          </Button>
                           <Button
                             variant={"ghost"}
                             onClick={() =>

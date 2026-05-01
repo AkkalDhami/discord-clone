@@ -79,21 +79,23 @@ export function GroupChatWelcome({
           }}>
           <IconUsersPlus className={"size-4"} /> Invite Friends
         </Button>
-        <Button
-          variant={"outline"}
-          onClick={() => {
-            open("edit-group", { conversation });
-          }}>
-          <IconPencil className={"size-4"} /> Edit Group
-        </Button>
         {isAdmin && (
-          <Button
-            variant={"destructive"}
-            onClick={() => {
-              open("kick-group-members", { conversation });
-            }}>
-            <IconHammer className="size-4" /> Kick Members
-          </Button>
+          <>
+            <Button
+              variant={"outline"}
+              onClick={() => {
+                open("edit-group", { conversation });
+              }}>
+              <IconPencil className={"size-4"} /> Edit Group
+            </Button>
+            <Button
+              variant={"destructive"}
+              onClick={() => {
+                open("kick-group-members", { conversation });
+              }}>
+              <IconHammer className="size-4" /> Kick Members
+            </Button>
+          </>
         )}
       </div>
     </div>
