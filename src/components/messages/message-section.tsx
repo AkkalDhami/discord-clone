@@ -5,9 +5,12 @@ import { MessageCard } from "@/components/messages/message-card";
 import { useInfiniteMessages } from "@/hooks/use-message";
 
 export function MessagesSection({
-  conversationId
+  conversationId,
+  cursor
 }: {
   conversationId: string;
+  /** Message `_id` to start pagination before (see GET /api/messages `cursor`). */
+  cursor?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -19,7 +22,8 @@ export function MessagesSection({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteMessages({
       conversationId,
-      limit: 10
+      limit: 10,
+      cursor
     });
 
   const messages =

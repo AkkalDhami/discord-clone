@@ -17,13 +17,18 @@ export async function createMessage(data: CreateMessageType) {
 }
 
 export async function fetchMessages(data: FetchMessagePayload) {
-  const res = await fetchWithAuth(
-    `/api/messages?conversationId=${data.conversationId}&limit=${data.limit}&cursor=${data.cursor}`,
-    {
-      method: "GET",
-      credentials: "include"
-    }
-  );
+  const params = new URLSearchParams({
+    conversationId: data.conversationId,
+    limit: String(data.limit)
+  });
+  if (data.cursor) {
+    params.set("cursor", data.cursor);
+  }
+
+  const res = await fetchWithAuth(`/api/messages?${params.toString()}`, {
+    method: "GET",
+    credentials: "include"
+  });
 
   if (!res.ok) {
     throw new Error("Failed to fetch messages");
