@@ -25,9 +25,14 @@ export const LeaveConversationSchema = z.object({
   participants: z.array(z.string()).min(1, "Select at least one member to add")
 });
 
+export const DeleteConversationSchema = z.object({
+  conversationId: z.string().min(1, "Conversation Id is required")
+});
+
 export type ConversationType = z.infer<typeof ConversationSchema>;
 export type ConversationUpdateType = z.infer<typeof ConversationUpdateSchema>;
 export type ConversationAddMembersType = z.infer<
   typeof ConversationAddMembersSchema
 >;
 export type LeaveConversationType = z.infer<typeof LeaveConversationSchema>;
+export type DeleteConversationType = z.infer<typeof DeleteConversationSchema>;
