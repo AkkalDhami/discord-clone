@@ -30,5 +30,5 @@ export type PartialFriendship = {
 
 export type PartialProfile = Pick<
   Profile,
-  "_id" | "avatar" | "email" | "name" | "username"
+  "_id" | "avatar" | "email" | "name" | "username" | "createdAt"
 >;

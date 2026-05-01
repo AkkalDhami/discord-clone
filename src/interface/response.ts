@@ -1,4 +1,5 @@
 import { PartialProfile } from "@/types/friend";
+import { IMessage } from "@/interface";
 
 export interface Error {
   data: {
@@ -28,5 +29,13 @@ export interface GetMeResponse extends ApiResponse {
       createdAt: Date;
       updatedAt: Date;
     };
+  };
+}
+
+export interface FetchMessagesResponse extends ApiResponse {
+  data: {
+    messages: IMessage[];
+    nextCursor: string | null;
+    hasMore: boolean;
   };
 }

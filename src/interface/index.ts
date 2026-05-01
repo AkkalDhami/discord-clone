@@ -1,6 +1,7 @@
 import ChannelType from "@/enums/channel.enum";
 import MemberRole from "@/enums/role.enum";
 import { FriendRequestStatus } from "@/models/friend-request.model";
+import { MessageType } from "@/models/message.model";
 import { PartialProfile } from "@/types/friend";
 
 export interface Profile {
@@ -47,7 +48,7 @@ export interface Member {
   profileId: string;
   serverId?: string;
 
-  profile: Profile;
+  profile: PartialProfile;
 
   createdAt?: string;
   updatedAt?: string;
@@ -101,6 +102,15 @@ export interface Friendship {
   createdAt: string;
 }
 
+export interface PartialConversation {
+  _id: string;
+  name?: string;
+  logo?: IFile;
+  participants?: PartialProfile[];
+  admin?: string;
+  type?: string;
+}
+
 export interface FriendRequest {
   _id: string;
 
@@ -111,4 +121,32 @@ export interface FriendRequest {
 
   createdAt: string;
   updatedAt: string;
+}
+
+export interface IMessage {
+  _id: string;
+  content?: string;
+
+  conversation: PartialConversation;
+  channel?: string;
+  server?: string;
+
+  edited?: boolean;
+  isBot?: boolean;
+  isAdmin?: boolean;
+  pinned?: boolean;
+
+  type: MessageType;
+
+  visibleTo?: string[];
+
+  attachments?: IFile[];
+
+  channelId?: string;
+  serverId?: string;
+
+  createdAt?: string;
+  updatedAt?: string;
+
+  sender: PartialProfile;
 }
