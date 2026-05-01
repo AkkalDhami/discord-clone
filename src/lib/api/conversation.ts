@@ -2,6 +2,7 @@ import { fetchWithAuth } from "@/lib/api/auth";
 import {
   ConversationType,
   ConversationUpdateType,
+  DeleteConversationType,
   LeaveConversationType
 } from "@/validators/conversation";
 
@@ -66,6 +67,19 @@ export async function kickGroupMember(data: LeaveConversationType) {
       credentials: "include"
     }
   );
+
+  return res.json();
+}
+
+export async function deleteConversation({
+  conversationId
+}: DeleteConversationType) {
+  const res = await fetchWithAuth(`/api/conversations/${conversationId}`, {
+    method: "DELETE",
+    credentials: "include"
+  });
+
+  if (!res.ok) return null;
 
   return res.json();
 }

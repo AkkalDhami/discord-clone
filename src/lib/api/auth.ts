@@ -19,8 +19,7 @@ function apiUrl(path: string) {
 
 export async function getMe() {
   const res = await fetch(apiUrl("/api/auth/me"), {
-    credentials: "include",
-    cache: "no-store"
+    credentials: "include"
   });
 
   if (!res.ok) return null;
