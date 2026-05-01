@@ -68,7 +68,15 @@ export const PATCH = AsyncHandler(async (req: NextRequest) => {
 
   if (!isParticipant) {
     return ApiResponse({
-      statusCode: STATUS_CODES.UNAUTHORIZED,
+      statusCode: STATUS_CODES.FORBIDDEN,
+      message: "You are not authorized to edit this group",
+      success: false
+    });
+  }
+
+  if (conversation.admin.toString() !== user.id) {
+    return ApiResponse({
+      statusCode: STATUS_CODES.FORBIDDEN,
       message: "You are not authorized to edit this group",
       success: false
     });

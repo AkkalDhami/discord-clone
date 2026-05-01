@@ -5,6 +5,7 @@ import { ApiResponse } from "@/interface/response";
 import {
   ConversationType,
   ConversationUpdateType,
+  DeleteConversationType,
   LeaveConversationType
 } from "@/validators/conversation";
 
@@ -73,6 +74,17 @@ export function useConversation() {
     }
   });
 
+  const deleteConversationMutation = useMutation({
+    mutationFn: async (data: DeleteConversationType) => {
+      const res = await conversationApi.deleteConversation(data);
+      return res as ApiResponse;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["conversation"] });
+    }
+  });
+
   return {
     createConversation: createConversationMutation.mutateAsync,
     isConversationCreating: createConversationMutation.isPending,
@@ -87,6 +99,9 @@ export function useConversation() {
     isRemovingGroupMembers: removeGroupMembersMutation.isPending,
 
     kickGroupMember: kickGroupMemberMutation.mutateAsync,
-    isKickingGroupMember: kickGroupMemberMutation.isPending
+    isKickingGroupMember: kickGroupMemberMutation.isPending,
+
+    deleteConversation: deleteConversationMutation.mutateAsync,
+    isDeletingConversation: deleteConversationMutation.isPending
   };
 }
