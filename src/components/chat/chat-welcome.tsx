@@ -4,7 +4,12 @@ import { PopulatedConversation } from "@/components/chat/direct-chat-section";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { IconHammer, IconPencil, IconUsersPlus } from "@tabler/icons-react";
+import {
+  IconHammer,
+  IconHash,
+  IconPencil,
+  IconUsersPlus
+} from "@tabler/icons-react";
 import { useUser } from "@/hooks/use-user-store";
 import { useModal } from "@/hooks/use-modal-store";
 import { PartialFriendship, PartialProfile } from "@/types/friend";
@@ -13,6 +18,7 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { Spinner } from "@/components/ui/spinner";
 import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
+import { Channel } from "@/interface";
 
 export function GroupChatWelcome({
   conversation
@@ -189,6 +195,25 @@ export function DirectChatWelcome({
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+export function ChannelWelcome({
+  channel
+}: {
+  channel: Pick<Channel, "_id" | "name" | "type">;
+}) {
+  return (
+    <div className="mt-4 flex flex-col space-y-3 px-4">
+      <IconHash className="bg-secondary size-18 rounded-full p-3" />
+
+      <h2 className="text-3xl font-medium">
+        Welcome to #{channel?.name} Channel!
+      </h2>
+      <p className="text-muted-primary text-lg">
+        This is the start of the #{channel?.name} channel.
+      </p>
     </div>
   );
 }
