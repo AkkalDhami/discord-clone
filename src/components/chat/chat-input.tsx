@@ -66,7 +66,9 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
     try {
       const res = await createMessage({
         content: data.content,
-        conversationId: query.conversationId as string
+        conversationId: query.conversationId as string,
+        serverId: query.serverId as string,
+        channelId: query.channelId as string
       });
 
       form.reset();

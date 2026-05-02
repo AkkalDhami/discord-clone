@@ -104,6 +104,12 @@ export function ChatHeaderAction({
         </>
       )}
 
+      {type == "channel" && (
+        <ActionTooltip label="Pinned Messages" side="bottom">
+          <IconPin className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
+        </ActionTooltip>
+      )}
+
       <div className="hidden items-center gap-3 lg:flex">
         {(type === "friend" || type === "group") && (
           <>

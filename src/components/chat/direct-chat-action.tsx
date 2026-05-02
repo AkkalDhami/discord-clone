@@ -13,11 +13,11 @@ export function DirectChatAction() {
       <Link href={"/friends"} className="group relative cursor-pointer">
         <div
           className={cn(
-            "bg-primary absolute top-[2px] -left-8.5 w-1 rounded-r-full transition-all",
+            "bg-primary absolute top-[22px] -left-8.5 w-1 -translate-y-1/2 rounded-r-full transition-all",
             !(
               pathname.includes("/friends") ||
               pathname.includes("/conversations")
-            ) && "group-hover:top-1/2 group-hover:h-5",
+            ) && "h-2 group-hover:h-5",
             (pathname.includes("/friends") ||
               pathname.includes("/conversations")) &&
               "h-9"
