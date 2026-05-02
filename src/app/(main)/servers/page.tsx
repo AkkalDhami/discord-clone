@@ -242,7 +242,7 @@ export default async function ServersHubPage() {
                               rounded="lg"
                               src={server.logo || ""}
                               name={nameWithoutEmoji}
-                              className="size-9 rounded-lg"
+                              className="size-8 rounded-lg"
                             />
                             <h3 className="line-clamp-1 text-lg leading-snug font-medium">
                               {server.name}

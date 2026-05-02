@@ -1,4 +1,4 @@
-import { InitialModal } from "@/components/modals/initial-modal";
+// import { InitialModal } from "@/components/modals/initial-modal";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Member from "@/models/member.model";
 import Server from "@/models/server.model";
@@ -25,13 +25,11 @@ export default async function Page() {
     return redirect(`/servers/${server._id}`);
   }
 
-  // if (profile) {
-  //   return redirect("/friends");
-  // }
+  return redirect("/servers");
 
-  return (
-    <div className="flex h-screen items-center justify-center">
-      <InitialModal />
-    </div>
-  );
+  // return (
+  //   <div className="flex h-screen items-center justify-center">
+  //     <InitialModal />
+  //   </div>
+  // );
 }

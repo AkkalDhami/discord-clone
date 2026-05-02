@@ -9,7 +9,7 @@ export function MessagesSection({
   cursor
 }: {
   conversationId: string;
-  /** Message `_id` to start pagination before (see GET /api/messages `cursor`). */
+  /** Message `_id` to start pagination before */
   cursor?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
