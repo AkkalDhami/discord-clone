@@ -102,7 +102,6 @@ export default async function Page(
         {JSON.stringify(member, null, 2)}
       </ScrollArea>
       <ChatInput
-        apiUrl={`/api/messages`}
         query={{
           memberId,
           serverId
