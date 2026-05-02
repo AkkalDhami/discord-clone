@@ -209,7 +209,7 @@ export async function ServerSidebar({ serverId }: { serverId: string }) {
   )?.role;
 
   return (
-    <div className="text-primary border-edge mb-4 flex h-full w-full flex-col border-r border-l pb-4 md:border-l-0">
+    <div className="text-primary border-edge mb-4 flex h-full w-full flex-col border-l pb-4 md:border-l-0">
       <ServerHeader server={JSON.stringify(cleanServer)} role={role} />
       <ScrollArea className={"h-[calc(100vh-120px)] pb-4"}>
         <ServerSection

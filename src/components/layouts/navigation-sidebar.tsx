@@ -1,7 +1,10 @@
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Member from "@/models/member.model";
 import { redirect } from "next/navigation";
-import { NavigationAction } from "@/components/navigation/navigation-action";
+import {
+  MyServers,
+  NavigationAction
+} from "@/components/navigation/navigation-action";
 import ThemeToggle from "./theme-toggle";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { NavigationItem } from "@/components/navigation/navigation-item";
@@ -53,14 +56,17 @@ export async function NavigationSidebar({ className }: { className?: string }) {
 
       <NavigationAction />
       <ScrollArea className="flex-1">
-        {servers?.map((server: IServer) => (
-          <NavigationItem
-            key={server._id.toString()}
-            id={server._id.toString()}
-            logo={server.logo}
-            name={server.name}
-          />
-        ))}
+        <MyServers />
+        <div className="mt-6 flex flex-col space-y-3.5">
+          {servers?.map((server: IServer) => (
+            <NavigationItem
+              key={server._id.toString()}
+              id={server._id.toString()}
+              logo={server.logo}
+              name={server.name}
+            />
+          ))}
+        </div>
       </ScrollArea>
       <div className="absolute bottom-4 flex flex-col items-center space-y-2.5 sm:space-y-3.5">
         <UserMenu
