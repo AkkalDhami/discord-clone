@@ -3,7 +3,9 @@ import z from "zod";
 export const CreateMessageSchema = z.object({
   conversationId: z.string().min(1),
   content: z.string().min(1),
-  privateUsers: z.array(z.string()).optional()
+  privateUsers: z.array(z.string()).optional(),
+  serverId: z.string().optional(),
+  channelId: z.string().optional()
 });
 
 export const UpdateMessageSchema = CreateMessageSchema.partial()
