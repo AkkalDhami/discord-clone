@@ -13,17 +13,15 @@ import { useModal } from "@/hooks/use-modal-store";
 import { Label } from "@/components/ui/label";
 import { IconCheck, IconCopy, IconRefresh } from "@tabler/icons-react";
 import { useOrigin } from "@/hooks/use-origin";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { useServer } from "@/hooks/use-server";
 import { cn } from "@/lib/utils";
-import { useCopyToClipboard } from "@/hooks/use-copy-to-clipboard.ts";
 
 export function InviteModal() {
   const { close, isOpen, type, data, open } = useModal();
   const isModalOpen = isOpen && type === "invite-people";
-
-  const { copied, copy } = useCopyToClipboard();
-
+  const [copied, setCopied] = useState(false);
   const { generateInviteLink, generateInviteLinkLoading } = useServer();
   const origin = useOrigin();
   const { server } = data;
@@ -33,7 +31,11 @@ export function InviteModal() {
 
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
   const onCopy = () => {
-    copy(inviteUrl);
+    navigator.clipboard.writeText(inviteUrl);
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1000);
   };
 
   const onNewLink = async () => {
@@ -65,19 +67,20 @@ export function InviteModal() {
               Server invite link
             </Label>
             <div className="mt-2 flex items-center gap-x-2">
-              <div
+              <Input
+                readOnly
                 className={cn(
-                  "border-input bg-background text-foreground w-full flex-1 overflow-hidden rounded-lg border px-2 py-1.5 text-sm break-all",
-                  generateInviteLinkLoading &&
-                    "bg-muted animate-pulse cursor-not-allowed"
-                )}>
-                <p className="m-0">{inviteUrl}</p>
-              </div>
+                  "focus-visible:border-border flex-1 border focus-visible:ring-0 focus-visible:ring-offset-0",
+                  generateInviteLinkLoading && "cursor-not-allowed"
+                )}
+                disabled={generateInviteLinkLoading}
+                value={inviteUrl}
+              />
               {copied ? (
                 <Button
                   type="button"
                   variant={"ghost"}
-                  className="h-9 cursor-default px-2 py-1.5 text-green-600 hover:text-green-500 dark:hover:text-green-500">
+                  className="h-9 cursor-default bg-green-500 px-2 py-1.5 text-white hover:bg-green-600 hover:text-white dark:hover:bg-green-600">
                   <IconCheck className="size-5" />
                 </Button>
               ) : (
@@ -86,7 +89,7 @@ export function InviteModal() {
                   onClick={onCopy}
                   disabled={generateInviteLinkLoading}
                   variant={"ghost"}
-                  className="text-primary-500 hover:text-primary-600 h-9 px-2 py-1.5">
+                  className="h-9 bg-indigo-500 px-2 py-1.5 text-white hover:bg-indigo-600 hover:text-white dark:hover:bg-indigo-600">
                   <IconCopy className="size-5" />
                 </Button>
               )}

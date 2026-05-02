@@ -42,7 +42,7 @@ import toast from "react-hot-toast";
 import { useMember } from "@/hooks/use-member";
 import { useRouter } from "next/navigation";
 
-export const RoleIconMap = {
+export const RoleIconMap: Record<MemberRole, React.ReactNode> = {
   [MemberRole.ADMIN]: <IconCrownFilled className="size-4 text-orange-500" />,
   [MemberRole.MODERATOR]: <IconSwords className="size-4 text-indigo-500" />,
   [MemberRole.GUEST]: null
