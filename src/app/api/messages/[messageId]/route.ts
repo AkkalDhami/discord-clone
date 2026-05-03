@@ -7,6 +7,7 @@ import { AsyncHandler } from "@/utils/async-handler";
 import { validateObjectId } from "@/utils/validate-objid";
 import { UpdateMessageSchema, UpdateMessageType } from "@/validators/message";
 import { NextRequest } from "next/server";
+import { Types } from "mongoose";
 
 export const PATCH = AsyncHandler(
   async (
@@ -44,7 +45,7 @@ export const PATCH = AsyncHandler(
       });
     }
 
-    const { content, pinned } = result.data;
+    const { content, pinned, reaction } = result.data;
 
     const message = await Message.findById(messageId);
 
@@ -56,7 +57,7 @@ export const PATCH = AsyncHandler(
       });
     }
 
-    if (!message.sender.equals(user.id) && pinned === undefined) {
+    if (!message.sender.equals(user.id) && pinned === undefined && !reaction) {
       return ApiResponse({
         statusCode: STATUS_CODES.FORBIDDEN,
         message: `You are not authorized to edit this message`,
@@ -65,12 +66,58 @@ export const PATCH = AsyncHandler(
     }
 
     if (content) {
+      if (!message.sender.equals(user.id)) {
+        return ApiResponse({
+          statusCode: STATUS_CODES.FORBIDDEN,
+          message: `You are not authorized to edit this message`,
+          success: false
+        });
+      }
       message.content = content;
       message.edited = true;
     }
 
     if (typeof pinned !== "undefined") {
+      if (message.visibleTo.length > 1) {
+        return ApiResponse({
+          statusCode: STATUS_CODES.BAD_REQUEST,
+          message: `Secret messages cannot be pinned`,
+          success: false
+        });
+      }
+
       message.pinned = pinned;
+    }
+
+    if (reaction) {
+      message.reactions = message.reactions ?? [];
+      const existingReaction = message.reactions.find(
+        r => r.emoji === reaction
+      );
+
+      if (existingReaction) {
+        const alreadyReacted = existingReaction.reactedByUserIds.some(
+          id => `${id}` === user.id
+        );
+
+        if (alreadyReacted) {
+          existingReaction.reactedByUserIds =
+            existingReaction.reactedByUserIds.filter(id => `${id}` !== user.id);
+        } else {
+          existingReaction.reactedByUserIds.push(new Types.ObjectId(user.id));
+        }
+
+        if (existingReaction.reactedByUserIds.length === 0) {
+          message.reactions = message.reactions.filter(
+            r => r.emoji !== reaction
+          );
+        }
+      } else {
+        message.reactions.push({
+          emoji: reaction,
+          reactedByUserIds: [new Types.ObjectId(user.id)]
+        });
+      }
     }
 
     await message.save();

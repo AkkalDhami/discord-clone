@@ -151,19 +151,87 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
         ]
       }
     },
+    {
+      $lookup: {
+        from: "profiles",
+        localField: "visibleTo",
+        foreignField: "_id",
+        as: "visibleTo",
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              name: 1,
+              username: 1,
+              email: 1,
+              avatar: 1,
+              createdAt: 1
+            }
+          }
+        ]
+      }
+    },
+
+    {
+      $lookup: {
+        from: "messages",
+        localField: "replyTo",
+        foreignField: "_id",
+        as: "replyTo",
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              content: 1,
+              sender: 1,
+              createdAt: 1
+            }
+          },
+          {
+            $lookup: {
+              from: "profiles",
+              localField: "sender",
+              foreignField: "_id",
+              as: "sender",
+              pipeline: [
+                {
+                  $project: {
+                    _id: 1,
+                    name: 1,
+                    username: 1,
+                    avatar: 1
+                  }
+                }
+              ]
+            }
+          },
+          { $unwind: "$sender" }
+        ]
+      }
+    },
+    {
+      $unwind: {
+        path: "$replyTo",
+        preserveNullAndEmptyArrays: true
+      }
+    },
 
     { $unwind: "$sender" }
   ]);
 
+  // console.log({ messages });
+
   const hasMore = messages.length === limit;
-  const nextCursor = hasMore ? messages[messages.length - 1]._id : null;
+  const nextCursor = hasMore ? messages[messages.length - 1]._id : undefined;
+
+  const reversedMessages = messages.reverse();
 
   return ApiResponse({
     statusCode: STATUS_CODES.OK,
     success: true,
     message: "Get messages",
     data: {
-      messages,
+      messages: reversedMessages,
       hasMore,
       nextCursor
     }
