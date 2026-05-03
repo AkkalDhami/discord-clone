@@ -55,9 +55,9 @@ export async function NavigationSidebar({ className }: { className?: string }) {
       <DirectChatAction />
 
       <NavigationAction />
-      <ScrollArea className="flex-1">
+      <ScrollArea className="mt-4 flex-1">
         <MyServers />
-        <div className="mt-6 flex flex-col space-y-3.5">
+        <div className="mt-3 flex flex-col space-y-3.5">
           {servers?.map((server: IServer) => (
             <NavigationItem
               key={server._id.toString()}

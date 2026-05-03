@@ -73,6 +73,36 @@ export async function DirectChatSidebar() {
       }
     },
     {
+      $lookup: {
+        from: "messages",
+        localField: "lastMessage",
+        foreignField: "_id",
+        pipeline: [
+          {
+            $match: {
+              deleted: false
+            }
+          },
+          {
+            $project: {
+              content: 1,
+              sender: 1,
+              type: 1
+            }
+          }
+        ],
+        as: "lastMessage"
+      }
+    },
+
+    {
+      $unwind: {
+        path: "$lastMessage",
+        preserveNullAndEmptyArrays: true
+      }
+    },
+
+    {
       $sort: { updatedAt: -1 }
     }
   ]);

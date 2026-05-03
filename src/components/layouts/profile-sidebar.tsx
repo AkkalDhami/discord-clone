@@ -183,7 +183,7 @@ function DirectProfileSidebar() {
                     });
                   }}
                   className={cn("flex items-center justify-between gap-3")}>
-                  <span>Remove Friend</span>
+                  <span>Ignore Friend</span>
                   <IconUserOff className="text-muted-foreground size-4" />
                 </DropdownMenuItem>
               </DropdownMenuGroup>
