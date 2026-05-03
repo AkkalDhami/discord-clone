@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     template: "%s | Discord clone - Akkal Dhami"
   },
   description:
-    "A Discord clone built with Next.js, React Query, and Tailwind CSS. This project is a demonstration of my skills in building a full-stack web application with modern technologies."
+    "A Discord clone built with Next.js, React Query, Shadcn and Tailwind CSS. This project is a demonstration of my skills in building a full-stack web application with modern technologies."
 };
 
 export default function RootLayout({

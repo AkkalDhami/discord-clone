@@ -55,18 +55,18 @@ export function ServerSection({ server, role, memberId }: ServerSectionProps) {
   const serverData = JSON.parse(server) as ServerWithMembersWithProfiles;
   // console.log({ serverData });
   const { open } = useModal();
-  const param: {
-    serverId: string;
-    channelId: string;
-    memberId?: string;
-  } = useParams();
+  // const param: {
+  //   serverId: string;
+  //   channelId: string;
+  //   memberId?: string;
+  // } = useParams();
 
   const isAdmin = role === MemberRole.ADMIN;
   const isModerator = isAdmin || role === MemberRole.MODERATOR;
 
-  const members = serverData.members?.filter(
-    (m: Member) => m.profile._id !== serverData.profileId
-  );
+  // const members = serverData.members?.filter(
+  //   (m: Member) => m.profile._id !== serverData.profileId
+  // );
 
   const serverPayload = {
     _id: serverData?._id,

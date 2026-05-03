@@ -4,18 +4,12 @@ import {
   SentFriendRequestCard
 } from "@/components/friend/friend-request-card";
 import { FriendSearch } from "@/components/friend/friend-search";
-import { Button } from "@/components/ui/button";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger
-} from "@/components/ui/collapsible";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
 
 import FriendRequest from "@/models/friend-request.model";
 import { FriendWithReciever, FriendWithSender } from "@/types/friend";
-import { IconChevronDown } from "@tabler/icons-react";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -82,27 +76,26 @@ export default async function Page(props: PageProps<"/friends/requests">) {
           <div className="border-edge border-b px-2 py-2">
             <FriendSearch />
           </div>
-          {incoming.length > 0 && (
-            <Collapsible className={"w-full"} defaultOpen>
-              <CollapsibleTrigger
-                className={"w-full text-start"}
-                render={
-                  <Button
-                    variant="ghost"
-                    className="text-muted-primary w-full font-normal">
-                    Friend Requests - {incoming.length}
-                    <IconChevronDown className="ml-auto -rotate-90 group-data-panel-open/button:rotate-0" />
-                  </Button>
-                }>
-                {/* <h2
-                  className={
-                    "border-edge text-muted-primary border-b px-3 text-lg font-normal"
-                  }>
-                  Friend Requests - {incoming.length}
-                </h2> */}
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <div className="mt-2 space-y-2">
+          {(incoming.length > 0 || outgoing.length > 0) && (
+            <Tabs defaultValue="incoming" className="w-full">
+              <TabsList
+                variant={"line"}
+                className={"flex flex-wrap items-center gap-12 p-2"}>
+                <TabsTrigger
+                  value="incoming"
+                  className={"h-8 p-0 text-lg font-normal"}>
+                  Pending Requests - {incoming.length}
+                </TabsTrigger>
+                <TabsTrigger
+                  value="outgoing"
+                  className={"h-8 p-0 text-lg font-normal"}>
+                  Sent Requests - {outgoing.length}
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent
+                value="incoming"
+                className={"border-edge border-t py-3"}>
+                <div className="space-y-2">
                   {incoming.map(f => (
                     <FriendRequestCard
                       key={f._id.toString()}
@@ -110,23 +103,11 @@ export default async function Page(props: PageProps<"/friends/requests">) {
                     />
                   ))}
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
-          )}
-          {outgoing.length > 0 && (
-            <Collapsible className={"w-full"} defaultOpen>
-              <CollapsibleTrigger
-                className={"w-full text-start"}
-                render={
-                  <Button
-                    variant="ghost"
-                    className="text-muted-primary w-full font-normal">
-                    Sent Requests - {outgoing.length}
-                    <IconChevronDown className="ml-auto -rotate-90 group-data-panel-open/button:rotate-0" />
-                  </Button>
-                }></CollapsibleTrigger>
-              <CollapsibleContent className={"w-full"}>
-                <div className="mt-2 space-y-2">
+              </TabsContent>
+              <TabsContent
+                value="outgoing"
+                className={"border-edge border-t py-3"}>
+                <div className="space-y-2">
                   {outgoing.map(f => (
                     <SentFriendRequestCard
                       key={f._id.toString()}
@@ -134,8 +115,8 @@ export default async function Page(props: PageProps<"/friends/requests">) {
                     />
                   ))}
                 </div>
-              </CollapsibleContent>
-            </Collapsible>
+              </TabsContent>
+            </Tabs>
           )}
         </>
       ) : (

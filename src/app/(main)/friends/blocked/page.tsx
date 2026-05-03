@@ -62,7 +62,7 @@ export default async function Page(props: PageProps<"/friends/blocked">) {
           <div className="border-edge border-b px-2 py-2">
             <FriendSearch />
           </div>
-          <h2 className="text-muted-primary border-edge mb-2 p-2.5 font-normal">
+          <h2 className="border-edge p-2.5 font-normal">
             Blocked Friends - {friends.length}
           </h2>
           <div className="border-edge divide-y border-t">
