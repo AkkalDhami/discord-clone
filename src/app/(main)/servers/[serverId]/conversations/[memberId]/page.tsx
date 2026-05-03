@@ -6,7 +6,6 @@ import { currentAuthUser } from "@/helpers/auth.helper";
 import { Member as MemberIterface } from "@/interface";
 import { getOrCreateConversation } from "@/lib/conversation";
 import Member from "@/models/member.model";
-import Server from "@/models/server.model";
 import { Types } from "mongoose";
 import { redirect } from "next/navigation";
 
@@ -73,10 +72,10 @@ export default async function Page(
   }
 
   const conversation = await getOrCreateConversation({
-    memberOneId: member._id.toString(),
-    memberTwoId: profile.id.toString(),
+    admin: profile.id,
     serverId,
-    type: "direct"
+    type: "direct-server-member",
+    participants: [member.profileId.toString(), profile.id]
   });
 
   if (!conversation) {
