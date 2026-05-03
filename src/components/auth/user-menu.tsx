@@ -26,8 +26,8 @@ export function UserMenu({ name, username, image, email }: UserMenuProps) {
 
   const handleLogout = async () => {
     try {
-      await logout();
       router.push("/signin");
+      await logout();
     } catch (error) {
       console.log(error);
       toast.error("Failed to logout");
@@ -39,7 +39,12 @@ export function UserMenu({ name, username, image, email }: UserMenuProps) {
       <DropdownMenuTrigger
         render={
           <Button variant="ghost" size="icon">
-            <UserAvatar name={name} src={image} className="size-9" />
+            <UserAvatar
+              rounded="lg"
+              name={name}
+              src={image}
+              className="size-9"
+            />
           </Button>
         }
       />

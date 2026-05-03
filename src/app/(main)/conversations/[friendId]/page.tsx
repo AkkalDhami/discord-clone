@@ -46,15 +46,6 @@ export default async function Page(
 
   const { friendId } = await props.params;
 
-  const searchParams = await props.searchParams;
-  const cursorQuery = searchParams.cursor;
-  const messagesInitialCursor =
-    typeof cursorQuery === "string"
-      ? cursorQuery
-      : Array.isArray(cursorQuery)
-        ? cursorQuery[0]
-        : undefined;
-
   await dbConnect();
 
   const friend = await Profile.findOne({
@@ -365,10 +356,7 @@ export default async function Page(
           />
         )}
 
-        <MessagesSection
-          conversationId={conversationId as string}
-          cursor={messagesInitialCursor}
-        />
+        <MessagesSection conversationId={conversationId as string} />
       </ScrollArea>
 
       {friendship?.status === "blocked" ? (

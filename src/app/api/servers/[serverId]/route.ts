@@ -5,7 +5,9 @@ import { currentAuthUser } from "@/helpers/auth.helper";
 import { validateRequest } from "@/lib/validation";
 import Category from "@/models/category.model";
 import Channel from "@/models/channel.model";
+import Conversation from "@/models/conversation.model";
 import Member from "@/models/member.model";
+import Message from "@/models/message.model";
 
 import Server from "@/models/server.model";
 import { utapi } from "@/server/uploadting";
@@ -143,23 +145,27 @@ export const DELETE = AsyncHandler(
     }
 
     const session = await mongoose.startSession();
-
+    const logo = existingServer?.logo?.split("/");
     try {
       await session.withTransaction(async () => {
-        await Channel.deleteMany({ serverId: existingServer._id }, { session });
+        await Promise.all([
+          Channel.deleteMany({ serverId: existingServer._id }, { session }),
 
-        await Category.deleteMany(
-          { serverId: existingServer._id },
-          { session }
-        );
+          Category.deleteMany({ serverId: existingServer._id }, { session }),
 
-        await Member.deleteMany({ serverId: existingServer._id }, { session });
+          Member.deleteMany({ serverId: existingServer._id }, { session }),
 
-        await Server.findByIdAndDelete(existingServer._id, { session });
+          Conversation.deleteMany(
+            { serverId: existingServer._id },
+            { session }
+          ),
 
-        const logo = existingServer?.logo?.split("/");
+          Message.deleteMany({ serverId: existingServer._id }, { session }),
 
-        await utapi.deleteFiles(logo[logo.length - 1]);
+          Server.findByIdAndDelete(existingServer._id, { session }),
+
+          utapi.deleteFiles(logo[logo.length - 1])
+        ]);
       });
 
       return ApiResponse({
