@@ -12,8 +12,8 @@ import {
   IconHammer,
   IconTrash,
   IconMenu2,
-  IconX,
-  IconPencil
+  IconPencil,
+  IconLogout
 } from "@tabler/icons-react";
 import {
   Sheet,
@@ -57,6 +57,21 @@ export function ChatHeaderAction({
           <ActionTooltip label="Start Video Call" side="bottom">
             <IconVideo className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
           </ActionTooltip>
+          <ActionTooltip label="Pinned Messages" side="bottom">
+            <IconPin className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
+          </ActionTooltip>
+          {type === "friend" && (
+            <ActionTooltip label="Delete Conversation" side="bottom">
+              <IconTrash
+                onClick={() => {
+                  open("delete-conversation", {
+                    conversation
+                  });
+                }}
+                className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
+              />
+            </ActionTooltip>
+          )}
           {(type === "friend" || type === "group") && (
             <ActionTooltip
               label={
@@ -98,9 +113,6 @@ export function ChatHeaderAction({
               )}
             </ActionTooltip>
           )}
-          <ActionTooltip label="Pinned Messages" side="bottom">
-            <IconPin className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
-          </ActionTooltip>
         </>
       )}
 
@@ -122,17 +134,19 @@ export function ChatHeaderAction({
                   />
                 </ActionTooltip>
                 <ActionTooltip label="Leave Group" side="bottom">
-                  <IconX
+                  <IconLogout
                     onClick={() => open("leave-group", { conversation })}
                     className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
                   />
                 </ActionTooltip>
                 {isGroupAdmin && (
                   <>
-                    <ActionTooltip label="Delete Conversation" side="bottom">
-                      <IconTrash
+                    <ActionTooltip label="Edit group" side="bottom">
+                      <IconPencil
                         onClick={() =>
-                          open("delete-conversation", { conversation })
+                          open("edit-group", {
+                            conversation
+                          })
                         }
                         className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
                       />
@@ -145,23 +159,19 @@ export function ChatHeaderAction({
                         className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
                       />
                     </ActionTooltip>
+                    <ActionTooltip label="Delete Conversation" side="bottom">
+                      <IconTrash
+                        onClick={() =>
+                          open("delete-conversation", { conversation })
+                        }
+                        className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
+                      />
+                    </ActionTooltip>
                   </>
                 )}
               </>
             )}
           </>
-        )}
-        {type === "group" && conversation && isGroupAdmin && (
-          <ActionTooltip label="Edit group" side="bottom">
-            <IconPencil
-              onClick={() =>
-                open("edit-group", {
-                  conversation
-                })
-              }
-              className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
-            />
-          </ActionTooltip>
         )}
       </div>
 
@@ -263,7 +273,7 @@ export function ChatHeaderAction({
                 variant={"ghost"}
                 onClick={() => open("leave-group", { conversation })}
                 className="group flex h-10 justify-start gap-4 py-2">
-                <IconX className="text-muted-foreground group-hover:text-accent-foreground size-7 cursor-pointer p-1" />
+                <IconLogout className="text-muted-foreground group-hover:text-accent-foreground size-7 cursor-pointer p-1" />
                 <span className="text-muted-foreground group-hover:text-accent-foreground text-lg font-medium">
                   Leave Group
                 </span>

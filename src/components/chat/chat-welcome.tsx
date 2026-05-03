@@ -161,7 +161,7 @@ export function DirectChatWelcome({
               }
             });
           }}>
-          Remove Friend
+          Ignore Friend
         </Button>
 
         {friendship.status === "active" ? (

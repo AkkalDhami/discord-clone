@@ -4,7 +4,7 @@ import { IconPlus } from "@tabler/icons-react";
 import { ActionTooltip } from "@/components/common/action-tooltip";
 import { useModal } from "@/hooks/use-modal-store";
 import { PartialProfile } from "@/types/friend";
-import { IFile } from "@/interface";
+import { IFile, IMessage } from "@/interface";
 import { ConversationTypes } from "@/models/conversation.model";
 import { FriendChatItem, GroupChatItem } from "@/components/chat/chat-item";
 
@@ -17,7 +17,9 @@ export type PopulatedConversation = {
 
   name?: string;
   logo?: IFile;
-  lastMessage?: string;
+  lastMessage?: Pick<IMessage, "content" | "type"> & {
+    sender: string;
+  };
 };
 
 export function DirectChatSection({

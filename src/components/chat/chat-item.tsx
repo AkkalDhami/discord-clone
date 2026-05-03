@@ -6,6 +6,13 @@ import { PopulatedConversation } from "@/components/chat/direct-chat-section";
 import { IconX } from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
+import { useUser } from "@/hooks/use-user-store";
+
+function splitContent(content: string, maxLength: number = 20) {
+  return content.length > maxLength
+    ? content.slice(0, maxLength) + "..."
+    : content;
+}
 
 export function GroupChatItem({ c }: { c: PopulatedConversation }) {
   const params = useParams();
@@ -96,6 +103,7 @@ export function GroupChatLogo({
 export function FriendChatItem({ c }: { c: PopulatedConversation }) {
   const params = useParams();
   const participant = c?.participants?.[0];
+  const { user } = useUser();
 
   if (c.type !== "direct" || !participant?._id) {
     return null;
@@ -106,7 +114,7 @@ export function FriendChatItem({ c }: { c: PopulatedConversation }) {
       <Link
         href={`/conversations/${participant._id}`}
         className={cn(
-          "hover:bg-secondary relative flex w-full items-center rounded-md p-2",
+          "hover:bg-secondary group relative flex w-full items-center rounded-md p-2",
           params.friendId === participant._id && "bg-secondary"
         )}>
         <UserAvatar
@@ -115,12 +123,21 @@ export function FriendChatItem({ c }: { c: PopulatedConversation }) {
           className="size-8"
         />
         <div className="ml-2">
-          <h3 className="line-clamp-1 text-sm font-medium">
-            {participant?.name}
-          </h3>
-          <p className="text-muted-foreground text-xs">
-            @{participant?.username}
-          </p>
+          <div className="flex items-center gap-3">
+            <h3 className="line-clamp-1 text-sm font-medium">
+              {participant?.name}
+            </h3>
+            <p className="text-muted-foreground text-xs opacity-0 group-hover:opacity-100">
+              @{participant?.username}
+            </p>
+          </div>
+          {c.lastMessage?.content && (
+            <p className="text-muted-foreground text-xs">
+              {user?.id === c.lastMessage.sender
+                ? `You: ${splitContent(c.lastMessage?.content)}`
+                : splitContent(c.lastMessage?.content)}
+            </p>
+          )}
         </div>
       </Link>
     </div>
