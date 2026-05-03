@@ -47,14 +47,6 @@ export const DELETE = AsyncHandler(
       });
     }
 
-    if (conversation.type !== "group") {
-      return ApiResponse({
-        statusCode: STATUS_CODES.BAD_REQUEST,
-        message: "Only group conversations can be deleted",
-        success: false
-      });
-    }
-
     if (conversation.admin.toString() !== user.id) {
       return ApiResponse({
         statusCode: STATUS_CODES.BAD_REQUEST,
@@ -75,7 +67,7 @@ export const DELETE = AsyncHandler(
     return ApiResponse({
       statusCode: STATUS_CODES.OK,
       success: true,
-      message: "Group deleted successfully"
+      message: "Conversation deleted successfully"
     });
   }
 );
