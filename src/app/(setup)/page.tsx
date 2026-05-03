@@ -1,9 +1,6 @@
-// import { InitialModal } from "@/components/modals/initial-modal";
+import { InitialModal } from "@/components/modals/initial-modal";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Member from "@/models/member.model";
-import Server from "@/models/server.model";
-// import Member from "@/models/member.model";
-// import Server from "@/models/server.model";
 import { redirect } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -17,19 +14,13 @@ export default async function Page() {
     profileId: profile.id
   });
 
-  const server = await Server.findOne({
-    _id: member?.serverId
-  });
-
-  if (server && profile) {
-    return redirect(`/servers/${server._id}`);
+  if (member) {
+    redirect("/servers");
   }
 
-  return redirect("/servers");
-
-  // return (
-  //   <div className="flex h-screen items-center justify-center">
-  //     <InitialModal />
-  //   </div>
-  // );
+  return (
+    <div className="flex h-screen items-center justify-center">
+      <InitialModal />
+    </div>
+  );
 }

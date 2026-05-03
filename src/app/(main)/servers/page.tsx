@@ -27,6 +27,7 @@ import type { Route } from "next";
 import { UserAvatar } from "@/components/common/user-avatar";
 import { PartialProfile } from "@/types/friend";
 import { formatCompactNumber } from "@/utils/num";
+import { ActionTooltip } from "@/components/common/action-tooltip";
 
 export const dynamic = "force-dynamic";
 
@@ -199,12 +200,12 @@ export default async function ServersHubPage() {
     { $sort: { name: 1 } }
   ]);
 
-  console.log({ servers });
+  // console.log({ servers });
 
   return (
-    <div className="border-edge ml-1 h-screen border-x py-5 pb-16 md:pb-24">
-      <div className="px-4 pt-6 sm:px-6 lg:px-8">
-        <h2 className="text-foreground my-2 text-2xl font-semibold">
+    <div className="border-edge ml-1 h-screen border-x pt-4">
+      <div className="border-edge border-y px-4 pt-3 pb-6">
+        <h2 className="text-foreground mb-4 text-2xl font-semibold">
           My Servers - ({servers.length})
         </h2>
 
@@ -242,7 +243,7 @@ export default async function ServersHubPage() {
                               rounded="lg"
                               src={server.logo || ""}
                               name={nameWithoutEmoji}
-                              className="size-8 rounded-lg"
+                              className="size-9 rounded-lg"
                             />
                             <h3 className="line-clamp-1 text-lg leading-snug font-medium">
                               {server.name}
@@ -251,8 +252,10 @@ export default async function ServersHubPage() {
                         </div>
                       </div>
 
-                      <div className="border-edge absolute top-3 right-3 rounded-full border p-1">
-                        {RoleIconMap[server.role as MemberRole]}
+                      <div className="border-edge absolute top-3 right-3 flex size-8 items-center justify-center rounded-full border p-1">
+                        <ActionTooltip label={server.role} size="sm" side="top">
+                          {RoleIconMap[server.role as MemberRole]}
+                        </ActionTooltip>
                       </div>
 
                       <div className="flex flex-wrap items-center justify-between gap-1">
@@ -307,7 +310,7 @@ export default async function ServersHubPage() {
                         <div className="flex items-center gap-1">
                           <IconCrownFilled className="size-5 rounded-full border border-orange-500 bg-orange-500/10 p-1 text-orange-500" />
                           <span className="text-muted-primary text-base leading-relaxed font-normal">
-                            {server.admin.username}
+                            @{server.admin.username}
                           </span>
                         </div>
 
