@@ -40,6 +40,7 @@ import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { PartialProfile } from "@/types/friend";
 import { useReply } from "@/hooks/use-reply-store";
+// import { useSocket } from "@/hooks/use-socket-store";
 
 type ChatInputProps = {
   query: Record<string, unknown>;
@@ -57,7 +58,6 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
 
   const { open, isOpen, type: modalType } = useModal();
 
-  // const router = useRouter();
   const { createMessage } = useMessage();
 
   const isSidebarProfileOpen = isOpen && modalType === "profile-sidebar";
@@ -68,6 +68,8 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
       content: ""
     }
   });
+
+  // const socket = useSocket(state => state.socket);
 
   const onSubmit = async (data: ChatInputType) => {
     try {
@@ -88,11 +90,6 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
       clearReply();
 
       requestAnimationFrame(() => {
-        // const el = textareaRef.current;
-        // if (el) {
-        //   el.style.height = "40px";
-        // }
-
         const container = document.getElementById("messages-container");
         container?.scrollTo({
           top: container.scrollHeight,

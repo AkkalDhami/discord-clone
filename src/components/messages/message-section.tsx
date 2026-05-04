@@ -114,7 +114,10 @@ export function MessagesSection({
 
   return (
     <div className="relative">
-      <div ref={containerRef} className="flex h-full w-full flex-col pt-2">
+      <div
+        ref={containerRef}
+        id="messages-container"
+        className="flex h-full w-full flex-col pt-2">
         {isFetchingNextPage && (
           <div className="text-muted-foreground flex w-full items-center justify-center gap-2 py-2 text-sm">
             <Spinner /> Loading more...
