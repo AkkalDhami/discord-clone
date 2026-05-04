@@ -26,13 +26,10 @@ export interface IMessage extends Document {
   mentions: mongoose.Types.ObjectId[];
   readBy: mongoose.Types.ObjectId[];
   replyTo?: mongoose.Types.ObjectId;
-  reactions?: [
-    {
-      emoji: string;
-      count: number;
-      reactedByUserIds: mongoose.Types.ObjectId[];
-    }
-  ];
+  reactions?: {
+    emoji: string;
+    reactedByUserIds: mongoose.Types.ObjectId[];
+  }[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -105,6 +102,17 @@ const messageSchema = new Schema<IMessage>(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Member"
+      }
+    ],
+    reactions: [
+      {
+        emoji: { type: String, required: true },
+        reactedByUserIds: [
+          {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Profile"
+          }
+        ]
       }
     ]
   },

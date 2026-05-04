@@ -5,7 +5,8 @@ export const CreateMessageSchema = z.object({
   content: z.string().min(1),
   privateUsers: z.array(z.string()).optional(),
   serverId: z.string().optional(),
-  channelId: z.string().optional()
+  channelId: z.string().optional(),
+  replyTo: z.string().optional()
 });
 
 export const UpdateMessageSchema = CreateMessageSchema.partial()
@@ -13,7 +14,8 @@ export const UpdateMessageSchema = CreateMessageSchema.partial()
     content: true
   })
   .extend({
-    pinned: z.boolean().optional()
+    pinned: z.boolean().optional(),
+    reaction: z.string().min(1).optional()
   });
 
 export type CreateMessageType = z.infer<typeof CreateMessageSchema>;

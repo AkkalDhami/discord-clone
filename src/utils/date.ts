@@ -28,3 +28,29 @@ export function timeAgo(dateString: string) {
     addSuffix: true
   }).replace("about", "");
 }
+
+export function formatDateLabel(date: string) {
+  const d = new Date(date);
+  const today = new Date();
+
+  const isToday = d.toDateString() === today.toDateString();
+
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const isYesterday = d.toDateString() === yesterday.toDateString();
+
+  if (isToday) return "Today";
+  if (isYesterday) return "Yesterday";
+
+  return d.toLocaleDateString([], {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+}
+
+export function getDateKey(date: string | Date) {
+  const d = new Date(date);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
