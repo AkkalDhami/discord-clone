@@ -123,6 +123,18 @@ export interface FriendRequest {
   updatedAt: string;
 }
 
+export type ReplyMessage = {
+  _id: string;
+  content?: string;
+  sender: {
+    _id: string;
+    name: string;
+    username: string;
+    avatar?: IFile;
+  };
+  createdAt?: string;
+};
+
 export interface IMessage {
   _id: string;
   content?: string;
@@ -131,6 +143,8 @@ export interface IMessage {
   channel?: string;
   server?: string;
 
+  replyTo?: ReplyMessage;
+
   edited?: boolean;
   isBot?: boolean;
   isAdmin?: boolean;
@@ -138,12 +152,17 @@ export interface IMessage {
 
   type: MessageType;
 
-  visibleTo?: string[];
+  visibleTo?: PartialProfile[];
 
   attachments?: IFile[];
 
   channelId?: string;
   serverId?: string;
+
+  reactions?: {
+    emoji: string;
+    reactedByUserIds: string[];
+  }[];
 
   createdAt?: string;
   updatedAt?: string;

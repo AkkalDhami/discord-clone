@@ -35,7 +35,7 @@ export interface GetMeResponse extends ApiResponse {
 export interface FetchMessagesResponse extends ApiResponse {
   data: {
     messages: IMessage[];
-    nextCursor: string | null;
+    nextCursor: string | undefined;
     hasMore: boolean;
   };
 }

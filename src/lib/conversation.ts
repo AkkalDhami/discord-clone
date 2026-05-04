@@ -153,7 +153,7 @@ export async function getOrCreateConversation({
   participants: string[];
   admin: string;
   serverId: string;
-  channelId: string;
+  channelId?: string;
   name?: string;
   type: ConversationTypes;
 }) {
@@ -232,7 +232,7 @@ export async function getConversation({
   participants: string[];
   type: ConversationTypes;
   serverId: string;
-  channelId: string;
+  channelId?: string;
 }) {
   try {
     const conversation = cId
@@ -281,7 +281,7 @@ async function createConversation({
   type: ConversationTypes;
   participantsKey: string;
   serverId: string;
-  channelId: string;
+  channelId?: string;
 }) {
   try {
     const conversation = await Conversation.create({
