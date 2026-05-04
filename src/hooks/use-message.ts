@@ -111,6 +111,7 @@ export function useMessage() {
       queryClient.invalidateQueries({
         queryKey: ["messages", payload.conversationId]
       });
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
     }
   });
 
@@ -120,6 +121,16 @@ export function useMessage() {
       return res as ApiResponse;
     },
 
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    }
+  });
+
+  const reactMessageMutation = useMutation({
+    mutationFn: async (data: { messageId: string; reaction: string }) => {
+      const res = await messageApi.updateMessage(data);
+      return res as ApiResponse;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["messages"] });
     }
@@ -164,30 +175,60 @@ export function useMessage() {
     isMessageTogglingPin: togglePinMessageMutation.isPending,
 
     deleteMessage: deleteMessageMutation.mutateAsync,
-    isMessageDeleting: deleteMessageMutation.isPending
+    isMessageDeleting: deleteMessageMutation.isPending,
+
+    reactMessage: reactMessageMutation.mutateAsync,
+    isMessageReacting: reactMessageMutation.isPending
   };
 }
 
+// export function useInfiniteMessages({
+//   conversationId,
+//   limit = 50,
+//   cursor: initialCursor
+// }: FetchMessagePayload) {
+//   const initialPageParam = initialCursor ?? null;
+
+//   return useInfiniteQuery<FetchMessagesResponse>({
+//     queryKey: ["messages", conversationId, initialPageParam],
+//     queryFn: async ({ pageParam }) => {
+//       const res = await messageApi.fetchMessages({
+//         conversationId,
+//         limit,
+//         cursor: pageParam != null ? String(pageParam) : undefined
+//       });
+
+//       return res as FetchMessagesResponse;
+//     },
+//     initialPageParam,
+//     getNextPageParam: lastPage => lastPage.data.nextCursor ?? undefined,
+//     enabled: !!conversationId
+//   });
+// }
+
 export function useInfiniteMessages({
   conversationId,
-  limit = 50,
-  cursor: initialCursor
-}: FetchMessagePayload) {
-  const initialPageParam = initialCursor ?? null;
-
+  limit = 50
+}: Omit<FetchMessagePayload, "cursor">) {
   return useInfiniteQuery<FetchMessagesResponse>({
-    queryKey: ["messages", conversationId, initialPageParam],
+    queryKey: ["messages", conversationId],
+
     queryFn: async ({ pageParam }) => {
       const res = await messageApi.fetchMessages({
         conversationId,
         limit,
-        cursor: pageParam != null ? String(pageParam) : undefined
+        cursor: String(pageParam)
       });
 
       return res as FetchMessagesResponse;
     },
-    initialPageParam,
-    getNextPageParam: lastPage => lastPage.data.nextCursor ?? undefined,
+
+    getNextPageParam: lastPage => {
+      return lastPage.data.nextCursor ?? undefined;
+    },
+
+    initialPageParam: undefined,
+
     enabled: !!conversationId
   });
 }
