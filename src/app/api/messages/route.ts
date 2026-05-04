@@ -33,7 +33,8 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const { content, conversationId, privateUsers } = validationResult.data;
+  const { content, conversationId, privateUsers, replyTo } =
+    validationResult.data;
 
   if (!conversationId) {
     return ApiResponse({
@@ -55,7 +56,8 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     sender: user.id,
     conversation: conversationId,
     content,
-    visibleTo: privateUsers?.length ? [user.id, ...privateUsers] : []
+    visibleTo: privateUsers?.length ? [user.id, ...privateUsers] : [],
+    replyTo
   });
 
   await Conversation.findByIdAndUpdate(conversationId, {
