@@ -25,7 +25,7 @@ export function MemberItem({
           : `/servers/${memberData.serverId}/conversations/${memberData._id}`
       }
       className={cn(
-        "hover:bg-secondary relative flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
+        "hover:bg-secondary pointer-events-none relative flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
         "border-edge border-t last:border-b",
         params.memberId === memberData._id &&
           "bg-secondary pointer-events-none",

@@ -62,7 +62,7 @@ export function SentFriendRequestCard({ friend }: { friend: string }) {
 
   return (
     friendReq.receiver && (
-      <div className="hover:bg-secondary/60 border-edge flex items-center justify-between border-y p-3.5">
+      <div className="hover:bg-secondary/60 border-edge flex items-center justify-between border-y p-3">
         <div className="w-full space-y-3">
           <div className="flex w-full items-center gap-1.5">
             <UserAvatar
@@ -169,7 +169,7 @@ export function FriendRequestCard({ friend }: { friend: string }) {
   }
 
   return (
-    <div className="hover:bg-secondary/30 border-edge flex w-full items-center justify-between border-y p-3.5">
+    <div className="hover:bg-secondary/30 border-edge flex w-full items-center justify-between border-y p-3">
       <div className="w-full space-y-3">
         <div className="flex w-full items-center gap-1.5">
           <UserAvatar

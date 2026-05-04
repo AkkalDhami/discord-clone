@@ -33,21 +33,30 @@ export function FriendCard({ friend }: { friend: string }) {
 
   const { open } = useModal();
 
+  const status = "Offline";
+
   return (
-    <div className="hover:bg-secondary/60 border-edge flex items-center justify-between border-b p-3.5">
+    <div className="hover:bg-secondary/60 group border-edge flex items-center justify-between border-b p-3">
       <div className="flex w-full items-center justify-between gap-3">
         <div className="flex w-full items-center gap-1.5">
-          <UserAvatar
-            name={friendData?.friend?.name}
-            src={friendData?.friend?.avatar?.url}
-            className="size-12"
-          />
-          <div className="flex w-full flex-col">
-            <h3 className="f">{friendData?.friend?.name}</h3>
+          <div className="relative">
+            <UserAvatar
+              name={friendData?.friend?.name}
+              src={friendData?.friend?.avatar?.url}
+              className="size-11"
+            />
 
-            <p className="text-muted-foreground text-sm">
-              @{friendData?.friend?.username}
-            </p>
+            <div className="bg-background ring-background absolute right-0 bottom-1 size-3 rounded-full border-[3px] border-neutral-500 ring-4" />
+          </div>
+          <div className="flex w-full flex-col">
+            <div className="flex w-full items-center gap-2">
+              <h3 className="font-normal">{friendData?.friend?.name}</h3>
+
+              <p className="text-muted-primary text-sm opacity-0 duration-100 group-hover:opacity-100">
+                @{friendData?.friend?.username}
+              </p>
+            </div>
+            <p className="text-muted-foreground text-sm">{status}</p>
           </div>
         </div>
 
@@ -100,7 +109,7 @@ export function FriendCard({ friend }: { friend: string }) {
                       });
                     }}
                     className={cn("flex items-center justify-between gap-3")}>
-                    <span>Remove Friend</span>
+                    <span>Ignore Friend</span>
                     <IconUserOff className="text-muted-foreground size-4" />
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
@@ -141,7 +150,7 @@ export function BlockedFriendCard({
   }
 
   return (
-    <div className="bg-secondary/30 hover:bg-secondary/60 border-edge flex items-center justify-between border-b p-3.5">
+    <div className="bg-secondary/30 hover:bg-secondary/60 border-edge flex items-center justify-between border-b p-3">
       <div className="w-full space-y-3">
         <div className="flex w-full flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-1.5">
