@@ -38,11 +38,8 @@ import { useMessage } from "@/hooks/use-message";
 import toast from "react-hot-toast";
 
 import { useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
 import { PartialProfile } from "@/types/friend";
 import { useReply } from "@/hooks/use-reply-store";
-import { useRef } from "react";
-import { useAutoResize } from "@/hooks/use-auto-resize";
 
 type ChatInputProps = {
   query: Record<string, unknown>;
@@ -56,11 +53,11 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
   const replyingTo = useReply(state => state.replyingTo);
   const clearReply = useReply(state => state.clearReply);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const { open, isOpen, type: modalType } = useModal();
 
-  const router = useRouter();
+  // const router = useRouter();
   const { createMessage } = useMessage();
 
   const isSidebarProfileOpen = isOpen && modalType === "profile-sidebar";
@@ -91,10 +88,10 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
       clearReply();
 
       requestAnimationFrame(() => {
-        const el = textareaRef.current;
-        if (el) {
-          el.style.height = "40px";
-        }
+        // const el = textareaRef.current;
+        // if (el) {
+        //   el.style.height = "40px";
+        // }
 
         const container = document.getElementById("messages-container");
         container?.scrollTo({
@@ -117,7 +114,7 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
     name: "content"
   });
 
-  useAutoResize(textareaRef, content);
+  // useAutoResize(textareaRef, content);
 
   return (
     <div
@@ -162,11 +159,11 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
                   <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input items-start in-data-[slot=combobox-content]:focus-within:border-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0 [[data-slot=input-group-control]:focus-visible]:border-none">
                     <InputGroupTextarea
                       {...field}
-                      ref={textareaRef}
+                      // ref={textareaRef}
                       id="chat-input"
                       className={cn(
                         "no-scrollbar resize-none",
-                        "max-h-[160px] min-h-[40px]",
+                        "max-h-[120px] min-h-[63.5px]",
                         "leading-5"
                       )}
                       placeholder={`Message  ${type === "channel" ? `#${name}` : type === "member" ? `@${name}` : `${name}`}`}

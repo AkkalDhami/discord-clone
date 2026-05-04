@@ -7,6 +7,8 @@ import { PartialProfile } from "@/types/friend";
 import { IFile, IMessage } from "@/interface";
 import { ConversationTypes } from "@/models/conversation.model";
 import { FriendChatItem, GroupChatItem } from "@/components/chat/chat-item";
+import { initSocket } from "@/configs/socket";
+import { useEffect, useMemo } from "react";
 
 export type PopulatedConversation = {
   _id: string;
@@ -51,6 +53,21 @@ export function DirectChatSection({
     }) ?? [];
 
   const { open } = useModal();
+
+  const socket = useMemo(() => {
+    const socket = initSocket();
+    return socket?.connect();
+  }, []);
+
+  useEffect(() => {
+    socket.on("message", (data: unknown) => {
+      console.log("message: ", data);
+    });
+
+    return () => {
+      socket.close();
+    };
+  }, [socket]);
 
   return (
     <div className="py-3">

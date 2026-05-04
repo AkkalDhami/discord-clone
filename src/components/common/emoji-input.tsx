@@ -8,10 +8,12 @@ import {
   PopoverContent,
   PopoverTrigger
 } from "@/components/ui/popover";
+
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupInput
+  InputGroupInput,
+  InputGroupTextarea
 } from "@/components/ui/input-group";
 
 import { IconMoodSmile } from "@tabler/icons-react";
@@ -23,19 +25,19 @@ import {
   EmojiPickerFooter
 } from "@/components/ui/emoji-picker";
 
-type EmojiInputProps<T extends FieldValues> = React.ComponentProps<
-  typeof InputGroupInput
-> & {
+type EmojiInputProps<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   label: string;
   type?: "input" | "textarea";
-};
+} & React.ComponentProps<"input"> &
+  React.ComponentProps<"textarea">;
 
 export function EmojiInput<T extends FieldValues>({
   control,
   name,
   label,
+  type = "input",
   ...inputProps
 }: EmojiInputProps<T>) {
   const [open, setOpen] = useState(false);
@@ -46,6 +48,27 @@ export function EmojiInput<T extends FieldValues>({
       control={control}
       name={name}
       render={({ field, fieldState }) => {
+        const handleEmojiInsert = (emoji: string) => {
+          const el = document.getElementById(id) as
+            | HTMLInputElement
+            | HTMLTextAreaElement
+            | null;
+
+          if (!el) return;
+
+          const value = field.value || "";
+          const start = el.selectionStart ?? value.length;
+          const end = el.selectionEnd ?? value.length;
+
+          const newValue = value.slice(0, start) + emoji + value.slice(end);
+
+          field.onChange(newValue);
+
+          requestAnimationFrame(() => {
+            el.selectionStart = el.selectionEnd = start + emoji.length;
+          });
+        };
+
         return (
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel
@@ -53,13 +76,23 @@ export function EmojiInput<T extends FieldValues>({
               className="text-muted-primary font-medium uppercase">
               {label}
             </FieldLabel>
+
             <InputGroup>
-              <InputGroupInput
-                id={id}
-                {...field}
-                {...inputProps}
-                aria-invalid={fieldState.invalid}
-              />
+              {type === "textarea" ? (
+                <InputGroupTextarea
+                  id={id}
+                  {...field}
+                  {...inputProps}
+                  aria-invalid={fieldState.invalid}
+                />
+              ) : (
+                <InputGroupInput
+                  id={id}
+                  {...field}
+                  {...inputProps}
+                  aria-invalid={fieldState.invalid}
+                />
+              )}
 
               <InputGroupAddon align="inline-end">
                 <Popover open={open} onOpenChange={setOpen}>
@@ -70,34 +103,13 @@ export function EmojiInput<T extends FieldValues>({
                         onMouseDown={e => e.preventDefault()}>
                         <IconMoodSmile className="hover:text-accent-foreground cursor-pointer" />
                       </button>
-                    }></PopoverTrigger>
+                    }
+                  />
 
                   <PopoverContent className="w-fit p-0">
                     <EmojiPicker
                       className="h-85.5"
-                      onEmojiSelect={({ emoji }) => {
-                        const input = document.getElementById(
-                          id
-                        ) as HTMLInputElement;
-
-                        if (input) {
-                          const start =
-                            input.selectionStart ?? field.value.length;
-                          const end = input.selectionEnd ?? field.value.length;
-
-                          const newValue =
-                            field.value.slice(0, start) +
-                            emoji +
-                            field.value.slice(end);
-
-                          field.onChange(newValue);
-
-                          requestAnimationFrame(() => {
-                            input.selectionStart = input.selectionEnd =
-                              start + emoji.length;
-                          });
-                        }
-                      }}>
+                      onEmojiSelect={({ emoji }) => handleEmojiInsert(emoji)}>
                       <EmojiPickerSearch />
                       <EmojiPickerContent />
                       <EmojiPickerFooter />
@@ -106,6 +118,7 @@ export function EmojiInput<T extends FieldValues>({
                 </Popover>
               </InputGroupAddon>
             </InputGroup>
+
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         );
