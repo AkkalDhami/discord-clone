@@ -29,7 +29,6 @@ export function DeleteMessageModal() {
   const onDelete = async () => {
     try {
       const res = await deleteMessage(message._id);
-
       if (res?.success) {
         close();
       } else {

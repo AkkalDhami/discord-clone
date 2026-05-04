@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -18,16 +18,18 @@ import { PartialProfile } from "@/types/friend";
 import toast from "react-hot-toast";
 import { useMessage } from "@/hooks/use-message";
 import { useQueryClient } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useUser } from "@/hooks/use-user-store";
-
-const MAX = 10;
+import { Textarea } from "@/components/ui/textarea";
 
 export function PrivateUserModal() {
   const [query, setQuery] = useState("");
+  const [content, setContent] = useState("");
 
   const { createMessage } = useMessage();
 
   const queryClient = useQueryClient();
+  const router = useRouter();
 
   const [selected, setSelected] = useState<PartialProfile[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -38,6 +40,14 @@ export function PrivateUserModal() {
   const isModalOpen = isOpen && type === "private-user";
 
   const { privateMessage } = data;
+
+  useEffect(() => {
+    if (privateMessage?.content !== undefined) {
+      requestAnimationFrame(() => {
+        setContent(privateMessage.content ?? "");
+      });
+    }
+  }, [privateMessage?.content]);
 
   const friends = privateMessage?.participants;
 
@@ -55,22 +65,26 @@ export function PrivateUserModal() {
 
   const toggle = (friend: PartialProfile) => {
     setSelected(prev => {
-      const exists = prev.find(u => u._id === friend._id);
-      if (exists) return prev.filter(u => u._id !== friend._id);
-      if (prev.length >= MAX) return prev;
-      return [...prev, friend];
+      const next = prev.some(u => u._id === friend._id)
+        ? prev.filter(u => u._id !== friend._id)
+        : [...prev, friend];
+      setPrivateUsers(next);
+      return next;
     });
-    setPrivateUsers(selected);
   };
 
   const remove = (id: string) => {
-    setSelected(prev => prev.filter(u => u._id !== id));
-    setPrivateUsers(selected);
+    setSelected(prev => {
+      const next = prev.filter(u => u._id !== id);
+      setPrivateUsers(next);
+      return next;
+    });
   };
 
   const reset = () => {
     setSelected([]);
     setQuery("");
+    setContent("");
   };
 
   const handleClose = () => {
@@ -86,7 +100,7 @@ export function PrivateUserModal() {
     handleClose();
     try {
       const res = await createMessage({
-        content: privateMessage?.content,
+        content,
         conversationId: privateMessage?.conversationId,
         privateUsers: selected.map(u => u._id)
       });
@@ -95,6 +109,7 @@ export function PrivateUserModal() {
         await queryClient.invalidateQueries({
           queryKey: ["messages", privateMessage?.conversationId]
         });
+        router.refresh();
         requestAnimationFrame(() => {
           const container = document.getElementById("messages-container");
           container?.scrollTo({
@@ -122,15 +137,20 @@ export function PrivateUserModal() {
             Send Private Message
           </DialogTitle>
         </DialogHeader>
-        {privateMessage?.content ? (
+        {privateMessage.content ? (
           <>
-            <div className="px-5 py-3">
-              {privateMessage.content && (
-                <div className="border-edge mb-3 max-h-24 overflow-y-auto rounded-lg border p-2">
-                  <p className="text-muted-foreground text-sm">
+            <div className="px-6">
+              {privateMessage.content !== undefined && (
+                <div className="mb-3 rounded-lg">
+                  <p className="text-muted-foreground mb-1 text-sm">
                     Message you are sending privately:
                   </p>
-                  <p className="font-normal">{privateMessage.content}</p>
+
+                  <Textarea
+                    value={content}
+                    onChange={e => setContent(e.target.value)}
+                    className="mt-1 h-auto min-h-16 resize-none border-none bg-transparent p-2 text-sm outline-none"
+                  />
                 </div>
               )}
               <div
@@ -162,7 +182,7 @@ export function PrivateUserModal() {
               </div>
             </div>
 
-            <ScrollArea className="h-52 px-3">
+            <ScrollArea className="mt-3 h-52 px-6">
               <div className="space-y-1">
                 {filtered?.map(friend => {
                   const sel = isSelected(friend._id);
@@ -213,7 +233,7 @@ export function PrivateUserModal() {
               <Button
                 type="button"
                 variant={"primary"}
-                disabled={selected.length === 0}
+                disabled={selected.length === 0 || content.trim().length === 0}
                 onClick={handleSubmit}>
                 Send Message
               </Button>

@@ -34,13 +34,13 @@ export function RemoveFriendModal() {
       if (res?.success) {
         close();
         router.refresh();
-        toast.success(res.message || "Friend removed successfully");
+        toast.success(res.message || "Friend ignored  successfully");
       } else {
-        toast.error(res.message || "Failed to remove friend");
+        toast.error(res.message || "Failed to ignore friend");
       }
     } catch (error) {
       console.log({ error });
-      toast.error("Failed to remove friend");
+      toast.error("Failed to ignore friend");
     }
   };
   return (
@@ -51,9 +51,9 @@ export function RemoveFriendModal() {
       }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Remove Friend</DialogTitle>
+          <DialogTitle>Ignore Friend</DialogTitle>
           <DialogDescription className={"text-base"}>
-            Are you sure you want to remove this friend?
+            Are you sure you want to ignore this friend?
             <div className="mt-1 flex items-center gap-1.5">
               <UserAvatar
                 name={friend.name}
@@ -69,52 +69,6 @@ export function RemoveFriendModal() {
               </div>
             </div>
           </DialogDescription>
-
-          <ul className="text-muted-foreground border-edge mt-1 list-inside list-disc space-y-2 border-y py-2 text-sm">
-            <li className="flex items-start gap-2">
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-red-500" />
-              <span>
-                If you remove this friend, your{" "}
-                <span className="text-foreground font-medium">
-                  chat history
-                </span>{" "}
-                will be deleted.
-              </span>
-            </li>
-
-            <li className="flex items-start gap-2">
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-red-500" />
-              <span>
-                All{" "}
-                <span className="text-foreground font-medium">
-                  messages and media
-                </span>{" "}
-                shared will be permanently removed.
-              </span>
-            </li>
-
-            <li className="flex items-start gap-2">
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-red-500" />
-              <span>
-                You will no longer be able to{" "}
-                <span className="text-foreground font-medium">
-                  send messages
-                </span>{" "}
-                to each other.
-              </span>
-            </li>
-
-            <li className="flex items-start gap-2">
-              <span className="mt-2 size-1.5 shrink-0 rounded-full bg-red-500" />
-              <span>
-                You can add them again later, but{" "}
-                <span className="text-foreground font-medium">
-                  previous conversations won&apos;t be restored
-                </span>
-                .
-              </span>
-            </li>
-          </ul>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
           <Button
@@ -132,10 +86,10 @@ export function RemoveFriendModal() {
             className={"h-9 py-2 text-base font-medium"}>
             {isRemovingFriend ? (
               <>
-                <Spinner /> Removing...
+                <Spinner /> Ignoring...
               </>
             ) : (
-              "Remove Friend"
+              "Ignore Friend"
             )}
           </Button>
         </div>
