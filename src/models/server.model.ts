@@ -7,8 +7,9 @@ export interface IServer extends Document {
   logo: string;
   inviteCode: string;
 
+  description?: string;
+
   profileId: mongoose.Types.ObjectId;
-  // members: mongoose.Types.ObjectId[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -21,10 +22,17 @@ const serverSchema = new Schema<IServer>(
       required: [true, "Name is required"],
       trim: true
     },
+
+    description: {
+      type: String,
+      trim: true
+    },
+
     logo: {
       type: String,
       default: null
     },
+
     inviteCode: {
       type: String,
       required: [true, "Invite code is required"],
@@ -36,12 +44,6 @@ const serverSchema = new Schema<IServer>(
       ref: "Profile",
       required: [true, "Profile ID is required"]
     }
-    // members: [
-    //   {
-    //     type: Schema.Types.ObjectId,
-    //     ref: "Member"
-    //   }
-    // ]
   },
   {
     timestamps: true
