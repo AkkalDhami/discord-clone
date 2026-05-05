@@ -33,6 +33,7 @@ export interface Server {
   name: string;
   logo: string;
   inviteCode: string;
+  description?: string;
 
   profileId: string;
   members: Member[];

@@ -39,3 +39,15 @@ export interface FetchMessagesResponse extends ApiResponse {
     hasMore: boolean;
   };
 }
+
+export interface ServerPreviewResponse extends ApiResponse {
+  data: {
+    _id: string;
+    name: string;
+    logo: string;
+    description?: string;
+    createdAt: Date;
+    members: number;
+    isAlreadyMember: boolean;
+  };
+}
