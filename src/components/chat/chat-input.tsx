@@ -78,7 +78,8 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
         conversationId: query.conversationId as string,
         serverId: query.serverId as string,
         channelId: query.channelId as string,
-        replyTo: replyingTo?._id
+        replyTo: replyingTo?._id,
+        privateUsers: replyingTo?.visibleTo
       });
 
       if (!res.success) {

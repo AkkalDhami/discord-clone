@@ -18,8 +18,29 @@ export function UserAvatar({
 }: UserAvatarProps) {
   return (
     <Avatar
-      className={cn("size-10", className, `rounded-${rounded}` as string)}>
-      <AvatarImage src={src} />
+      className={cn(
+        "size-10",
+        className,
+        rounded === "lg" && "rounded-lg",
+        rounded === "md" && "rounded-md",
+        rounded === "full" && "rounded-full",
+        rounded === "sm" && "rounded-sm",
+        rounded === "xl" && "rounded-xl",
+        rounded === "2xl" && "rounded-2xl"
+      )}>
+      <AvatarImage
+        src={src}
+        className={cn(
+          "size-10 object-cover object-center",
+          className,
+          rounded === "lg" && "rounded-lg",
+          rounded === "md" && "rounded-md",
+          rounded === "full" && "rounded-full",
+          rounded === "sm" && "rounded-sm",
+          rounded === "xl" && "rounded-xl",
+          rounded === "2xl" && "rounded-2xl"
+        )}
+      />
       <AvatarFallback
         className={cn(
           "bg-indigo-500 text-white",

@@ -42,7 +42,7 @@ export function MessagesSection({
 
     requestAnimationFrame(() => {
       container.scrollIntoView({
-        behavior: "smooth"
+        behavior: "auto"
       });
       setIsInitialScrollDone(true);
     });

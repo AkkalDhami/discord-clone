@@ -151,7 +151,8 @@ export function MessageAction({ message }: { message: IMessage }) {
                 _id: message.sender._id,
                 name: message.sender.name,
                 username: message.sender.username
-              }
+              },
+              visibleTo: visibleTo?.map(user => user._id) || []
             })
           }
           className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
