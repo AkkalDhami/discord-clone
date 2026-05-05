@@ -79,6 +79,7 @@ export function ServerHeader({ server, role }: ServerHeaderProps) {
                     server: {
                       _id: serverObj._id,
                       name: serverObj.name,
+                      description: serverObj.description,
                       logo: serverObj.logo,
                       inviteCode: serverObj.inviteCode,
                       profileId: serverObj.profileId,

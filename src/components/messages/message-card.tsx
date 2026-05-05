@@ -54,8 +54,7 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
   const inviteId = extractInviteId(content || "");
 
   const { data: inviteData, isFetching } = useInvitePreview({
-    inviteId,
-    userId: user?.id
+    inviteId
   });
 
   const replyingTo = useReply(state => state.replyingTo);

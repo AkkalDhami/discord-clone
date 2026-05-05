@@ -38,6 +38,11 @@ import { SidebarProfileData, useModal } from "@/hooks/use-modal-store";
 import { useUser } from "@/hooks/use-user-store";
 import Link from "next/link";
 import { PartialProfile } from "@/types/friend";
+import { useQueryClient } from "@tanstack/react-query";
+import { ChatInputType } from "@/validators/chat";
+import { useMessage } from "@/hooks/use-message";
+import { useReply } from "@/hooks/use-reply-store";
+import toast from "react-hot-toast";
 
 export function ProfileSidebar() {
   const { isOpen, type, data } = useModal();
@@ -64,14 +69,45 @@ export function ProfileSidebar() {
 
 function DirectProfileSidebar() {
   const { isOpen, close, type, open, data } = useModal();
+  const queryClient = useQueryClient();
+  const { createMessage } = useMessage();
+  const replyingTo = useReply(state => state.replyingTo);
 
   const isSidebarOpen = isOpen && type === "profile-sidebar";
-
-  const { sidebarProfile } = data;
+  const { sidebarProfile, conversation } = data;
   const friend = sidebarProfile?.friend;
   const mutualFriends = sidebarProfile?.mutualFriends || [];
   const mutualServers = sidebarProfile?.mutualServers || [];
   const servers = sidebarProfile?.servers || [];
+
+  const onSubmit = async (data: ChatInputType) => {
+    try {
+      const res = await createMessage({
+        content: data.content,
+        conversationId: conversation?._id as string,
+        replyTo: replyingTo?._id
+      });
+
+      if (!res.success) {
+        toast.error(res.message || "Failed to send server link");
+        return;
+      }
+
+      requestAnimationFrame(() => {
+        const container = document.getElementById("messages-container");
+        container?.scrollIntoView({
+          behavior: "smooth"
+        });
+      });
+
+      await queryClient.invalidateQueries({
+        queryKey: ["messages", conversation?._id]
+      });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send server link");
+    }
+  };
 
   return (
     <>
@@ -123,6 +159,11 @@ function DirectProfileSidebar() {
                         servers?.map(({ _id, logo, inviteCode, name }) => (
                           <DropdownMenuItem
                             key={_id}
+                            onClick={() => {
+                              onSubmit({
+                                content: `${process.env.NEXT_PUBLIC_APP_URL}/invite/${inviteCode}`
+                              });
+                            }}
                             className={"flex items-center gap-3 px-1.5 py-2"}>
                             {logo ? (
                               <Image

@@ -53,8 +53,9 @@ export async function DirectChatSidebar() {
             $match: {
               $expr: {
                 $and: [
-                  { $in: ["$_id", "$$participantIds"] },
-                  { $ne: ["$_id", new Types.ObjectId(currentUser?.id)] }
+                  {
+                    $in: ["$_id", "$$participantIds"]
+                  }
                 ]
               }
             }
@@ -85,6 +86,7 @@ export async function DirectChatSidebar() {
           },
           {
             $project: {
+              _id: 1,
               content: 1,
               sender: 1,
               type: 1
