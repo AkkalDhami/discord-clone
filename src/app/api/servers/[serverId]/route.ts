@@ -45,7 +45,7 @@ export const PATCH = AsyncHandler(
       });
     }
 
-    const { name, logo } = result.data;
+    const { name, logo, description } = result.data;
 
     const existingServer = await Server.findOne({
       _id: serverId
@@ -74,7 +74,8 @@ export const PATCH = AsyncHandler(
 
     const server = await Server.findByIdAndUpdate(serverId, {
       name,
-      logo
+      logo,
+      description
     });
 
     return ApiResponse({

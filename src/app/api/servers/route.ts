@@ -65,7 +65,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
       const [textCategory] = await Category.create(
         [
           {
-            name: "Text Channels",
+            name: "text-channels",
             serverId: serverDoc._id,
             profileId: user.id
           }
@@ -77,7 +77,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
       await Channel.create(
         [
           {
-            name: "General",
+            name: "general",
             type: ChannelType.TEXT,
             serverId: serverDoc._id,
             profileId: user.id,
