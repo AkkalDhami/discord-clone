@@ -85,7 +85,7 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
     if (!el) return;
 
     el.scrollIntoView({
-      behavior: "smooth",
+      behavior: "auto",
       block: "center"
     });
 
@@ -99,7 +99,9 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
         "group hover:bg-secondary/70 relative py-1 duration-300",
         replyingTo?._id === _id &&
           "bg-primary-600/10 hover:bg-primary-500/10 border-primary-500 border-l-2",
-        isHighlighted && "bg-primary-500/20"
+        isHighlighted && "hover:bg-primary-500/10 bg-primary-500/20",
+        replyTo?.sender._id === user?.id &&
+          "bg-amber-500/10 hover:bg-amber-600/10"
       )}>
       {replyTo && (
         <div className="mb-1 flex items-center gap-1 pl-8 text-xs">
