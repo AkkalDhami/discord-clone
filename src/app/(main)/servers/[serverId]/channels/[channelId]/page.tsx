@@ -85,6 +85,7 @@ export default async function Page(
             name: channel.name,
             type: channel.type
           }}
+          isPrivate={channel?.category?.private ?? false}
         />
 
         <MessagesSection conversationId={conversationId as string} />

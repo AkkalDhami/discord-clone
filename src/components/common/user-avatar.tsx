@@ -7,7 +7,7 @@ type UserAvatarProps = {
   src?: string;
   name?: string;
   className?: string;
-  rounded?: "lg" | "md" | "full" | "sm";
+  rounded?: "lg" | "md" | "full" | "sm" | "xl" | "2xl";
 };
 
 export function UserAvatar({
@@ -26,7 +26,9 @@ export function UserAvatar({
           rounded === "lg" && "rounded-lg",
           rounded === "md" && "rounded-md",
           rounded === "full" && "rounded-full",
-          rounded === "sm" && "rounded-sm"
+          rounded === "sm" && "rounded-sm",
+          rounded === "xl" && "rounded-xl",
+          rounded === "2xl" && "rounded-2xl"
         )}>
         {name?.slice(0, 1).toUpperCase()}
       </AvatarFallback>

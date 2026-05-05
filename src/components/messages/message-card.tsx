@@ -22,6 +22,11 @@ import { useMessage } from "@/hooks/use-message";
 import toast from "react-hot-toast";
 import { ActionTooltip } from "../common/action-tooltip";
 import { formatDateLabel } from "@/utils/date";
+import { useReply } from "@/hooks/use-reply-store";
+import { useMessageHighlight } from "@/hooks/use-msg-highlight";
+import { extractInviteId } from "@/utils/url";
+import { useInvitePreview } from "@/hooks/use-invite-preview";
+import { useRouter } from "next/navigation";
 
 export function MessageCard(message: IMessage & { grouped?: boolean }) {
   const { user } = useUser();
@@ -38,11 +43,26 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
     _id
   } = message;
 
+  const router = useRouter();
+
   const { reactMessage, isMessageReacting } = useMessage();
 
   const { name, username, avatar } = sender || {
     ...user
   };
+
+  const inviteId = extractInviteId(content || "");
+
+  const { data: inviteData, isFetching } = useInvitePreview({
+    inviteId,
+    userId: user?.id
+  });
+
+  const replyingTo = useReply(state => state.replyingTo);
+
+  const highlightedId = useMessageHighlight(state => state.highlightedId);
+
+  const isHighlighted = highlightedId === _id;
 
   async function onReact(emoji: string) {
     try {
@@ -58,23 +78,72 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
     }
   }
 
+  const highlight = useMessageHighlight.getState().highlight;
+
+  function scrollToMessage(id: string) {
+    const el = document.getElementById(`message-${id}`);
+
+    if (!el) return;
+
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    highlight(id);
+  }
+
   return (
     <div
-      className={cn("group hover:bg-secondary/70 relative py-1 duration-300")}>
-      <div className="flex gap-3 px-4">
-        <div className="relative w-12 shrink-0">
-          {!grouped ? (
-            <div className="bg-muted size-10 overflow-hidden rounded-full">
-              <UserAvatar src={avatar?.url} name={name} />
+      id={`message-${_id}`}
+      className={cn(
+        "group hover:bg-secondary/70 relative py-1 duration-300",
+        replyingTo?._id === _id &&
+          "bg-primary-600/10 hover:bg-primary-500/10 border-primary-500 border-l-2",
+        isHighlighted && "bg-primary-500/20"
+      )}>
+      {replyTo && (
+        <div className="mb-1 flex items-center gap-1 pl-8 text-xs">
+          <div
+            onClick={() => scrollToMessage(replyTo._id)}
+            className="hover:border-foreground mt-2 h-4 w-[52px] cursor-pointer rounded-l-lg rounded-b-none border-t-2 border-l-2 border-neutral-500/60"
+          />
+          <div className="flex items-center gap-2">
+            <UserAvatar
+              src={replyTo.sender.avatar?.url}
+              name={replyTo.sender?.name}
+              className="size-6 text-sm"
+            />
+            <div className="text-muted-foreground flex min-w-0 items-center gap-1">
+              <span className="text-muted-foreground text-sm font-medium">
+                @{replyTo.sender?.username || replyTo.sender?.name}
+              </span>
+
+              <span
+                onClick={() => scrollToMessage(replyTo._id)}
+                className="text-accent-foreground cursor-pointer truncate font-normal">
+                {replyTo.content || "Attachment"}
+              </span>
             </div>
+          </div>
+        </div>
+      )}
+
+      <div className="flex gap-3 px-4">
+        <div className="relative w-14 shrink-0">
+          {!grouped ? (
+            <UserAvatar src={avatar?.url} name={name} className="size-12" />
           ) : (
-            <span className="text-muted-foreground text-[10px] opacity-0 group-hover:opacity-100">
-              {new Date(createdAt).toLocaleTimeString([], {
-                hour: "numeric",
-                minute: "numeric",
-                hour12: true
-              })}
-            </span>
+            <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100">
+              <span className="text-muted-foreground text-[10px]">
+                {new Date(createdAt).toLocaleTimeString([], {
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true
+                })}
+              </span>
+              {pinned && <IconPin className="text-muted-foreground size-3" />}
+            </div>
           )}
         </div>
 
@@ -93,19 +162,19 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
                 )}
 
                 <span className="text-muted-foreground text-[13px]">
-                  {new Date(createdAt).toLocaleDateString([], {
-                    year: "numeric",
-                    month: "numeric",
-                    day: "numeric",
+                  {formatDateLabel(createdAt)}
+                  {", "}
+                  {new Date(createdAt).toLocaleTimeString([], {
                     hour: "2-digit",
                     minute: "numeric",
                     hour12: true
                   })}
                 </span>
+                {pinned && (
+                  <IconPin className="text-muted-foreground size-3.5" />
+                )}
               </>
             )}
-
-            {pinned && <IconPin className="text-muted-foreground size-3.5" />}
 
             {visibleTo && visibleTo.length > 1 && (
               <span className="text-[13px] text-purple-500">
@@ -117,18 +186,6 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
               </span>
             )}
           </div>
-
-          {replyTo && (
-            <div className="bg-muted/60 hover:bg-muted border-primary-500 mb-1 cursor-pointer rounded-md border-l-2 px-2 py-1 text-xs">
-              <p className="text-muted-foreground font-medium">
-                {replyTo.sender?.name || "Unknown"}
-              </p>
-
-              <p className="text-muted-foreground line-clamp-1">
-                {replyTo.content || "Attachment"}
-              </p>
-            </div>
-          )}
 
           {content && (
             <p
@@ -144,6 +201,59 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
                 </span>
               )}
             </p>
+          )}
+
+          {inviteData?.success && !isFetching && (
+            <div className="bg-muted/40 mt-2 w-80 overflow-hidden rounded-xl border">
+              <div className="relative h-20 bg-linear-to-r from-neutral-300 to-neutral-400 dark:from-neutral-700 dark:to-neutral-800"></div>
+
+              <div className="-mt-8 flex items-end gap-3 px-6">
+                <UserAvatar
+                  name={inviteData?.data?.name}
+                  src={inviteData?.data?.logo}
+                  className="size-16 border-4"
+                />
+              </div>
+              <div className="px-4 py-1.5 pb-4">
+                <div className="min-w-0 space-y-1">
+                  <p className="truncate font-medium">
+                    {inviteData?.data?.name}
+                  </p>
+
+                  <div className="flex w-full items-center justify-between">
+                    <p className="text-muted-primary text-xs">
+                      {inviteData?.data?.members} Members
+                    </p>
+
+                    <p className="text-muted-primary text-xs">
+                      Est.{" "}
+                      {new Date(inviteData?.data?.createdAt).toDateString()}
+                    </p>
+                  </div>
+                  {inviteData?.data?.description && (
+                    <p className="text-muted-foreground line-clamp-5 text-sm">
+                      {inviteData?.data?.description}
+                    </p>
+                  )}
+                </div>
+
+                {
+                  <button
+                    onClick={() => {
+                      if (inviteData.data.isAlreadyMember) {
+                        router.push(`/servers/${inviteData.data._id}`);
+                      } else {
+                        router.push(`/invite/${inviteId}`);
+                      }
+                    }}
+                    className="mt-3 w-full cursor-pointer rounded-lg bg-green-600 py-1.5 text-white hover:bg-green-700">
+                    {!inviteData.data.isAlreadyMember
+                      ? "Join Server"
+                      : "Go to Server"}
+                  </button>
+                }
+              </div>
+            </div>
           )}
 
           {message.reactions?.length ? (

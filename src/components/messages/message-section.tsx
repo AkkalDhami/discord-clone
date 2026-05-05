@@ -9,6 +9,8 @@ import {
 import { useInfiniteMessages } from "@/hooks/use-message";
 import { getDateKey } from "@/utils/date";
 import { Spinner } from "@/components/ui/spinner";
+import { useModal } from "@/hooks/use-modal-store";
+import { cn } from "@/lib/utils";
 
 export function MessagesSection({
   conversationId
@@ -16,6 +18,9 @@ export function MessagesSection({
   conversationId: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const { isOpen, type: modalType } = useModal();
+  const isSidebarOpen = isOpen && modalType === "profile-sidebar";
 
   const [showJumpToPresent, setShowJumpToPresent] = useState(false);
   const [isInitialScrollDone, setIsInitialScrollDone] = useState(false);
@@ -25,68 +30,24 @@ export function MessagesSection({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteMessages({
       conversationId,
-      limit: 10
+      limit: 80
     });
 
   const messages =
     data?.pages.flatMap(page => page?.data?.messages ?? []) ?? [];
 
-  // ✅ Initial scroll to bottom
   useEffect(() => {
     const container = containerRef.current;
     if (!container || isLoading || isInitialScrollDone) return;
 
     requestAnimationFrame(() => {
-      container.scrollTop = container.scrollHeight;
+      container.scrollIntoView({
+        behavior: "smooth"
+      });
       setIsInitialScrollDone(true);
     });
   }, [isLoading, isInitialScrollDone]);
 
-  // ✅ Scroll handler (top = load older, bottom = hide jump button)
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleScroll = async () => {
-      const isNearTop = container.scrollTop <= 50;
-
-      const isNearBottom =
-        container.scrollHeight - container.scrollTop - container.clientHeight <=
-        50;
-
-      // ✅ show button only when NOT at bottom
-      setShowJumpToPresent(!isNearBottom);
-
-      // ✅ prevent double fetch
-      if (
-        isNearTop &&
-        hasNextPage &&
-        !isFetchingNextPage &&
-        !isFetchingRef.current
-      ) {
-        isFetchingRef.current = true;
-
-        const prevScrollHeight = container.scrollHeight;
-
-        await fetchNextPage();
-
-        requestAnimationFrame(() => {
-          const newScrollHeight = container.scrollHeight;
-
-          // ✅ preserve scroll position after prepend
-          container.scrollTop =
-            newScrollHeight - prevScrollHeight + container.scrollTop;
-
-          isFetchingRef.current = false;
-        });
-      }
-    };
-
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
-
-  // ✅ Auto-scroll only if already near bottom
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !isInitialScrollDone) return;
@@ -102,22 +63,61 @@ export function MessagesSection({
     }
   }, [messages.length, isInitialScrollDone]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = async () => {
+      const isNearTop = container.scrollTop <= 10;
+
+      const isNearBottom =
+        container.scrollHeight - container.scrollTop - container.clientHeight <=
+        20;
+
+      setShowJumpToPresent(!isNearBottom);
+
+      if (
+        isNearTop &&
+        hasNextPage &&
+        !isFetchingNextPage &&
+        !isFetchingRef.current
+      ) {
+        isFetchingRef.current = true;
+
+        const prevScrollHeight = container.scrollHeight;
+        const prevScrollTop = container.scrollTop;
+
+        await fetchNextPage();
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            const newScrollHeight = container.scrollHeight;
+
+            container.scrollTop =
+              prevScrollTop + (newScrollHeight - prevScrollHeight);
+
+            isFetchingRef.current = false;
+          });
+        });
+      }
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+
   const scrollToBottom = (smooth = true) => {
     const container = containerRef.current;
     if (!container) return;
 
-    container.scrollTo({
-      top: container.scrollHeight,
+    container.scrollIntoView({
       behavior: smooth ? "smooth" : "auto"
     });
   };
 
   return (
-    <div className="relative">
-      <div
-        ref={containerRef}
-        id="messages-container"
-        className="flex h-full w-full flex-col pt-2">
+    <div className={cn("relative", isSidebarOpen && "pr-82")}>
+      <div className="flex h-full w-full flex-col pt-2">
         {isFetchingNextPage && (
           <div className="text-muted-foreground flex w-full items-center justify-center gap-2 py-2 text-sm">
             <Spinner /> Loading more...
@@ -147,7 +147,8 @@ export function MessagesSection({
                   new Date(prev?.createdAt ?? new Date()).getTime() <
                   5 * 60 * 1000;
 
-              const isGrouped = isSameAuthor && isWithinTimeWindow;
+              const isGrouped =
+                isSameAuthor && isWithinTimeWindow && !message?.replyTo;
 
               return (
                 <Fragment key={message?._id}>
@@ -162,15 +163,17 @@ export function MessagesSection({
       </div>
 
       {showJumpToPresent && (
-        <div className="bg-secondary absolute right-4 bottom-4 rounded-lg border border-neutral-500/40 px-3 py-1.5">
+        <div
+          onClick={() => scrollToBottom(true)}
+          className="bg-secondary sticky right-4 bottom-4 mx-auto w-fit cursor-pointer rounded-xl border border-neutral-500/30 px-3 py-1.5 text-sm font-normal">
           You&apos;re viewing older messages
-          <button
-            onClick={() => scrollToBottom(true)}
-            className="bg-primary-500 hover:bg-primary-600 ml-3 cursor-pointer rounded-lg p-2 text-xs font-semibold text-white">
+          <button className="bg-primary-500 hover:bg-primary-600 ml-3 cursor-pointer rounded-lg p-2 text-xs text-white">
             Jump to Present
           </button>
         </div>
       )}
+
+      <div ref={containerRef} id="messages-container" className="mb-4" />
     </div>
   );
 }
