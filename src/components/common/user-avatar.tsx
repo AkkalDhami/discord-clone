@@ -31,8 +31,7 @@ export function UserAvatar({
       <AvatarImage
         src={src}
         className={cn(
-          "size-10 object-cover object-center",
-          className,
+          "object-cover object-center",
           rounded === "lg" && "rounded-lg",
           rounded === "md" && "rounded-md",
           rounded === "full" && "rounded-full",

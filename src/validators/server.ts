@@ -8,6 +8,12 @@ export const ServerSchema = z.object({
     .min(3, "Server name must be at least 3 characters.")
     .max(32, "Server name must be at most 32 characters."),
 
+  description: z
+    .string({
+      error: "Server description must be a string"
+    })
+    .optional(),
+
   logo: z.string({
     error: "Server logo must be a string"
   })
