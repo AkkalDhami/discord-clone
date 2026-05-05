@@ -186,6 +186,7 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
               _id: 1,
               content: 1,
               sender: 1,
+              visibleTo: 1,
               createdAt: 1
             }
           },
@@ -220,8 +221,6 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
 
     { $unwind: "$sender" }
   ]);
-
-  // console.log({ messages });
 
   const hasMore = messages.length === limit;
   const nextCursor = hasMore ? messages[messages.length - 1]._id : undefined;

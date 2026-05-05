@@ -80,7 +80,7 @@ export default async function Page(props: PageProps<"/friends/requests">) {
             <Tabs defaultValue="incoming" className="w-full">
               <TabsList
                 variant={"line"}
-                className={"flex flex-wrap items-center gap-12 p-2"}>
+                className={"flex items-center gap-4 p-2 sm:gap-12"}>
                 <TabsTrigger
                   value="incoming"
                   className={"h-8 p-0 text-lg font-normal"}>
