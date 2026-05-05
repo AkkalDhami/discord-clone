@@ -91,8 +91,7 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
 
       requestAnimationFrame(() => {
         const container = document.getElementById("messages-container");
-        container?.scrollTo({
-          top: container.scrollHeight,
+        container?.scrollIntoView({
           behavior: "smooth"
         });
       });
@@ -132,22 +131,21 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
               <Field className="flex flex-col justify-end">
                 <div className="relative">
                   {replyingTo && (
-                    <div className="bg-muted absolute bottom-full left-0 mb-2 w-full rounded-md border px-3 py-2 text-sm shadow-sm">
+                    <div className="absolute bottom-full left-0 mb-2 w-full rounded-md border bg-neutral-200 px-3 py-2 text-sm dark:bg-neutral-900">
                       <div className="flex items-center justify-between gap-2">
-                        <div className="min-w-0">
-                          <p className="text-muted-foreground text-xs">
-                            Replying to {replyingTo.sender.name}
-                          </p>
-
-                          <p className="truncate text-xs">
-                            {replyingTo.content || "Attachment"}
+                        <div className="flex-1">
+                          <p className="text-muted-foreground text-sm">
+                            Replying to{" "}
+                            <span className="text-foreground">
+                              @{replyingTo.sender.username}
+                            </span>
                           </p>
                         </div>
 
                         <button
                           type="button"
                           onClick={clearReply}
-                          className="text-muted-foreground hover:text-foreground">
+                          className="text-muted-foreground bg-muted hover:text-foreground flex size-8 cursor-pointer items-center justify-center rounded-full p-1">
                           ✕
                         </button>
                       </div>
@@ -163,6 +161,7 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
                         "max-h-[120px] min-h-[63.5px]",
                         "leading-5"
                       )}
+                      autoFocus={replyingTo?._id ? true : false}
                       placeholder={`Message  ${type === "channel" ? `#${name}` : type === "member" ? `@${name}` : `${name}`}`}
                       // onKeyUp={e => {
                       //   if (e.key === "Enter" && e.ctrlKey) {

@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   IconHammer,
   IconHash,
+  IconLock,
   IconPencil,
   IconUsersPlus
 } from "@tabler/icons-react";
@@ -200,13 +201,23 @@ export function DirectChatWelcome({
 }
 
 export function ChannelWelcome({
-  channel
+  channel,
+  isPrivate = false
 }: {
   channel: Pick<Channel, "_id" | "name" | "type">;
+  isPrivate?: boolean;
 }) {
   return (
-    <div className="mt-4 flex flex-col space-y-3 px-4">
-      <IconHash className="bg-secondary size-18 rounded-full p-3" />
+    <div className="relative mt-4 flex flex-col space-y-3 px-4">
+      <div className="relative w-fit">
+        <IconHash className="bg-secondary size-18 rounded-full p-3" />
+        {isPrivate && (
+          <IconLock
+            className="bg-secondary absolute top-3 right-1.5 rounded-full"
+            size={24}
+          />
+        )}
+      </div>
 
       <h2 className="text-3xl font-medium">
         Welcome to #{channel?.name} Channel!

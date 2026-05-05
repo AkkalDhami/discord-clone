@@ -43,7 +43,7 @@ export function GroupChatItem({ c }: { c: PopulatedConversation }) {
           <div className="ml-2">
             <h3 className="line-clamp-1 text-sm font-medium">{displayName}</h3>
             <p className="text-muted-foreground text-xs">
-              {participants.length + 1} Members
+              {participants.length} Members
             </p>
           </div>
         </div>

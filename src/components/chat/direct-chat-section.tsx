@@ -7,7 +7,7 @@ import { PartialProfile } from "@/types/friend";
 import { IFile, IMessage } from "@/interface";
 import { ConversationTypes } from "@/models/conversation.model";
 import { FriendChatItem, GroupChatItem } from "@/components/chat/chat-item";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSocket } from "@/hooks/use-socket-store";
 import { useUser } from "@/hooks/use-user-store";
 
@@ -34,43 +34,40 @@ export function DirectChatSection({
   conversations: string;
   user: string;
 }) {
-  const friends = JSON.parse(friend) as PartialProfile[];
-  const conversationsData = JSON.parse(
-    conversations
-  ) as PopulatedConversation[];
-  const currentUser = JSON.parse(user) as PartialProfile;
+  const friends = useMemo(
+    () => JSON.parse(friend) as PartialProfile[],
+    [friend]
+  );
+
+  const conversationsData = useMemo(
+    () => JSON.parse(conversations) as PopulatedConversation[],
+    [conversations]
+  );
+
+  const currentUser = useMemo(() => JSON.parse(user) as PartialProfile, [user]);
 
   const { user: profile } = useUser();
 
-  const filteredConversations =
-    conversationsData?.filter(c => {
-      if (c.type === "direct") {
-        return c.participants?.length > 0 && !!c.participants[0]._id;
-      }
+  const filteredConversations = useMemo(() => {
+    return (
+      conversationsData?.filter(c => {
+        if (c.type === "direct") {
+          return (
+            c.participants?.length > 0 &&
+            c.participants.some(p => p._id !== currentUser._id)
+          );
+        }
 
-      if (c.type === "group") {
-        return !!(c._id && (c.name || c.participants?.length > 0));
-      }
+        if (c.type === "group") {
+          return !!(c._id && (c.name || c.participants?.length > 0));
+        }
 
-      return false;
-    }) ?? [];
+        return false;
+      }) ?? []
+    );
+  }, [conversationsData, currentUser._id]);
 
   const { open } = useModal();
-
-  // const socket = useMemo(() => {
-  //   const socket = initSocket();
-  //   return socket?.connect();
-  // }, []);
-
-  // useEffect(() => {
-  //   socket.on("message", (data: unknown) => {
-  //     console.log("message: ", data);
-  //   });
-
-  //   return () => {
-  //     socket.close();
-  //   };
-  // }, [socket]);
 
   const connect = useSocket(state => state.connect);
 

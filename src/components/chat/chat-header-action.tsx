@@ -89,7 +89,8 @@ export function ChatHeaderAction({
                   onClick={() => {
                     if (!isSidebarOpen) {
                       open("profile-sidebar", {
-                        sidebarProfile: sidebarProfile
+                        sidebarProfile: sidebarProfile,
+                        conversation
                       });
                     } else {
                       close();
@@ -102,7 +103,8 @@ export function ChatHeaderAction({
                   onClick={() => {
                     if (!isSidebarOpen) {
                       open("profile-sidebar", {
-                        sidebarProfile: sidebarProfile
+                        sidebarProfile: sidebarProfile,
+                        conversation
                       });
                     } else {
                       close();
