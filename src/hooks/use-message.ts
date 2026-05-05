@@ -65,7 +65,7 @@ export function useMessage() {
               ...page,
               data: {
                 ...page.data,
-                messages: [optimisticMessage, ...page.data.messages]
+                messages: [...page.data.messages, optimisticMessage]
               }
             };
           })

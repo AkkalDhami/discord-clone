@@ -1,10 +1,12 @@
 import { ReplyMessage } from "@/interface";
 import { create } from "zustand";
 
-type ReplyState = {
-  replyingTo: ReplyMessage | null;
+type ReplyMessageWithVisibleTo = ReplyMessage & { visibleTo: string[] };
 
-  setReplyingTo: (message: ReplyMessage) => void;
+type ReplyState = {
+  replyingTo: ReplyMessageWithVisibleTo | null;
+
+  setReplyingTo: (message: ReplyMessageWithVisibleTo) => void;
   clearReply: () => void;
 };
 

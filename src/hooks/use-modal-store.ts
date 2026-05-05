@@ -61,7 +61,13 @@ export type SidebarProfileData = {
 export interface ModalData {
   server?: Pick<
     Server,
-    "_id" | "name" | "logo" | "inviteCode" | "profileId" | "members"
+    | "_id"
+    | "name"
+    | "logo"
+    | "inviteCode"
+    | "profileId"
+    | "members"
+    | "description"
   >;
   channel?: Channel;
   category?: Category;
