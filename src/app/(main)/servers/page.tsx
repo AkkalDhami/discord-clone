@@ -1,45 +1,19 @@
-import Link from "next/link";
-import { formatDistanceToNow } from "date-fns";
-import {
-  IconCalendar,
-  IconCategory,
-  IconCrownFilled,
-  IconHash,
-  IconSwords,
-  IconUsers
-} from "@tabler/icons-react";
-
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
 import dbConnect from "@/configs/db";
 import { currentAuthUser } from "@/helpers/auth.helper";
-import MemberRole from "@/enums/role.enum";
 import Member from "@/models/member.model";
-import { cn } from "@/lib/utils";
-import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
 import { Types } from "mongoose";
 import { redirect } from "next/navigation";
-import type { Route } from "next";
-import { UserAvatar } from "@/components/common/user-avatar";
 import { PartialProfile } from "@/types/friend";
-import { formatCompactNumber } from "@/utils/num";
-import { ActionTooltip } from "@/components/common/action-tooltip";
+import { MobileNavigationSidebar } from "@/components/navigation/navigation-sidebar-sm";
+import { ServerEmpty } from "@/components/server/server-empty";
+import { ServerCard } from "@/components/server/server-card";
 
 export const dynamic = "force-dynamic";
 
-const RoleIconMap: Record<MemberRole, React.ReactNode> = {
-  [MemberRole.ADMIN]: <IconCrownFilled className="size-4 text-orange-500" />,
-  [MemberRole.MODERATOR]: <IconSwords className="size-4 text-indigo-500" />,
-  [MemberRole.GUEST]: null
-};
-
-type ServerWithStats = {
+export type ServerWithStats = {
   _id: Types.ObjectId;
   name: string;
+  description: string | null;
   logo: string | null;
   createdAt: Date;
   profileId: Types.ObjectId;
@@ -162,6 +136,7 @@ export default async function ServersHubPage() {
         profileId: "$server.profileId",
         admin: "$admin",
         role: "$membershipRole",
+        description: "$server.description",
         channelCount: {
           $ifNull: [
             {
@@ -200,135 +175,22 @@ export default async function ServersHubPage() {
     { $sort: { name: 1 } }
   ]);
 
-  // console.log({ servers });
-
   return (
     <div className="border-edge ml-1 h-screen border-x pt-4">
       <div className="border-edge border-y px-4 pt-3 pb-6">
-        <h2 className="text-foreground mb-4 text-2xl font-semibold">
-          My Servers - ({servers.length})
-        </h2>
+        <div className="mb-4 flex flex-row items-center gap-4">
+          <MobileNavigationSidebar />
+          <h2 className="text-foreground text-2xl font-semibold">
+            My Servers - ({servers.length})
+          </h2>
+        </div>
 
         {servers.length === 0 ? (
-          <Card className="border-dashed shadow-none">
-            <CardHeader>
-              <CardTitle>No servers yet</CardTitle>
-              <CardDescription>
-                Create one from the sidebar with the plus button, or join with
-                an invite link.
-              </CardDescription>
-            </CardHeader>
-          </Card>
+          <ServerEmpty />
         ) : (
           <ul className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {servers.map(server => {
-              const href = `/servers/${server._id.toString()}` as Route;
-              const nameWithoutEmoji = removeLeadingEmoji(server.name);
-
-              const created = formatDistanceToNow(new Date(server.createdAt), {
-                addSuffix: true
-              });
-
-              return (
-                <li key={server._id.toString()}>
-                  <Link href={href} className="relative h-full">
-                    <div
-                      className={cn(
-                        "bg-secondary/40 hover:bg-muted/50 relative h-full gap-4 space-y-1.5 rounded-lg border-transparent p-4"
-                      )}>
-                      <div className="flex-row gap-4">
-                        <div className="relative shrink-0">
-                          <div className="flex items-center gap-2">
-                            <UserAvatar
-                              rounded="lg"
-                              src={server.logo || ""}
-                              name={nameWithoutEmoji}
-                              className="size-9 rounded-lg"
-                            />
-                            <h3 className="line-clamp-1 text-lg leading-snug font-medium">
-                              {server.name}
-                            </h3>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="border-edge absolute top-3 right-3 flex size-8 items-center justify-center rounded-full border p-1">
-                        <ActionTooltip label={server.role} size="sm" side="top">
-                          {RoleIconMap[server.role as MemberRole]}
-                        </ActionTooltip>
-                      </div>
-
-                      <div className="flex flex-wrap items-center justify-between gap-1">
-                        <div className="flex items-center gap-1.5">
-                          <IconUsers
-                            className="text-muted-foreground bg-secondary size-9 rounded-lg p-2"
-                            stroke={1.5}
-                            aria-hidden
-                          />
-                          <div className="flex flex-col gap-0">
-                            <span className="text-muted-foreground text-[11px] font-normal uppercase">
-                              Members
-                            </span>
-                            <span className="text-base font-normal tabular-nums">
-                              {formatCompactNumber(server.memberCount)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 py-3">
-                          <IconHash
-                            className="text-muted-foreground bg-secondary size-9 rounded-lg p-2"
-                            stroke={1.5}
-                            aria-hidden
-                          />
-                          <div className="flex flex-col gap-0">
-                            <span className="text-muted-foreground text-[11px] font-normal uppercase">
-                              Channels
-                            </span>
-                            <span className="text-base font-normal tabular-nums">
-                              {formatCompactNumber(server.channelCount)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 py-3">
-                          <IconCategory
-                            className="text-muted-foreground bg-secondary size-9 rounded-lg p-2"
-                            stroke={1.5}
-                            aria-hidden
-                          />
-                          <div className="flex flex-col gap-0">
-                            <span className="text-muted-foreground text-[11px] font-normal uppercase">
-                              Categories
-                            </span>
-                            <span className="text-base font-normal tabular-nums">
-                              {formatCompactNumber(server.categoryCount)}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center justify-between gap-1">
-                        <div className="flex items-center gap-1">
-                          <IconCrownFilled className="size-5 rounded-full border border-orange-500 bg-orange-500/10 p-1 text-orange-500" />
-                          <span className="text-muted-primary text-base leading-relaxed font-normal">
-                            @{server.admin.username}
-                          </span>
-                        </div>
-
-                        <time
-                          dateTime={new Date(server.createdAt).toISOString()}>
-                          <span className="text-muted-foreground flex items-center gap-1 text-xs">
-                            <IconCalendar
-                              className="size-3.5 shrink-0"
-                              aria-hidden
-                            />
-                            {created}
-                          </span>
-                        </time>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              );
+              return <ServerCard key={server._id.toString()} server={server} />;
             })}
           </ul>
         )}
