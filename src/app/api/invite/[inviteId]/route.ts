@@ -1,3 +1,4 @@
+import { currentAuthUser } from "@/helpers/auth.helper";
 import { STATUS_CODES } from "@/constants/status-codes";
 import Member from "@/models/member.model";
 import Server from "@/models/server.model";
@@ -11,9 +12,16 @@ export const GET = AsyncHandler(
     { params }: { params: Promise<{ inviteId: string }> }
   ) => {
     const { inviteId } = await params;
-    const { searchParams } = new URL(req.url);
 
-    const userId = searchParams.get("userId");
+    const user = await currentAuthUser();
+
+    if (!user) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.UNAUTHORIZED,
+        message: "User not authenticated!",
+        success: false
+      });
+    }
 
     const server = await Server.findOne({
       inviteCode: inviteId
@@ -22,7 +30,7 @@ export const GET = AsyncHandler(
       .lean();
 
     const isAlreadyMember = await Member.exists({
-      profileId: userId,
+      profileId: user?.id,
       serverId: server?._id
     });
 
