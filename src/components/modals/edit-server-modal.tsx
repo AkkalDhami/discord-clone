@@ -25,6 +25,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useEffect } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { EmojiInput } from "@/components/common/emoji-input";
+import { Textarea } from "@/components/ui/textarea";
 
 export function EditServerModal() {
   const { close, isOpen, type, data } = useModal();
@@ -47,6 +48,7 @@ export function EditServerModal() {
     if (server) {
       form.setValue("name", server.name);
       form.setValue("logo", server.logo || "");
+      form.setValue("description", server.description || "");
     }
   }, [server, form]);
 
@@ -110,6 +112,25 @@ export function EditServerModal() {
                 control={form.control}
                 name="name"
                 placeholder="Enter server name"
+              />
+
+              <Controller
+                name="description"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <Textarea
+                      {...field}
+                      placeholder="Enter server description"
+                      className="h-20 resize-none"
+                      rows={2}
+                      spellCheck={false}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
             </FieldGroup>
           </form>

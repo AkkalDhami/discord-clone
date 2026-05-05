@@ -56,7 +56,7 @@ export function DeleteMessageModal() {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="bg-secondary flex items-start gap-2 rounded-lg p-2">
+        <div className="bg-secondary flex items-start gap-2 overflow-hidden rounded-lg p-2">
           <UserAvatar
             src={message.sender.avatar?.url}
             name={message.sender.name}
@@ -66,7 +66,7 @@ export function DeleteMessageModal() {
               <span>{message.sender.name}</span>
               <span>{new Date(message?.createdAt || "").toLocaleString()}</span>
             </div>
-            <p className="font-normal">{message.content}</p>
+            <p className="line-clamp-3 font-normal">{message.content}</p>
           </div>
         </div>
 
