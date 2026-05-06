@@ -80,10 +80,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  console.log({
-    user
-  });
-
   if (user.lockUntil && new Date(user.lockUntil) > new Date()) {
     return ApiResponse({
       success: false,

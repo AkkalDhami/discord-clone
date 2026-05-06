@@ -39,10 +39,6 @@ export const PUT = AsyncHandler(async (req: NextRequest) => {
       receiver: currentUser.id
     }).session(session);
 
-    console.log({
-      request
-    });
-
     if (!request || request.status !== "pending") {
       await session.abortTransaction();
       return ApiResponse({

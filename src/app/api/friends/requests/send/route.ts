@@ -83,8 +83,6 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     pairKey
   });
 
-  console.log({ existingRequest });
-
   if (existingRequest && existingRequest.status !== "ignored") {
     return ApiResponse({
       statusCode: STATUS_CODES.BAD_REQUEST,

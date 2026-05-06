@@ -76,11 +76,6 @@ export const PATCH = AsyncHandler(
       });
     }
 
-    // console.log({
-    //   member,
-    //   user
-    // });
-
     if (
       member.profileId.toString() !== user.id.toString() &&
       adminMember.role !== MemberRole.ADMIN

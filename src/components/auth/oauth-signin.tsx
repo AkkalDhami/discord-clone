@@ -3,8 +3,6 @@ import { cn } from "@/lib/utils";
 import { signIn } from "next-auth/react";
 
 export function OAuthSignin({ className }: { className?: string }) {
-  // const { data: session } = useSession();
-  // console.log({ session });
   return (
     <div className={cn("mt-4", className)}>
       <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
