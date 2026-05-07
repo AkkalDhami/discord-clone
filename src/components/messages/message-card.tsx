@@ -6,7 +6,7 @@ import { UserAvatar } from "@/components/common/user-avatar";
 import { MessageAction } from "@/components/messages/message-action";
 import { renderMessageLinks } from "@/components/common/message-link";
 import { useUser } from "@/hooks/use-user-store";
-import { IconMoodSmileFilled, IconPin } from "@tabler/icons-react";
+import { IconMoodSmileFilled, IconPin, IconX } from "@tabler/icons-react";
 import {
   Popover,
   PopoverContent,
@@ -27,6 +27,7 @@ import { useMessageHighlight } from "@/hooks/use-msg-highlight";
 import { extractInviteId } from "@/utils/url";
 import { useInvitePreview } from "@/hooks/use-invite-preview";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export function MessageCard(message: IMessage & { grouped?: boolean }) {
   const { user } = useUser();
@@ -43,19 +44,11 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
     _id
   } = message;
 
-  const router = useRouter();
-
   const { reactMessage, isMessageReacting } = useMessage();
 
   const { name, username, avatar } = sender || {
     ...user
   };
-
-  const inviteId = extractInviteId(content || "");
-
-  const { data: inviteData, isFetching } = useInvitePreview({
-    inviteId
-  });
 
   const replyingTo = useReply(state => state.replyingTo);
 
@@ -204,58 +197,7 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
             </p>
           )}
 
-          {inviteData?.success && !isFetching && (
-            <div className="bg-muted/40 mt-2 w-80 overflow-hidden rounded-xl border">
-              <div className="relative h-20 bg-linear-to-r from-neutral-300 to-neutral-400 dark:from-neutral-700 dark:to-neutral-800"></div>
-
-              <div className="-mt-8 flex items-end gap-3 px-6">
-                <UserAvatar
-                  name={inviteData?.data?.name}
-                  src={inviteData?.data?.logo}
-                  className="size-16 border-4"
-                />
-              </div>
-              <div className="px-4 py-1.5 pb-4">
-                <div className="min-w-0 space-y-1">
-                  <p className="truncate font-medium">
-                    {inviteData?.data?.name}
-                  </p>
-
-                  <div className="flex w-full items-center justify-between">
-                    <p className="text-muted-primary text-xs">
-                      {inviteData?.data?.members} Members
-                    </p>
-
-                    <p className="text-muted-primary text-xs">
-                      Est.{" "}
-                      {new Date(inviteData?.data?.createdAt).toDateString()}
-                    </p>
-                  </div>
-                  {inviteData?.data?.description && (
-                    <p className="text-muted-foreground line-clamp-5 text-sm">
-                      {inviteData?.data?.description}
-                    </p>
-                  )}
-                </div>
-
-                {
-                  <button
-                    onClick={() => {
-                      if (inviteData.data.isAlreadyMember) {
-                        router.push(`/servers/${inviteData.data._id}`);
-                      } else {
-                        router.push(`/invite/${inviteId}`);
-                      }
-                    }}
-                    className="mt-3 w-full cursor-pointer rounded-lg bg-green-600 py-1.5 text-white hover:bg-green-700">
-                    {!inviteData.data.isAlreadyMember
-                      ? "Join Server"
-                      : "Go to Server"}
-                  </button>
-                }
-              </div>
-            </div>
-          )}
+          <InviteMessageCard content={content} />
 
           {message.reactions?.length ? (
             <div className="mt-1 flex flex-wrap items-center gap-2">
@@ -322,6 +264,69 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
   );
 }
 
+function InviteMessageCard({ content }: { content?: string }) {
+  const inviteId = extractInviteId(content || "");
+
+  const router = useRouter();
+
+  const { data: inviteData, isFetching } = useInvitePreview({
+    inviteId
+  });
+
+  return (
+    inviteData?.success &&
+    !isFetching && (
+      <div className="bg-muted/40 mt-2 w-80 overflow-hidden rounded-xl border">
+        <div className="relative h-20 bg-linear-to-r from-neutral-300 to-neutral-400 dark:from-neutral-700 dark:to-neutral-800"></div>
+
+        <div className="-mt-8 flex items-end gap-3 px-6">
+          <UserAvatar
+            name={inviteData?.data?.name}
+            src={inviteData?.data?.logo}
+            className="size-16 border-4"
+          />
+        </div>
+        <div className="px-4 py-1.5 pb-4">
+          <div className="min-w-0 space-y-1">
+            <p className="truncate font-medium">{inviteData?.data?.name}</p>
+
+            <div className="flex w-full items-center justify-between">
+              <p className="text-muted-primary text-xs">
+                {inviteData?.data?.members} Members
+              </p>
+
+              <p className="text-muted-primary text-xs">
+                Est. {new Date(inviteData?.data?.createdAt).toDateString()}
+              </p>
+            </div>
+            {inviteData?.data?.description && (
+              <p className="text-muted-foreground line-clamp-5 text-sm">
+                {inviteData?.data?.description}
+              </p>
+            )}
+          </div>
+
+          {
+            <button
+              onClick={() => {
+                if (inviteData.data.isAlreadyMember) {
+                  router.push(`/servers/${inviteData.data._id}`);
+                } else {
+                  router.push(`/invite/${inviteId}`);
+                }
+              }}
+              className="mt-3 w-full cursor-pointer rounded-lg bg-green-600 py-1.5 text-white hover:bg-green-700">
+              {!inviteData.data.isAlreadyMember
+                ? "Join Server"
+                : "Go to Server"}
+            </button>
+          }
+        </div>
+      </div>
+    )
+  );
+}
+
 export function ShimmerMessageCard() {
   return (
     <div className="animate-pulse px-4 py-2">
@@ -354,6 +359,100 @@ export function DateSeparator({
         {formatDateLabel(date)}
       </span>
       <div className="border-border grow border-t" />
+    </div>
+  );
+}
+
+export function PinnedMessageCard({ message }: { message: IMessage }) {
+  const { user } = useUser();
+
+  const { togglePinMessage, isMessageTogglingPin } = useMessage();
+
+  const {
+    sender,
+    content,
+    createdAt = new Date().toISOString(),
+    _id,
+    pinned
+  } = message;
+
+  const { name, avatar } = sender || {
+    ...user
+  };
+
+  const highlight = useMessageHighlight.getState().highlight;
+
+  async function onTogglePin() {
+    try {
+      const res = await togglePinMessage({
+        messageId: _id,
+        pinned: !pinned
+      });
+
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
+    } catch (error) {
+      console.error("Error pinning/unpinning message:", error);
+      toast.error(
+        error instanceof Error ? error.message : "Failed to pin/unpin message."
+      );
+    }
+  }
+
+  function jumpToMessage(id: string) {
+    const el = document.getElementById(`message-${id}`);
+
+    if (!el) return;
+
+    el.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+
+    highlight(id);
+  }
+
+  return (
+    <div className="border-edge group relative mt-2 rounded-lg border p-2 first:mt-0">
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex items-start gap-2">
+          <UserAvatar src={avatar?.url} name={name} className="size-10" />
+          <div className="flex flex-col gap-0.5">
+            <div className="flex items-center gap-1.5">
+              <p className="text-foreground text-sm font-medium">{name}</p>
+              <span className="text-muted-foreground text-xs">
+                {new Date(createdAt).toLocaleDateString([], {
+                  hour: "2-digit",
+                  minute: "numeric",
+                  hour12: true
+                })}
+              </span>
+            </div>
+            <p className="text-muted-primary text-sm font-normal">
+              {renderMessageLinks(content || "")}
+            </p>
+            <InviteMessageCard content={content} />
+          </div>
+        </div>
+
+        <div className="absolute top-1 right-1 flex items-center gap-2">
+          <Button
+            variant={"outline"}
+            className={"h-7 px-2 text-sm font-normal"}
+            onClick={() => jumpToMessage(_id)}>
+            Jump
+          </Button>
+          <Button
+            variant={"outline"}
+            disabled={isMessageTogglingPin}
+            size={"icon-sm"}
+            onClick={onTogglePin}>
+            <IconX />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

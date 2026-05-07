@@ -162,27 +162,26 @@ export function MessageAction({ message }: { message: IMessage }) {
         <IconArrowForwardUp className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
       </ActionTooltip>
 
-      {!visibleTo?.length && (
-        <ActionTooltip label={pinned ? "Unpin" : "Pin"} size="sm" side="top">
-          {!pinned ? (
-            <IconPin
-              onClick={onTogglePin}
-              className={cn(
-                "text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1",
-                isMessageTogglingPin && "cursor-not-allowed opacity-50"
-              )}
-            />
-          ) : (
-            <IconPinnedOff
-              onClick={onTogglePin}
-              className={cn(
-                "text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1",
-                isMessageTogglingPin && "cursor-not-allowed opacity-50"
-              )}
-            />
-          )}
-        </ActionTooltip>
-      )}
+      <ActionTooltip label={pinned ? "Unpin" : "Pin"} size="sm" side="top">
+        {!pinned ? (
+          <IconPin
+            onClick={onTogglePin}
+            className={cn(
+              "text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1",
+              isMessageTogglingPin && "cursor-not-allowed opacity-50"
+            )}
+          />
+        ) : (
+          <IconPinnedOff
+            onClick={onTogglePin}
+            className={cn(
+              "text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1",
+              isMessageTogglingPin && "cursor-not-allowed opacity-50"
+            )}
+          />
+        )}
+      </ActionTooltip>
+
       <ActionTooltip label={copied ? "Copied" : "Copy"} size="sm" side="top">
         {copied ? (
           <IconCheck className="size-7 cursor-default p-1 text-green-600" />
