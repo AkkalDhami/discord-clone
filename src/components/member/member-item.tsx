@@ -7,6 +7,7 @@ import MemberRole from "@/enums/role.enum";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { ActionTooltip } from "../common/action-tooltip";
 
 export function MemberItem({
   member,
@@ -25,7 +26,7 @@ export function MemberItem({
           : `/servers/${memberData.serverId}/conversations/${memberData._id}`
       }
       className={cn(
-        "hover:bg-secondary pointer-events-none relative flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
+        "hover:bg-secondary relative flex w-full cursor-pointer items-center gap-2 px-3 py-3 transition",
         "border-edge border-t last:border-b",
         params.memberId === memberData._id &&
           "bg-secondary pointer-events-none",
@@ -39,11 +40,12 @@ export function MemberItem({
         name={memberData.profile.name}
         className="size-10"
       />
-      <div className="flex flex-col">
+      <div className="pointer-events-auto relative flex flex-col">
         <p className="flex items-center gap-2 text-sm font-medium">
           {memberData.profile.name}
-          {RoleIconMap[memberData.role as MemberRole]}
-          {userId === memberData.profileId && " (You)"}
+          <ActionTooltip label={memberData.role} size="sm" side="top">
+            <span>{RoleIconMap[memberData.role as MemberRole]}</span>
+          </ActionTooltip>
         </p>
         <p className="text-muted-primary text-xs">
           {`@${memberData.profile.username || memberData.profile.email}`}

@@ -306,7 +306,7 @@ export default async function Page(
 
           members: !isDirectChat
             ? groupUsers?.map(u => ({
-                _id: JSON.stringify(u._id),
+                _id: u._id.toString(),
                 name: u.name,
                 username: u.username,
                 email: u.email,
@@ -315,7 +315,7 @@ export default async function Page(
             : [],
 
           adminId: !isDirectChat
-            ? JSON.stringify(groupConversation?.admin)
+            ? groupConversation?.admin.toString()
             : undefined
         }}
       />

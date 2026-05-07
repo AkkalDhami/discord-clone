@@ -1,4 +1,4 @@
-import { MemberSidebar } from "@/components/layouts/member-sidebar";
+// import { MemberSidebar } from "@/components/layouts/member-sidebar";
 import { MobileMemberSidebar } from "@/components/layouts/mobile-member-sidebar";
 import { MobileServerSidebar } from "@/components/layouts/mobile-server-sidebar";
 import { ServerSidebar } from "@/components/layouts/server-sidebar";
@@ -38,18 +38,15 @@ export default async function ServerIdLayout({
       <aside className="border-edge bg-background fixed inset-y-0 z-20 hidden h-full w-80 flex-col border-x pt-4 sm:w-86 md:flex">
         <ServerSidebar serverId={serverId} />
       </aside>
-      <div className="fixed top-7 left-2 z-20 md:hidden">
+      <div className="fixed top-6 left-2 z-20 md:hidden">
         <MobileServerSidebar serverId={serverId} />
       </div>
-      <div className="h-full flex-1 overflow-x-auto md:pl-86 lg:pr-80">
-        {/* <div className="border-edge h-full flex-1 overflow-x-auto border-x bg-neutral-100 md:pl-86 lg:pr-80 dark:bg-neutral-950"> */}
-        {children}
-      </div>
+      <div className="h-full flex-1 overflow-x-auto md:pl-86">{children}</div>
 
-      <aside className="border-edge bg-background fixed right-1 z-20 hidden h-full w-80 flex-col border-x pt-4 lg:flex">
+      {/* <aside className="border-edge bg-background fixed right-1 z-20 hidden h-full w-80 flex-col border-x pt-4 lg:flex">
         <MemberSidebar serverId={serverId} />
-      </aside>
-      <div className="fixed top-6 right-2 z-20 lg:hidden">
+      </aside> */}
+      <div className="fixed top-5.5 right-2 z-20">
         <MobileMemberSidebar serverId={serverId} />
       </div>
     </section>
