@@ -32,7 +32,8 @@ import {
   IconShield,
   IconShieldCheck,
   IconShieldQuestion,
-  IconSwords
+  IconSwords,
+  IconUser
 } from "@tabler/icons-react";
 import MemberRole from "@/enums/role.enum";
 import { useState } from "react";
@@ -45,7 +46,7 @@ import { useRouter } from "next/navigation";
 export const RoleIconMap: Record<MemberRole, React.ReactNode> = {
   [MemberRole.ADMIN]: <IconCrownFilled className="size-4 text-orange-500" />,
   [MemberRole.MODERATOR]: <IconSwords className="size-4 text-indigo-500" />,
-  [MemberRole.GUEST]: null
+  [MemberRole.GUEST]: <IconUser className="size-4 text-neutral-500" />
 };
 
 export function MemberModal() {

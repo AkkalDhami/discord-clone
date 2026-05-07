@@ -230,7 +230,7 @@ export function EditCategoryModal() {
                   type="button"
                   variant={"primary"}
                   onClick={() => {
-                    close();
+                    // close();
                     open("add-members", {
                       category,
                       categoryData: {
@@ -249,7 +249,7 @@ export function EditCategoryModal() {
                   category?.privateMembers?.map(m => (
                     <div
                       key={m._id}
-                      className="flex items-center justify-between">
+                      className="bg-secondary flex items-center justify-between rounded-lg p-2">
                       <div className="flex items-center gap-2">
                         <UserAvatar
                           src={m.profile.avatar?.url}

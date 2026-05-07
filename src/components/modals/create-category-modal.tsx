@@ -33,10 +33,10 @@ import { useCategory } from "@/hooks/use-category";
 import { EmojiInput } from "@/components/common/emoji-input";
 
 export function CreateCategoryModal() {
-  const { close, isOpen, type, data, open } = useModal();
+  const { close, isOpen, type, data } = useModal();
   const isModalOpen = isOpen && type === "create-category";
 
-  const server = data.server;
+  const { server } = data;
 
   const { createCategory, isCategoryCreating } = useCategory();
   const router = useRouter();
@@ -51,22 +51,18 @@ export function CreateCategoryModal() {
     }
   });
 
-  const isPrivate = useWatch({
-    control: form.control,
-    name: "private"
-  });
-
   async function onSubmit(data: CreateCategoryInput) {
-    if (data.private && server?.members && server?.members?.length > 1) {
-      open("add-members", {
-        server,
-        categoryData: {
-          name: data.name,
-          private: true
-        }
-      });
-      return;
-    }
+    // if (data.private && server?.members && server?.members?.length > 1) {
+    //   open("add-members", {
+    //     server,
+    //     category,
+    //     categoryData: {
+    //       name: data.name,
+    //       private: true
+    //     }
+    //   });
+    //   return;
+    // }
 
     try {
       const res = await createCategory({
@@ -174,10 +170,6 @@ export function CreateCategoryModal() {
                 <>
                   <Spinner /> Creating...
                 </>
-              ) : isPrivate &&
-                server?.members &&
-                server?.members?.length > 1 ? (
-                "Next"
               ) : (
                 "Create Category"
               )}

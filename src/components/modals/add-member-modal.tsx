@@ -46,7 +46,9 @@ export function AddMemberModal() {
 
   const { updateMember, isMemberUpdating } = useCategory();
 
-  const { server, category } = data;
+  const { server, category, categoryData } = data;
+
+  console.log({ categoryData, category });
 
   const [selectedMembers, setSelectedMembers] = React.useState<string[]>([]);
 
@@ -61,7 +63,6 @@ export function AddMemberModal() {
 
   async function handleCreate() {
     if (items.length === 0) {
-      // close();
       open("create-category", {
         server
       });
@@ -95,6 +96,7 @@ export function AddMemberModal() {
       open={isModalOpen}
       onOpenChange={openState => {
         if (!openState) close();
+        setSelectedMembers([]);
       }}>
       <DialogContent className="w-full max-w-200">
         <DialogHeader>
