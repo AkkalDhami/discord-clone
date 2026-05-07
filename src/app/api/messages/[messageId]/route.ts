@@ -78,13 +78,13 @@ export const PATCH = AsyncHandler(
     }
 
     if (typeof pinned !== "undefined") {
-      if (message.visibleTo.length > 1) {
-        return ApiResponse({
-          statusCode: STATUS_CODES.BAD_REQUEST,
-          message: `Secret messages cannot be pinned`,
-          success: false
-        });
-      }
+      // if (message.visibleTo.length > 1) {
+      //   return ApiResponse({
+      //     statusCode: STATUS_CODES.BAD_REQUEST,
+      //     message: `Secret messages cannot be pinned`,
+      //     success: false
+      //   });
+      // }
 
       message.pinned = pinned;
     }

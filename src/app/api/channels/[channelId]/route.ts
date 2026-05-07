@@ -3,7 +3,9 @@ import MemberRole from "@/enums/role.enum";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { validateRequest } from "@/lib/validation";
 import Channel from "@/models/channel.model";
+import Conversation from "@/models/conversation.model";
 import Member from "@/models/member.model";
+import Message from "@/models/message.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 import { EditCategorySchemaType } from "@/validators/category";
@@ -66,7 +68,11 @@ export const DELETE = AsyncHandler(
       });
     }
 
-    await Channel.deleteOne({ _id: channel._id });
+    await Promise.all([
+      Channel.deleteOne({ _id: channel._id }),
+      Message.deleteMany({ channelId: channel._id }),
+      Conversation.deleteMany({ channelId: channel._id, type: "server" })
+    ]);
 
     return ApiResponse({
       statusCode: STATUS_CODES.OK,
