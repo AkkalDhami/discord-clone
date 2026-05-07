@@ -12,6 +12,7 @@ export type FetchMessagePayload = {
   conversationId: string;
   limit: number;
   cursor?: string;
+  onlyPinned?: boolean;
 };
 
 export function useMessage() {
@@ -208,16 +209,18 @@ export function useMessage() {
 
 export function useInfiniteMessages({
   conversationId,
-  limit = 50
+  limit = 50,
+  onlyPinned = false
 }: Omit<FetchMessagePayload, "cursor">) {
   return useInfiniteQuery<FetchMessagesResponse>({
-    queryKey: ["messages", conversationId],
+    queryKey: ["messages", conversationId, onlyPinned],
 
     queryFn: async ({ pageParam }) => {
       const res = await messageApi.fetchMessages({
         conversationId,
         limit,
-        cursor: String(pageParam)
+        cursor: String(pageParam),
+        onlyPinned
       });
 
       return res as FetchMessagesResponse;

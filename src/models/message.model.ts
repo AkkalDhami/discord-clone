@@ -124,6 +124,8 @@ const messageSchema = new Schema<IMessage>(
 messageSchema.index({ channelId: 1, createdAt: -1 });
 messageSchema.index({ conversation: 1, createdAt: -1 });
 
+messageSchema.index({ pinned: 1, createdAt: -1 });
+
 messageSchema.index({
   visibleTo: 1,
   sender: 1

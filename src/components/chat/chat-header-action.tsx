@@ -90,7 +90,7 @@ export function ChatHeaderAction({
                     Pinned Messages
                   </PopoverTitle>
                 </PopoverHeader>
-                <ScrollArea className="h-full max-h-[400px] p-2">
+                <ScrollArea className="h-[400px] p-2">
                   {!isLoading && messages.length === 0 ? (
                     <div className="text-muted-foreground flex items-center justify-center p-4">
                       No pinned messages
