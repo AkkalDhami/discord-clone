@@ -24,6 +24,9 @@ export async function fetchMessages(data: FetchMessagePayload) {
   if (data.cursor) {
     params.set("cursor", data.cursor);
   }
+  if (data.onlyPinned) {
+    params.set("pinned", String(data.onlyPinned));
+  }
 
   const res = await fetchWithAuth(`/api/messages?${params.toString()}`, {
     method: "GET",
