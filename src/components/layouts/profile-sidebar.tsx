@@ -258,19 +258,21 @@ function DirectProfileSidebar() {
                       key={server._id}
                       href={`/servers/${server._id}`}
                       className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
-                      <div className="bg-primary-500 flex h-10 w-10 items-center justify-center rounded-xl font-normal text-white">
-                        {server.logo ? (
-                          <Image
-                            src={server.logo}
-                            alt={server.name}
-                            width={40}
-                            height={40}
-                            className="rounded-lg object-cover object-center"
-                          />
-                        ) : (
-                          removeLeadingEmoji(server.name).slice(0, 1)
-                        )}
-                      </div>
+                      {server.logo ? (
+                        <Image
+                          src={server.logo}
+                          alt={server.name}
+                          width={40}
+                          height={40}
+                          className="size-10 rounded-lg object-cover object-center"
+                        />
+                      ) : (
+                        <div className="bg-primary-500 flex size-10 items-center justify-center rounded-xl font-normal text-white">
+                          {removeLeadingEmoji(server.name)
+                            .charAt(0)
+                            .toUpperCase()}
+                        </div>
+                      )}
                       <h3 className="text-lg font-normal">{server.name}</h3>
                     </Link>
                   ))}

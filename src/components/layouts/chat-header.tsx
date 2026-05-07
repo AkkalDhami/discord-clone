@@ -49,7 +49,8 @@ export function ChatHeader({
       className={cn(
         "border-edge mt-4 flex items-center justify-between border-y px-4 pt-3 pb-3",
         isSidebarOpen && "lg:pr-84",
-        type === "group" && "pt-1.5 pb-1.5"
+        type === "group" && "pt-1.5 pb-1.5",
+        type === "channel" && "pt-2 pb-2.25"
       )}>
       <div className="relative flex items-center gap-2 px-8 md:px-0">
         {type === "channel" && (
