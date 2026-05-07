@@ -79,6 +79,7 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
   const conversationId = searchParams.get("conversationId") as string;
   const limit = parseInt(searchParams.get("limit") || "50", 10);
   const cursor = searchParams.get("cursor");
+  const onlyPinned = searchParams.get("pinned") === "true";
 
   if (!validateObjectId(conversationId)) {
     return ApiResponse({
@@ -112,6 +113,7 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
     {
       $match: {
         ...matchQuery,
+        ...(onlyPinned && { pinned: true }),
         $expr: {
           $or: [
             { $eq: [{ $size: { $ifNull: ["$visibleTo", []] } }, 0] },
@@ -126,9 +128,7 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
       }
     },
     {
-      $sort: {
-        _id: -1
-      }
+      $sort: onlyPinned ? { updatedAt: -1, _id: -1 } : { _id: -1 }
     },
     {
       $limit: limit
@@ -230,7 +230,7 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
   return ApiResponse({
     statusCode: STATUS_CODES.OK,
     success: true,
-    message: "Get messages",
+    message: onlyPinned ? "Get pinned messages" : "Get messages",
     data: {
       messages: reversedMessages,
       hasMore,
