@@ -48,7 +48,7 @@ export function AddMemberModal() {
 
   const { server, category, categoryData } = data;
 
-  console.log({ categoryData, category });
+  // console.log({ categoryData, category });
 
   const [selectedMembers, setSelectedMembers] = React.useState<string[]>([]);
 
