@@ -1,6 +1,7 @@
 import { STATUS_CODES } from "@/constants/status-codes";
 import { currentAuthUser } from "@/helpers/auth.helper";
 import Conversation from "@/models/conversation.model";
+import Message from "@/models/message.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
 import { validateObjectId } from "@/utils/validate-objid";
@@ -46,31 +47,31 @@ export const DELETE = AsyncHandler(
       });
     }
 
-    await Conversation.updateOne(
-      { _id: conversation._id },
-      {
-        $push: {
-          deletedBy: user.id
-        }
-      }
-    );
+    // await Conversation.updateOne(
+    //   { _id: conversation._id },
+    //   {
+    //     $push: {
+    //       deletedBy: user.id
+    //     }
+    //   }
+    // );
 
-    // if (conversation.admin.toString() !== user.id) {
-    //   return ApiResponse({
-    //     statusCode: STATUS_CODES.BAD_REQUEST,
-    //     message: "You are not authorized to delete this group",
-    //     success: false
-    //   });
-    // }
+    if (conversation.admin.toString() !== user.id) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        message: "You are not authorized to delete this group",
+        success: false
+      });
+    }
 
-    // await Promise.all([
-    //   Conversation.deleteOne({
-    //     _id: conversationId
-    //   }),
-    //   Message.deleteMany({
-    //     conversation: conversationId
-    //   })
-    // ]);
+    await Promise.all([
+      Conversation.deleteOne({
+        _id: conversationId
+      }),
+      Message.deleteMany({
+        conversation: conversationId
+      })
+    ]);
 
     return ApiResponse({
       statusCode: STATUS_CODES.OK,

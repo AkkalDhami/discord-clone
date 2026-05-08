@@ -1,4 +1,4 @@
-import { ChatInput } from "@/components/chat/chat-input";
+import { ChatInput } from "@/app/api/servers/chat/chat-input";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import MemberRole from "@/enums/role.enum";

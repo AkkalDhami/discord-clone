@@ -37,6 +37,7 @@ import { DeleteConversationModal } from "@/components/modals/delete-conversation
 
 import { EditMessageModal } from "@/components/modals/edit-message-modal";
 import { DeleteMessageModal } from "@/components/modals/delete-message-modal";
+import { ForwardMessageModal } from "@/components/modals/forward-message-modal";
 
 import { PrivateUserModal } from "@/components/modals/private-user-modal";
 
@@ -79,6 +80,7 @@ export function ModalProvider() {
 
       <EditMessageModal />
       <DeleteMessageModal />
+      <ForwardMessageModal />
 
       <PrivateUserModal />
     </>
