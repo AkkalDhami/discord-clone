@@ -159,7 +159,10 @@ export function MessageAction({ message }: { message: IMessage }) {
         />
       </ActionTooltip>
       <ActionTooltip label="Forward" size="sm" side="top">
-        <IconArrowForwardUp className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
+        <IconArrowForwardUp
+          onClick={() => open("forward-message", { message })}
+          className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
+        />
       </ActionTooltip>
 
       <ActionTooltip label={pinned ? "Unpin" : "Pin"} size="sm" side="top">

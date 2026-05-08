@@ -62,7 +62,7 @@ export function SignupForm() {
         setUser({
           id: res.user?.id,
           name: res.user?.name,
-          username: res?.user.username,
+          username: res?.user?.username,
           email: res.user?.email,
           avatar: res.user?.avatar
         });

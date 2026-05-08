@@ -30,7 +30,7 @@ export function MessagesSection({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
     useInfiniteMessages({
       conversationId,
-      limit: 80
+      limit: 100
     });
 
   const messages =
@@ -115,6 +115,10 @@ export function MessagesSection({
     });
   };
 
+  const loadMore = () => {
+    fetchNextPage();
+  };
+
   return (
     <div className={cn("relative", isSidebarOpen && "pr-82")}>
       <div className="flex h-full w-full flex-col pt-2">
@@ -122,6 +126,15 @@ export function MessagesSection({
           <div className="text-muted-foreground flex w-full items-center justify-center gap-2 py-2 text-sm">
             <Spinner /> Loading more...
           </div>
+        )}
+
+        {hasNextPage && !isFetchingNextPage && (
+          <button
+            disabled={isFetchingNextPage}
+            onClick={loadMore}
+            className="text-muted-foreground hover:text-accent-foreground mt-2 w-full cursor-pointer p-2">
+            {isFetchingNextPage ? "Loading..." : "Load more"}
+          </button>
         )}
 
         {isLoading
