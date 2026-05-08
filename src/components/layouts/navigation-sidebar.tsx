@@ -12,7 +12,7 @@ import { IServer } from "@/models/server.model";
 import { Types } from "mongoose";
 import { UserMenu } from "@/components/auth/user-menu";
 import { cn } from "@/lib/utils";
-import { DirectChatAction } from "@/components/chat/direct-chat-action";
+import { DirectChatAction } from "@/app/api/servers/chat/direct-chat-action";
 
 export async function NavigationSidebar({ className }: { className?: string }) {
   const profile = await currentAuthUser();

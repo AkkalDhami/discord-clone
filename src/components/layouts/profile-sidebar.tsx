@@ -273,7 +273,7 @@ function DirectProfileSidebar() {
                             .toUpperCase()}
                         </div>
                       )}
-                      <h3 className="text-lg font-normal">{server.name}</h3>
+                      <h3 className="text-base font-normal">{server.name}</h3>
                     </Link>
                   ))}
               </div>

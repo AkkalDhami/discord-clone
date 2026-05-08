@@ -1,7 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DirectChatSection } from "@/components/chat/direct-chat-section";
+import { DirectChatSection } from "@/app/api/servers/chat/direct-chat-section";
 
-import { DirectChatItemSection } from "@/components/chat/direct-chat-item-section";
+import { DirectChatItemSection } from "@/app/api/servers/chat/direct-chat-item-section";
 import { DirectChatSidebarHeader } from "@/components/layouts/direct-chat-sidebar-header";
 import dbConnect from "@/configs/db";
 import Friendship from "@/models/friendship.model";
@@ -41,7 +41,10 @@ export async function DirectChatSidebar() {
   const conversations = await Conversation.aggregate([
     {
       $match: {
-        participants: new Types.ObjectId(currentUser?.id)
+        participants: new Types.ObjectId(currentUser?.id),
+        deletedBy: {
+          $nin: [new Types.ObjectId(currentUser?.id)]
+        }
       }
     },
     {
@@ -79,17 +82,19 @@ export async function DirectChatSidebar() {
         localField: "lastMessage",
         foreignField: "_id",
         pipeline: [
-          {
-            $match: {
-              deleted: false
-            }
-          },
+          // {
+          //   $match: {
+          //     deleted: false
+          //   }
+          // },
           {
             $project: {
               _id: 1,
               content: 1,
               sender: 1,
-              type: 1
+              type: 1,
+              createdAt: 1,
+              updatedAt: 1
             }
           }
         ],
@@ -120,13 +125,6 @@ export async function DirectChatSidebar() {
         <DirectChatSection
           friend={JSON.stringify(mappedFriends)}
           conversations={JSON.stringify(conversations)}
-          user={JSON.stringify({
-            _id: currentUser?.id as string,
-            name: currentUser?.name as string,
-            username: currentUser?.username as string,
-            email: currentUser?.email as string,
-            avatar: currentUser?.avatar
-          })}
         />
       </ScrollArea>
     </div>

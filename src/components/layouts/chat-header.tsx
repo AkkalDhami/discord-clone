@@ -2,11 +2,11 @@
 
 import { IconHash, IconLockFilled } from "@tabler/icons-react";
 import { UserAvatar } from "@/components/common/user-avatar";
-import { ChatHeaderAction } from "@/components/chat/chat-header-action";
+import { ChatHeaderAction } from "@/app/api/servers/chat/chat-header-action";
 import { cn } from "@/lib/utils";
 import { SidebarProfileData, useModal } from "@/hooks/use-modal-store";
-import { GroupChatLogo } from "@/components/chat/chat-item";
-import { PopulatedConversation } from "@/components/chat/direct-chat-section";
+import { GroupChatLogo, splitContent } from "@/app/api/servers/chat/chat-item";
+import { PopulatedConversation } from "@/app/api/servers/chat/direct-chat-section";
 import { ActionTooltip } from "@/components/common/action-tooltip";
 import { useUser } from "@/hooks/use-user-store";
 
@@ -106,7 +106,9 @@ export function ChatHeader({
         )}
 
         {type !== "group" && (
-          <span className="text-base font-normal">{name}</span>
+          <span className="text-base font-normal">
+            {splitContent(name, 15)}
+          </span>
         )}
       </div>
 
