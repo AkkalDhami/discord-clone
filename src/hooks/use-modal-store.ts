@@ -38,6 +38,7 @@ export type ModalType =
   | "profile-sidebar"
   | "edit-message"
   | "delete-message"
+  | "forward-message"
   | "private-user";
 
 export type FriendType = PartialProfile & {

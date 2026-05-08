@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as conversationApi from "@/lib/api/conversation";
 
 import { ApiResponse } from "@/interface/response";
@@ -11,6 +11,14 @@ import {
 
 export function useConversation() {
   const queryClient = useQueryClient();
+
+  const getConversationQuery = useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const res = await conversationApi.getConversation();
+      return res as ApiResponse;
+    }
+  });
 
   const createConversationMutation = useMutation({
     mutationFn: async (data: ConversationType) => {
@@ -86,6 +94,9 @@ export function useConversation() {
   });
 
   return {
+    conversationData: getConversationQuery.data,
+    isConversationLoading: getConversationQuery.isLoading,
+
     createConversation: createConversationMutation.mutateAsync,
     isConversationCreating: createConversationMutation.isPending,
 
