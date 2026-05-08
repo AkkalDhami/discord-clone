@@ -6,6 +6,15 @@ import {
   LeaveConversationType
 } from "@/validators/conversation";
 
+export async function getConversation() {
+  const res = await fetchWithAuth("/api/conversations", {
+    method: "GET",
+    credentials: "include"
+  });
+
+  return res.json();
+}
+
 export async function createConversation(data: ConversationType) {
   const res = await fetchWithAuth("/api/conversations", {
     method: "POST",
