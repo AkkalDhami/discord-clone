@@ -1,8 +1,11 @@
-import { BlockedUserChatInput, ChatInput } from "@/components/chat/chat-input";
+import {
+  BlockedUserChatInput,
+  ChatInput
+} from "@/app/api/servers/chat/chat-input";
 import {
   DirectChatWelcome,
   GroupChatWelcome
-} from "@/components/chat/chat-welcome";
+} from "@/app/api/servers/chat/chat-welcome";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { MessagesSection } from "@/components/messages/message-section";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -188,15 +191,13 @@ export default async function Page(
   let rawGroupConversation = null;
   let conversationId = null;
 
-  if (isDirectChat) {
+  if (isDirectChat && currentUser.id !== friendId) {
     directConversation = await getOrCreateFriendConversation({
       admin: currentUser.id,
       participants: [currentUser.id, friend!._id.toString()],
       type: "direct"
     });
     conversationId = directConversation?._id?.toString();
-
-    // console.log({ directConversation });
   } else {
     rawGroupConversation = await getFriendConversation({
       cId: conversationInDb?._id?.toString(),
@@ -206,11 +207,9 @@ export default async function Page(
     conversationId = rawGroupConversation?.conversation?._id?.toString();
   }
 
-  if (!directConversation && !rawGroupConversation) {
+  if (!directConversation?._id && !rawGroupConversation?.conversation) {
     return redirect("/friends/all");
   }
-
-  // console.log({ rawMessages });
 
   const { conversation: groupConversation, users: groupUsers } =
     rawGroupConversation || {};
@@ -220,6 +219,14 @@ export default async function Page(
       ?.filter(p => p._id.toString() !== currentUser.id)
       .map(p => p.name)
       .join(", ") || "";
+
+  const isParticipant = groupUsers?.some(
+    p => p._id.toString() === currentUser.id
+  );
+
+  if (!isParticipant && !isDirectChat) {
+    return redirect("/friends");
+  }
 
   const mappedMutualServers = mutualServers.map(s => {
     return {
@@ -244,6 +251,11 @@ export default async function Page(
   ) as FriendType;
 
   // console.log({ parsedFriend });
+
+  // console.log({
+  //   directConversation,
+  //   groupConversation
+  // });
 
   const filteredParticipants = groupUsers
     ?.filter(p => p._id.toString() !== currentUser.id)

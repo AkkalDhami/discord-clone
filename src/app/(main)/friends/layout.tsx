@@ -1,4 +1,4 @@
-import { DirectChatHeader } from "@/components/chat/direct-chat-header";
+import { DirectChatHeader } from "@/app/api/servers/chat/direct-chat-header";
 import { DirectChatSidebar } from "@/components/layouts/direct-chat-sidebar";
 import { FriendRightSidebar } from "@/components/layouts/friend-right-sidebar";
 

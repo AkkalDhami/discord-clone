@@ -1,5 +1,5 @@
-import { ChatInput } from "@/components/chat/chat-input";
-import { ChannelWelcome } from "@/components/chat/chat-welcome";
+import { ChatInput } from "@/app/api/servers/chat/chat-input";
+import { ChannelWelcome } from "@/app/api/servers/chat/chat-welcome";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { MessagesSection } from "@/components/messages/message-section";
 import { ScrollArea } from "@/components/ui/scroll-area";
