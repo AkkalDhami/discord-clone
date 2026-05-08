@@ -33,7 +33,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const { content, conversationId, privateUsers, replyTo } =
+  const { content, conversationId, privateUsers, replyTo, forwarded } =
     validationResult.data;
 
   if (!conversationId) {
@@ -52,12 +52,33 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
+  const conversation = await Conversation.findById(conversationId);
+  if (!conversation) {
+    return ApiResponse({
+      statusCode: STATUS_CODES.NOT_FOUND,
+      success: false,
+      message: "Conversation not found"
+    });
+  }
+
+  const isParticipant = conversation.participants.includes(
+    new Types.ObjectId(user?.id)
+  );
+  if (!isParticipant) {
+    return ApiResponse({
+      statusCode: STATUS_CODES.FORBIDDEN,
+      success: false,
+      message: "You are not a participant of this conversation"
+    });
+  }
+
   const message = await Message.create({
     sender: user.id,
     conversation: conversationId,
     content,
     visibleTo: privateUsers?.length ? [user.id, ...privateUsers] : [],
-    replyTo
+    replyTo,
+    forwarded
   });
 
   await Conversation.findByIdAndUpdate(conversationId, {

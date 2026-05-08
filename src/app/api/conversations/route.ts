@@ -156,3 +156,70 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     message: "Conversation created successfully"
   });
 });
+
+export const GET = AsyncHandler(async (req: NextRequest) => {
+  const user = await currentAuthUser();
+
+  if (!user) {
+    return ApiResponse({
+      statusCode: STATUS_CODES.UNAUTHORIZED,
+      message: "Unauthorized",
+      success: false
+    });
+  }
+
+  const conversations = await Conversation.aggregate([
+    {
+      $match: {
+        participants: user.id
+      }
+    },
+    // {
+    //   $lookup: {
+    //     from: "profiles",
+    //     localField: "participants",
+    //     foreignField: "_id",
+    //     as: "participants",
+    //     pipeline: [
+    //       {
+    //         $project: {
+    //           _id: 1,
+    //           username: 1,
+    //           avatar: 1
+    //         }
+    //       }
+    //     ]
+    //   }
+    // },
+    // {
+    //   $lookup: {
+    //     from: "channels",
+    //     localField: "channelId",
+    //     foreignField: "_id",
+    //     as: "channel",
+    //     pipeline: [
+    //       {
+    //         $lookup: {
+    //           from: "servers",
+    //           localField: "serverId",
+    //           foreignField: "_id",
+    //           as: "server"
+    //         }
+    //       }
+    //     ]
+    //   }
+    // },
+    {
+      $sort: {
+        updatedAt: -1
+      }
+    }
+  ]);
+
+  return ApiResponse({
+    statusCode: STATUS_CODES.OK,
+    success: true,
+    data: conversations,
+    message: "Conversations fetched successfully"
+  });
+});
