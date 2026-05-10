@@ -18,13 +18,12 @@ export interface IMessage extends Document {
   content?: string;
   attachments?: IFile[];
   edited: boolean;
+  forwarded: boolean;
 
   type: MessageType;
   pinned: boolean;
   visibleTo: mongoose.Types.ObjectId[];
 
-  // mentions: mongoose.Types.ObjectId[];
-  // readBy: mongoose.Types.ObjectId[];
   replyTo?: mongoose.Types.ObjectId;
   reactions?: {
     emoji: string;
@@ -92,18 +91,6 @@ const messageSchema = new Schema<IMessage>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Message"
     },
-    // mentions: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Member"
-    //   }
-    // ],
-    // readBy: [
-    //   {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: "Member"
-    //   }
-    // ],
     reactions: [
       {
         emoji: { type: String, required: true },

@@ -20,6 +20,7 @@ export interface IConversation extends Document {
   lastMessage?: mongoose.Types.ObjectId;
 
   deleted: boolean;
+  deletedBy?: mongoose.Types.ObjectId[];
 
   createdAt: Date;
   updatedAt: Date;
@@ -62,6 +63,12 @@ const conversationSchema = new Schema<IConversation>(
       type: Boolean,
       default: false
     },
+    deletedBy: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Member"
+      }
+    ],
     type: {
       type: String,
       enum: CONVERSATION_TYPES,
