@@ -147,6 +147,7 @@ export interface IMessage {
   replyTo?: ReplyMessage;
 
   edited?: boolean;
+  forwarded?: boolean;
   isBot?: boolean;
   isAdmin?: boolean;
   pinned?: boolean;

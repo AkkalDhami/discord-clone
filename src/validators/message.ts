@@ -6,7 +6,8 @@ export const CreateMessageSchema = z.object({
   privateUsers: z.array(z.string()).optional(),
   serverId: z.string().optional(),
   channelId: z.string().optional(),
-  replyTo: z.string().optional()
+  replyTo: z.string().optional(),
+  forwarded: z.boolean().default(false).optional()
 });
 
 export const UpdateMessageSchema = CreateMessageSchema.partial()
