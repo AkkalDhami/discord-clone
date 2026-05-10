@@ -54,3 +54,20 @@ export function getDateKey(date: string | Date) {
   const d = new Date(date);
   return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
 }
+
+export function getDateTime({ date }: { date: string }) {
+  const isToday = formatDateLabel(date) === "Today";
+
+  if (isToday) {
+    return new Date(date).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "numeric",
+      hour12: true
+    });
+  }
+
+  return new Date(date).toLocaleDateString([], {
+    month: "long",
+    day: "numeric"
+  });
+}
