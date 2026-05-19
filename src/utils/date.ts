@@ -59,10 +59,22 @@ export function getDateTime({ date }: { date: string }) {
   const isToday = formatDateLabel(date) === "Today";
 
   if (isToday) {
-    return new Date(date).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "numeric",
-      hour12: true
+    return new Date(date)
+      .toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "numeric",
+        hour12: true
+      })
+      .toUpperCase();
+  }
+
+  const lastYear = new Date(date).getFullYear() - 1;
+
+  if (lastYear === new Date().getFullYear()) {
+    return new Date(date).toLocaleDateString([], {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
     });
   }
 

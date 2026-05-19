@@ -145,7 +145,6 @@ export async function getOrCreateFriendConversation({
 export async function getOrCreateConversation({
   participants,
   serverId,
-  channelId,
   type,
   admin,
   name
@@ -153,7 +152,6 @@ export async function getOrCreateConversation({
   participants: string[];
   admin: string;
   serverId: string;
-  channelId?: string;
   name?: string;
   type: ConversationTypes;
 }) {
@@ -181,8 +179,7 @@ export async function getOrCreateConversation({
     participants: participantObjectIds.map(id => id.toString()),
     type,
     participantsKey,
-    serverId,
-    channelId
+    serverId
   });
 
   const users = result?.users;
@@ -195,8 +192,7 @@ export async function getOrCreateConversation({
       type,
       name,
       participantsKey,
-      serverId,
-      channelId
+      serverId
     });
   }
 
@@ -272,7 +268,6 @@ async function createConversation({
   name,
   participantsKey,
   admin,
-  channelId,
   serverId
 }: {
   participants: string[];
@@ -281,14 +276,12 @@ async function createConversation({
   type: ConversationTypes;
   participantsKey: string;
   serverId: string;
-  channelId?: string;
 }) {
   try {
     const conversation = await Conversation.create({
       participants,
       type,
       serverId,
-      channelId,
       admin,
       name,
       participantsKey

@@ -18,7 +18,7 @@ export async function createMessage(data: CreateMessageType) {
 
 export async function fetchMessages(data: FetchMessagePayload) {
   const params = new URLSearchParams({
-    conversationId: data.conversationId,
+    [data.paramKey]: data.paramValue,
     limit: String(data.limit)
   });
   if (data.cursor) {
