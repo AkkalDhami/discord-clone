@@ -32,3 +32,10 @@ export type PartialProfile = Pick<
   Profile,
   "_id" | "avatar" | "email" | "name" | "username" | "createdAt"
 >;
+
+export type FilterSearchConversation = {
+  _id: string;
+  name?: string;
+  type: "group" | "direct";
+  logo?: string;
+};

@@ -1,4 +1,4 @@
-import { PartialProfile } from "@/types/friend";
+import { FilterSearchConversation, PartialProfile } from "@/types/friend";
 import { IMessage } from "@/interface";
 
 export interface Error {
@@ -49,5 +49,11 @@ export interface ServerPreviewResponse extends ApiResponse {
     createdAt: Date;
     members: number;
     isAlreadyMember: boolean;
+  };
+}
+
+export interface SearchConversationResponse extends ApiResponse {
+  data: {
+    data: FilterSearchConversation[];
   };
 }

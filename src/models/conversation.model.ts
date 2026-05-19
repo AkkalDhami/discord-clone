@@ -47,7 +47,7 @@ const conversationSchema = new Schema<IConversation>(
     participants: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Profile"
       }
     ],
     participantsKey: {
@@ -61,7 +61,7 @@ const conversationSchema = new Schema<IConversation>(
     deletedBy: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        ref: "Profile"
       }
     ],
     type: {

@@ -12,6 +12,7 @@ export interface IMessage extends Document {
   memberId?: mongoose.Types.ObjectId;
   channelId?: mongoose.Types.ObjectId;
   serverId?: mongoose.Types.ObjectId;
+  categoryId?: mongoose.Types.ObjectId;
 
   sender: mongoose.Types.ObjectId;
 
@@ -86,7 +87,10 @@ const messageSchema = new Schema<IMessage>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Server"
     },
-
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category"
+    },
     edited: {
       type: Boolean,
       default: false

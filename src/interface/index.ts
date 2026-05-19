@@ -109,6 +109,7 @@ export interface PartialConversation {
   logo?: IFile;
   participants?: PartialProfile[];
   admin?: string;
+
   type?: string;
 }
 
@@ -136,6 +137,13 @@ export type ReplyMessage = {
   createdAt?: string;
 };
 
+export type ForwardedMessage = {
+  originalMessageId: string;
+  originalSenderId: string;
+
+  forwardedAt: string;
+};
+
 export interface IMessage {
   _id: string;
   content?: string;
@@ -147,7 +155,7 @@ export interface IMessage {
   replyTo?: ReplyMessage;
 
   edited?: boolean;
-  forwarded?: boolean;
+  forwarded?: ForwardedMessage;
   isBot?: boolean;
   isAdmin?: boolean;
   pinned?: boolean;
