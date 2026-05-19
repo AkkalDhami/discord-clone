@@ -8,7 +8,7 @@ export type MessageType = (typeof MESSAGE_TYPE)[keyof typeof MESSAGE_TYPE];
 export interface IMessage extends Document {
   _id: mongoose.Types.ObjectId;
 
-  conversation: mongoose.Types.ObjectId;
+  conversationId?: mongoose.Types.ObjectId;
   memberId?: mongoose.Types.ObjectId;
   channelId?: mongoose.Types.ObjectId;
   serverId?: mongoose.Types.ObjectId;
@@ -18,7 +18,11 @@ export interface IMessage extends Document {
   content?: string;
   attachments?: IFile[];
   edited: boolean;
-  forwarded: boolean;
+  forwarded?: {
+    originalMessageId: mongoose.Types.ObjectId;
+    originalSenderId: mongoose.Types.ObjectId;
+    forwardedAt: Date;
+  };
 
   type: MessageType;
   pinned: boolean;
@@ -41,7 +45,7 @@ const messageSchema = new Schema<IMessage>(
       ref: "Profile",
       required: true
     },
-    conversation: {
+    conversationId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Conversation"
     },
@@ -101,15 +105,29 @@ const messageSchema = new Schema<IMessage>(
           }
         ]
       }
-    ]
+    ],
+    forwarded: {
+      messageId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Message"
+      },
+      senderId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Profile"
+      },
+      forwardedAt: {
+        type: Date
+      }
+    }
   },
+
   {
     timestamps: true
   }
 );
 
 messageSchema.index({ channelId: 1, createdAt: -1 });
-messageSchema.index({ conversation: 1, createdAt: -1 });
+messageSchema.index({ conversationId: 1, createdAt: -1 });
 
 messageSchema.index({ pinned: 1, createdAt: -1 });
 
