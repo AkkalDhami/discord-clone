@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as conversationApi from "@/lib/api/conversation";
 
-import { ApiResponse } from "@/interface/response";
+import { ApiResponse, SearchConversationResponse } from "@/interface/response";
 import {
   ConversationType,
   ConversationUpdateType,
@@ -17,6 +17,14 @@ export function useConversation() {
     queryFn: async () => {
       const res = await conversationApi.getConversation();
       return res as ApiResponse;
+    }
+  });
+
+  const getSearchConversationQuery = useQuery({
+    queryKey: ["search-conversations"],
+    queryFn: async () => {
+      const res = await conversationApi.getSearchConversation();
+      return res as SearchConversationResponse;
     }
   });
 
@@ -96,6 +104,9 @@ export function useConversation() {
   return {
     conversationData: getConversationQuery.data,
     isConversationLoading: getConversationQuery.isLoading,
+
+    searchConversationData: getSearchConversationQuery.data?.data,
+    isSearchConversationLoading: getSearchConversationQuery.isLoading,
 
     createConversation: createConversationMutation.mutateAsync,
     isConversationCreating: createConversationMutation.isPending,
