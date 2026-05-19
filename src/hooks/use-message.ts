@@ -9,7 +9,8 @@ import { UpdateMessageType } from "@/validators/message";
 import { useUser } from "./use-user-store";
 
 export type FetchMessagePayload = {
-  conversationId: string;
+  paramKey: string;
+  paramValue: string;
   limit: number;
   cursor?: string;
   onlyPinned?: boolean;
@@ -208,16 +209,18 @@ export function useMessage() {
 // }
 
 export function useInfiniteMessages({
-  conversationId,
+  paramKey,
+  paramValue,
   limit = 50,
   onlyPinned = false
 }: Omit<FetchMessagePayload, "cursor">) {
   return useInfiniteQuery<FetchMessagesResponse>({
-    queryKey: ["messages", conversationId, onlyPinned],
+    queryKey: ["messages", paramKey, onlyPinned],
 
     queryFn: async ({ pageParam }) => {
       const res = await messageApi.fetchMessages({
-        conversationId,
+        paramKey,
+        paramValue,
         limit,
         cursor: String(pageParam),
         onlyPinned
@@ -232,6 +235,6 @@ export function useInfiniteMessages({
 
     initialPageParam: undefined,
 
-    enabled: !!conversationId
+    enabled: !!paramValue
   });
 }

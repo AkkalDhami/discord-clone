@@ -22,6 +22,12 @@ interface AuthData {
 export interface AuthStore extends AuthData {
   setUser: (user: AuthData["user"]) => void;
 
+  file: {
+    url: string | null;
+    type: "image" | "video" | "file" | "audio" | null;
+  } | null;
+  setFile: (file: AuthStore["file"] | null) => void;
+
   setPrivateUsers: (privateUsers: AuthData["privateUsers"]) => void;
 
   setOtp: (otp: AuthData["otp"]) => void;
@@ -31,11 +37,13 @@ export const useUser = create<AuthStore>()(
   persist(
     set => ({
       user: null,
+      file: null,
       privateUsers: null,
       otp: null,
       setUser: user => set({ user }),
       setOtp: otp => set({ otp }),
-      setPrivateUsers: privateUsers => set({ privateUsers })
+      setPrivateUsers: privateUsers => set({ privateUsers }),
+      setFile: file => set({ file })
     }),
     {
       name: "discord-by-akkal-user-storage"
