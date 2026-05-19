@@ -6,55 +6,24 @@ import {
   Command,
   CommandDialog,
   CommandEmpty,
-  CommandGroup,
   CommandInput,
   CommandItem,
   CommandList
 } from "@/components/ui/command";
-
-export interface Item {
-  value: string;
-  label: string;
-  shortcut?: string;
-}
-
-export interface Group {
-  value: string;
-  items: Item[];
-}
-
-export const suggestions: Item[] = [
-  { label: "Linear", shortcut: "⌘L", value: "linear" },
-  { label: "Figma", shortcut: "⌘F", value: "figma" },
-  { label: "Slack", shortcut: "⌘S", value: "slack" },
-  { label: "YouTube", shortcut: "⌘Y", value: "youtube" },
-  { label: "Raycast", shortcut: "⌘R", value: "raycast" }
-];
-
-export const commands: Item[] = [
-  { label: "Clipboard History", shortcut: "⌘⇧C", value: "clipboard-history" },
-  { label: "Import Extension", shortcut: "⌘I", value: "import-extension" },
-  { label: "Create Snippet", shortcut: "⌘N", value: "create-snippet" },
-  { label: "System Preferences", shortcut: "⌘,", value: "system-preferences" },
-  { label: "Window Management", shortcut: "⌘⇧W", value: "window-management" }
-];
-
-export const groupedItems: Group[] = [
-  { items: suggestions, value: "Suggestions" },
-  { items: commands, value: "Commands" }
-];
+import { useConversation } from "@/hooks/use-conversaton";
+import { UserAvatar } from "./user-avatar";
+import Link from "next/link";
 
 export function SearchConversation() {
+  const { searchConversationData, isSearchConversationLoading } =
+    useConversation();
   const [open, setOpen] = useState(false);
 
-  function handleItemClick(_item: Item) {
-    setOpen(false);
-    console.log(_item);
-  }
+  const items = searchConversationData?.data || [];
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "j" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === "k" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setOpen(open => !open);
       }
@@ -72,21 +41,30 @@ export function SearchConversation() {
         className="w-full">
         Find or start a conversation
       </Button>
-      <CommandDialog open={open} onOpenChange={setOpen}>
+      <CommandDialog
+        open={open && !isSearchConversationLoading}
+        onOpenChange={setOpen}
+        className="w- max-w-lg">
         <Command>
-          <CommandInput placeholder="Type a command or search..." />
-          <CommandList>
+          <CommandInput placeholder="Where would you like to go?" />
+          <CommandList className="mt-3">
             <CommandEmpty>No results found.</CommandEmpty>
-            {groupedItems.map(group => (
-              <CommandGroup key={group.value} heading={group.value}>
-                {group.items.map(item => (
-                  <CommandItem
-                    key={item.value}
-                    onClick={() => handleItemClick(item)}>
-                    {item.label}
-                  </CommandItem>
-                ))}
-              </CommandGroup>
+            {items.map(item => (
+              <CommandItem
+                key={item._id}
+                onClick={() => setOpen(false)}
+                className="mt-1 cursor-pointer p-2">
+                <Link
+                  href={`/conversations/${item._id}`}
+                  className="flex items-center gap-2">
+                  <UserAvatar
+                    name={item.name}
+                    src={item.logo}
+                    className="size-7"
+                  />
+                  {item.type === "direct" ? `@${item.name}` : item.name}
+                </Link>
+              </CommandItem>
             ))}
           </CommandList>
         </Command>

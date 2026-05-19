@@ -55,3 +55,28 @@ export function UserAvatar({
     </Avatar>
   );
 }
+
+export function OnlineUserAvatar({
+  src,
+  name,
+  rounded,
+  isOnline,
+  className
+}: UserAvatarProps & { isOnline: boolean }) {
+  return (
+    <div className="relative">
+      <UserAvatar
+        rounded={rounded}
+        name={name}
+        src={src}
+        className={className}
+      />
+      <div
+        className={cn(
+          "bg-background ring-background absolute right-0 bottom-1 size-2.5 rounded-full border-[3px] border-neutral-500 ring-4",
+          isOnline && "border-green-500 bg-green-500"
+        )}
+      />
+    </div>
+  );
+}

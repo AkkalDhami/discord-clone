@@ -1,6 +1,6 @@
 "use client";
 
-import { UserAvatar } from "@/components/common/user-avatar";
+import { OnlineUserAvatar, UserAvatar } from "@/components/common/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,27 +27,26 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useFriend } from "@/hooks/use-friend";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useSocket } from "@/hooks/use-socket-store";
 
 export function FriendCard({ friend }: { friend: string }) {
   const friendData = JSON.parse(friend) as PartialFriendship;
 
   const { open } = useModal();
+  const onlineUsers = useSocket(state => state.onlineUsers);
+  const isOnline = onlineUsers.includes(friendData?.friend?._id || "");
 
-  const status = "Offline";
+  const status = isOnline ? "Online" : "Offline";
 
   return (
     <div className="hover:bg-secondary/60 group border-edge flex items-center justify-between border-b p-3">
       <div className="flex w-full items-center justify-between gap-3">
         <div className="flex w-full items-center gap-1.5">
-          <div className="relative">
-            <UserAvatar
-              name={friendData?.friend?.name}
-              src={friendData?.friend?.avatar?.url}
-              className="size-11"
-            />
-
-            <div className="bg-background ring-background absolute right-0 bottom-1 size-3 rounded-full border-[3px] border-neutral-500 ring-4" />
-          </div>
+          <OnlineUserAvatar
+            src={friendData?.friend?.avatar?.url}
+            name={friendData?.friend?.name}
+            isOnline={isOnline}
+          />
           <div className="flex w-full flex-col">
             <div className="flex w-full items-center gap-2">
               <h3 className="font-normal">{friendData?.friend?.name}</h3>
@@ -56,7 +55,13 @@ export function FriendCard({ friend }: { friend: string }) {
                 @{friendData?.friend?.username}
               </p>
             </div>
-            <p className="text-muted-foreground text-sm">{status}</p>
+            <p
+              className={cn(
+                "text-muted-foreground text-sm",
+                isOnline && "text-green-600"
+              )}>
+              {status}
+            </p>
           </div>
         </div>
 

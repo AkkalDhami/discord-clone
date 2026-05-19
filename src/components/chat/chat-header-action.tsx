@@ -41,10 +41,12 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 export function ChatHeaderAction({
   type,
   sidebarProfile,
-  conversation
+  conversation,
+  channelId
 }: {
   type: ChatHeaderType;
   sidebarProfile?: SidebarProfileData;
+  channelId?: string;
   conversation?: {
     _id: string;
     participants: PartialProfile[];
@@ -58,7 +60,8 @@ export function ChatHeaderAction({
   const isGroupAdmin = user?.id && conversation?.admin === user.id;
 
   const { data, isLoading } = useInfiniteMessages({
-    conversationId: conversation?._id || "",
+    paramKey: channelId ? "channelId" : "conversationId",
+    paramValue: channelId || conversation?._id || "",
     limit: 100,
     onlyPinned: true
   });
@@ -104,18 +107,6 @@ export function ChatHeaderAction({
               </PopoverContent>
             </Popover>
           </ActionTooltip>
-          {type === "friend" && (
-            <ActionTooltip label="Delete Conversation" side="bottom">
-              <IconTrash
-                onClick={() => {
-                  open("delete-conversation", {
-                    conversation
-                  });
-                }}
-                className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1"
-              />
-            </ActionTooltip>
-          )}
           {(type === "friend" || type === "group") && (
             <ActionTooltip
               label={

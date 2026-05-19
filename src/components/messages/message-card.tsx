@@ -174,8 +174,9 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
               <span className="text-[13px] text-purple-500">
                 Visible to:{" "}
                 {visibleTo
-                  .filter(v => v._id !== user?.id)
-                  .map(v => `@${v.username}`)
+                  .map(v =>
+                    v.username === user?.username ? "You" : `@${v.username}`
+                  )
                   .join(", ")}
               </span>
             )}

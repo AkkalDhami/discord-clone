@@ -1,18 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { UserAvatar } from "@/components/common/user-avatar";
+import { OnlineUserAvatar, UserAvatar } from "@/components/common/user-avatar";
 import { PopulatedConversation } from "@/components/chat/direct-chat-section";
 import { IconX } from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
 import { useUser } from "@/hooks/use-user-store";
-
-function splitContent(content: string, maxLength: number = 20) {
-  return content.length > maxLength
-    ? content.slice(0, maxLength) + "..."
-    : content;
-}
+import { getDateTime } from "@/utils/date";
+import { TypingUser, useTyping } from "@/hooks/use-typing-store";
+import { useSocket } from "@/hooks/use-socket-store";
+import { BouncingDots } from "@/components/ui/bouncing-dots";
+import { splitContent } from "@/utils/split-content";
 
 export function GroupChatItem({ c }: { c: PopulatedConversation }) {
   const params = useParams();
@@ -26,8 +27,9 @@ export function GroupChatItem({ c }: { c: PopulatedConversation }) {
   }
 
   const displayName = c?.name
-    ? c.name
-    : "@" + participants.map(member => member.username).join(", @");
+    ? splitContent(c.name)
+    : "@" +
+      splitContent(participants.map(member => member.username).join(", @"));
 
   return (
     <div
@@ -102,8 +104,20 @@ export function GroupChatLogo({
 
 export function FriendChatItem({ c }: { c: PopulatedConversation }) {
   const params = useParams();
-  const participant = c?.participants?.[0];
   const { user } = useUser();
+  const participant = c?.participants?.find(p => p._id !== user?.id);
+
+  const onlineUsers = useSocket(state => state.onlineUsers);
+  const isOnline = onlineUsers.includes(participant?._id || "");
+
+  const EMPTY_TYPING_USERS: TypingUser[] = [];
+  const typingUsers = useTyping(
+    state => state.typingUsers[c._id ?? ""] ?? EMPTY_TYPING_USERS
+  );
+
+  const isTyping = typingUsers.find(
+    t => t.userId === participant?._id && t.conversationId === c._id
+  );
 
   if (c.type !== "direct" || !participant?._id) {
     return null;
@@ -117,26 +131,41 @@ export function FriendChatItem({ c }: { c: PopulatedConversation }) {
           "hover:bg-secondary group relative flex w-full items-center rounded-md p-2",
           params.friendId === participant._id && "bg-secondary"
         )}>
-        <UserAvatar
+        <OnlineUserAvatar
           src={participant?.avatar?.url}
           name={participant?.name}
-          className="size-8"
+          isOnline={isOnline}
+          className="size-9"
         />
-        <div className="ml-2">
-          <div className="flex items-center gap-3">
+        <div className="ml-2 w-full">
+          <div className="flex w-full items-center gap-3">
             <h3 className="line-clamp-1 text-sm font-medium">
-              {participant?.name}
+              {splitContent(participant?.name, 15)}
             </h3>
+
             <p className="text-muted-foreground text-xs opacity-0 group-hover:opacity-100">
               @{participant?.username}
             </p>
           </div>
-          {c.lastMessage?.content && (
-            <p className="text-muted-foreground text-xs">
-              {user?.id === c.lastMessage.sender
-                ? `You: ${splitContent(c.lastMessage?.content)}`
-                : splitContent(c.lastMessage?.content)}
-            </p>
+          {isTyping ? (
+            <div className="mt-1 flex items-end gap-10 *:w-10">
+              <BouncingDots className="text-[#f59e0b]" />
+            </div>
+          ) : (
+            <div className="flex w-full items-center justify-between">
+              {c.lastMessage?.content && (
+                <p className="text-muted-foreground text-xs">
+                  {user?.id === c.lastMessage.sender
+                    ? `You: ${splitContent(c.lastMessage?.content)}`
+                    : splitContent(c.lastMessage?.content)}
+                </p>
+              )}
+              {c.lastMessage?.createdAt && (
+                <p className="text-muted-foreground text-xs">
+                  {getDateTime({ date: c.lastMessage.createdAt })}
+                </p>
+              )}
+            </div>
           )}
         </div>
       </Link>

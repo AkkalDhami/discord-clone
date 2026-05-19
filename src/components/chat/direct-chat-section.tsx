@@ -20,7 +20,7 @@ export type PopulatedConversation = {
 
   name?: string;
   logo?: IFile;
-  lastMessage?: Pick<IMessage, "content" | "type"> & {
+  lastMessage?: Pick<IMessage, "content" | "type" | "createdAt"> & {
     sender: string;
   };
 };

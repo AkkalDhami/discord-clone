@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import {
   DateSeparator,
   MessageCard,
@@ -12,11 +12,15 @@ import { Spinner } from "@/components/ui/spinner";
 import { useModal } from "@/hooks/use-modal-store";
 import { cn } from "@/lib/utils";
 
+type MessagesSectionProps = {
+  conversationId?: string;
+  channelId?: string;
+};
+
 export function MessagesSection({
+  channelId,
   conversationId
-}: {
-  conversationId: string;
-}) {
+}: MessagesSectionProps) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   const { isOpen, type: modalType } = useModal();
@@ -27,23 +31,32 @@ export function MessagesSection({
 
   const isFetchingRef = useRef(false);
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } =
-    useInfiniteMessages({
-      conversationId,
-      limit: 100
-    });
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    status
+  } = useInfiniteMessages({
+    paramKey: channelId ? "channelId" : "conversationId",
+    paramValue: conversationId ?? channelId ?? "",
+    limit: 100
+  });
 
-  const messages =
-    data?.pages.flatMap(page => page?.data?.messages ?? []) ?? [];
+  const messages = useMemo(() => {
+    return (
+      data?.pages.flatMap(page => page?.data?.messages ?? []).filter(Boolean) ??
+      []
+    );
+  }, [data]);
 
   useEffect(() => {
     const container = containerRef.current;
     if (!container || isLoading || isInitialScrollDone) return;
 
     requestAnimationFrame(() => {
-      container.scrollIntoView({
-        behavior: "auto"
-      });
+      container.scrollTop = container.scrollHeight;
       setIsInitialScrollDone(true);
     });
   }, [isLoading, isInitialScrollDone]);
@@ -91,7 +104,7 @@ export function MessagesSection({
 
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
-            const newScrollHeight = container.scrollHeight;
+            const newScrollHeight = container?.scrollHeight ?? 0;
 
             container.scrollTop =
               prevScrollTop + (newScrollHeight - prevScrollHeight);
@@ -110,17 +123,20 @@ export function MessagesSection({
     const container = containerRef.current;
     if (!container) return;
 
-    container.scrollIntoView({
+    container.scrollTo({
+      top: container.scrollHeight,
       behavior: smooth ? "smooth" : "auto"
     });
   };
 
-  const loadMore = () => {
-    fetchNextPage();
+  const loadMore = async () => {
+    if (isFetchingNextPage) return;
+
+    await fetchNextPage();
   };
 
   return (
-    <div className={cn("relative", isSidebarOpen && "pr-82")}>
+    <div className={cn("relative", isSidebarOpen && "md:pr-80")}>
       <div className="flex h-full w-full flex-col pt-2">
         {isFetchingNextPage && (
           <div className="text-muted-foreground flex w-full items-center justify-center gap-2 py-2 text-sm">
@@ -128,16 +144,7 @@ export function MessagesSection({
           </div>
         )}
 
-        {hasNextPage && !isFetchingNextPage && (
-          <button
-            disabled={isFetchingNextPage}
-            onClick={loadMore}
-            className="text-muted-foreground hover:text-accent-foreground mt-2 w-full cursor-pointer p-2">
-            {isFetchingNextPage ? "Loading..." : "Load more"}
-          </button>
-        )}
-
-        {isLoading
+        {isLoading && status === "pending"
           ? Array.from({ length: 20 }).map((_, i) => (
               <ShimmerMessageCard key={i} />
             ))
@@ -174,6 +181,15 @@ export function MessagesSection({
               );
             })}
       </div>
+
+      {hasNextPage && !isFetchingNextPage && (
+        <button
+          disabled={isFetchingNextPage}
+          onClick={loadMore}
+          className="text-muted-foreground hover:text-accent-foreground mt-2 w-full cursor-pointer p-2">
+          {isFetchingNextPage ? "Loading..." : "Load more"}
+        </button>
+      )}
 
       {showJumpToPresent && (
         <div

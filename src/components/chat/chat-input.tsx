@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ChatInputSchema, ChatInputType } from "@/validators/chat";
@@ -30,7 +31,8 @@ import {
   IconMoodSmile,
   IconPlus,
   IconSend,
-  IconUserKey
+  IconUserKey,
+  IconX
 } from "@tabler/icons-react";
 import { useModal } from "@/hooks/use-modal-store";
 import { cn } from "@/lib/utils";
@@ -40,21 +42,37 @@ import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { PartialProfile } from "@/types/friend";
 import { useReply } from "@/hooks/use-reply-store";
-// import { useSocket } from "@/hooks/use-socket-store";
+import { useSocket } from "@/hooks/use-socket-store";
+import { useCallback, useEffect, useRef } from "react";
+import { useUser } from "@/hooks/use-user-store";
+import Image from "next/image";
+import { useTyping } from "@/hooks/use-typing-store";
+import { useDebounce } from "@/hooks/use-debounce";
+import { CreateMessageType } from "@/validators/message";
 
 type ChatInputProps = {
-  query: Record<string, unknown>;
+  conversationId?: string;
+  serverId?: string;
+  channelId?: string;
+  participants?: PartialProfile[];
+
   name: string;
   type: "channel" | "member" | "group" | "friend";
 };
 
-export function ChatInput({ query, name, type }: ChatInputProps) {
+export function ChatInput({
+  conversationId,
+  serverId,
+  channelId,
+  participants,
+  name,
+  type
+}: ChatInputProps) {
   const queryClient = useQueryClient();
 
   const replyingTo = useReply(state => state.replyingTo);
   const clearReply = useReply(state => state.clearReply);
-
-  // const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const { user, file, setFile } = useUser();
 
   const { open, isOpen, type: modalType } = useModal();
 
@@ -69,15 +87,159 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
     }
   });
 
-  // const socket = useSocket(state => state.socket);
+  const socket = useSocket(state => state.socket);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    socket?.emit("conversation:join", conversationId);
+
+    return () => {
+      socket?.emit("conversation:leave", conversationId);
+    };
+  }, [socket, conversationId]);
+
+  useEffect(() => {
+    if (!socket || !conversationId) return;
+
+    const handleNewMessage = (message: CreateMessageType) => {
+      queryClient.setQueryData(["messages", conversationId], (old: any) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.map((page: any, index: number) => {
+            if (index !== 0) return page;
+
+            return {
+              ...page,
+              data: {
+                ...page.data,
+                messages: [...page.data.messages, message]
+              }
+            };
+          })
+        };
+      });
+    };
+
+    socket.on("message:new", handleNewMessage);
+
+    return () => {
+      socket.off("message:new", handleNewMessage);
+    };
+  }, [socket, conversationId, queryClient]);
+
+  const isTypingRef = useRef(false);
+
+  const emitTypingStop = useDebounce(() => {
+    if (!socket || !conversationId || !user?.id) return;
+
+    if (!isTypingRef.current) return;
+
+    isTypingRef.current = false;
+
+    socket.emit("typing:stop", {
+      conversationId,
+      userId: user.id,
+      username: user.username
+    });
+  }, 1500);
+
+  const emitTypingStart = useCallback(() => {
+    if (!socket || !conversationId || !user?.id) return;
+
+    if (isTypingRef.current) return;
+
+    isTypingRef.current = true;
+
+    socket.emit("typing:start", {
+      conversationId,
+      userId: user.id,
+      username: user.username
+    });
+  }, [socket, conversationId, user]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleTypingStart = (payload: {
+      conversationId: string;
+      userId: string;
+      username: string;
+    }) => {
+      if (payload.userId === user?.id) return;
+
+      useTyping.getState().addTypingUser(payload.conversationId, {
+        userId: payload.userId,
+        username: payload.username,
+        conversationId: payload.conversationId
+      });
+    };
+
+    const handleTypingStop = (payload: {
+      conversationId: string;
+      userId: string;
+    }) => {
+      if (payload.userId === user?.id) return;
+
+      useTyping
+        .getState()
+        .removeTypingUser(payload.conversationId, payload.userId);
+    };
+
+    socket.on("typing:start", handleTypingStart);
+    socket.on("typing:stop", handleTypingStop);
+
+    return () => {
+      socket.off("typing:start", handleTypingStart);
+      socket.off("typing:stop", handleTypingStop);
+    };
+  }, [socket, user?.id]);
+
+  useEffect(() => {
+    return () => {
+      emitTypingStop.cancel?.();
+
+      if (isTypingRef.current) {
+        socket?.emit("typing:stop", {
+          conversationId,
+          userId: user?.id
+        });
+      }
+    };
+  }, [socket, conversationId, user, emitTypingStop]);
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const handleMessage = (payload: {
+      conversationId: string;
+      userId: string;
+      content: string;
+    }) => {
+      // remove typing state immediately
+      useTyping
+        .getState()
+        .removeTypingUser(payload.conversationId, payload.userId);
+
+      // your existing message logic...
+    };
+
+    socket.on("message:send", handleMessage);
+
+    return () => {
+      socket.off("message:send", handleMessage);
+    };
+  }, [socket]);
 
   const onSubmit = async (data: ChatInputType) => {
     try {
       const res = await createMessage({
         content: data.content,
-        conversationId: query.conversationId as string,
-        serverId: query.serverId as string,
-        channelId: query.channelId as string,
+        conversationId,
+        serverId,
+        channelId,
         replyTo: replyingTo?._id,
         privateUsers: replyingTo?.visibleTo
       });
@@ -87,18 +249,25 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
         return;
       }
 
+      console.log({ res });
+
+      const message = res.data;
+
+      socket?.emit("message:send", {
+        conversationId,
+        message
+      });
+
       form.reset();
       clearReply();
 
       requestAnimationFrame(() => {
         const container = document.getElementById("messages-container");
-        container?.scrollIntoView({
+
+        container?.scrollTo({
+          top: container.scrollHeight,
           behavior: "smooth"
         });
-      });
-
-      await queryClient.invalidateQueries({
-        queryKey: ["messages", query.conversationId]
       });
     } catch (error) {
       console.error(error);
@@ -110,8 +279,6 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
     control: form.control,
     name: "content"
   });
-
-  // useAutoResize(textareaRef, content);
 
   return (
     <div
@@ -152,6 +319,23 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
                       </div>
                     </div>
                   )}
+                  {file?.url && (
+                    <div className="relative flex items-center justify-center">
+                      <Image
+                        src={file.url}
+                        alt={file.type || "File"}
+                        width={100}
+                        height={100}
+                        className="size-20 rounded-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setFile({ url: null, type: null })}
+                        className="absolute -top-2 -right-2 rounded-full bg-red-500 p-1 text-white">
+                        <IconX className="size-4" />
+                      </button>
+                    </div>
+                  )}
                   <InputGroup className="has-[[data-slot=input-group-control]:focus-visible]:border-input items-start in-data-[slot=combobox-content]:focus-within:border-transparent has-[[data-slot=input-group-control]:focus-visible]:ring-0 [[data-slot=input-group-control]:focus-visible]:border-none">
                     <InputGroupTextarea
                       {...field}
@@ -164,17 +348,36 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
                       )}
                       autoFocus={replyingTo?._id ? true : false}
                       placeholder={`Message  ${type === "channel" ? `#${name}` : type === "member" ? `@${name}` : `${name}`}`}
-                      // onKeyUp={e => {
-                      //   if (e.key === "Enter" && e.ctrlKey) {
-                      //     e.preventDefault();
-                      //     form.handleSubmit(onSubmit)();
-                      //   }
-                      // }}
                       onKeyDown={e => {
                         if (e.key === "Enter" && !e.shiftKey) {
                           e.preventDefault();
                           form.handleSubmit(onSubmit)();
                         }
+                      }}
+                      onChange={e => {
+                        field.onChange(e);
+
+                        const value = e.target.value;
+
+                        // input cleared
+                        if (!value.trim()) {
+                          emitTypingStop.cancel?.();
+
+                          if (isTypingRef.current) {
+                            isTypingRef.current = false;
+
+                            socket?.emit("typing:stop", {
+                              conversationId,
+                              userId: user?.id,
+                              username: user?.username
+                            });
+                          }
+
+                          return;
+                        }
+
+                        emitTypingStart();
+                        emitTypingStop();
                       }}
                     />
                     <InputGroupAddon>
@@ -243,9 +446,8 @@ export function ChatInput({ query, name, type }: ChatInputProps) {
                           onClick={() => {
                             open("private-user", {
                               privateMessage: {
-                                conversationId: query.conversationId as string,
-                                participants:
-                                  query.participants as PartialProfile[],
+                                conversationId: conversationId as string,
+                                participants: participants || [],
                                 content
                               }
                             });
