@@ -1,4 +1,5 @@
 import { NavigationSidebar } from "@/components/layouts/navigation-sidebar";
+import { SocketProvider } from "@/components/providers/socket-provider";
 import { currentAuthUser } from "@/helpers/auth.helper";
 
 import { redirect } from "next/navigation";
@@ -18,6 +19,7 @@ export default async function ServerLayout({
 
   return (
     <section className="w-full">
+      <SocketProvider userId={profile.id} />
       <div className="fixed inset-y-0 z-30 ml-1 hidden h-full w-16 flex-col border-l sm:w-18 md:flex">
         <NavigationSidebar />
       </div>

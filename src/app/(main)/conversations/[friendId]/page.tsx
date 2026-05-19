@@ -1,11 +1,8 @@
-import {
-  BlockedUserChatInput,
-  ChatInput
-} from "@/app/api/servers/chat/chat-input";
+import { BlockedUserChatInput, ChatInput } from "@/components/chat/chat-input";
 import {
   DirectChatWelcome,
   GroupChatWelcome
-} from "@/app/api/servers/chat/chat-welcome";
+} from "@/components/chat/chat-welcome";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { MessagesSection } from "@/components/messages/message-section";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -375,13 +372,12 @@ export default async function Page(
         friend && <BlockedUserChatInput />
       ) : (
         <ChatInput
-          query={{
-            friendId: friend?._id?.toString(),
-            conversationId:
-              groupConversation?._id?.toString() ??
-              directConversation?._id?.toString(),
-            participants: filteredParticipants
-          }}
+          conversationId={
+            groupConversation?._id?.toString() ??
+            directConversation?._id?.toString() ??
+            ""
+          }
+          participants={filteredParticipants}
           name={friend?.username ?? groupConversation?.name ?? mappedUsersName}
           type={
             !friend && groupConversation?.type === "group" ? "group" : "member"

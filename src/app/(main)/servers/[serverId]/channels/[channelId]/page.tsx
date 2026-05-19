@@ -1,12 +1,11 @@
-import { ChatInput } from "@/app/api/servers/chat/chat-input";
-import { ChannelWelcome } from "@/app/api/servers/chat/chat-welcome";
+import { ChatInput } from "@/components/chat/chat-input";
+import { ChannelWelcome } from "@/components/chat/chat-welcome";
 import { ChatHeader } from "@/components/layouts/chat-header";
 import { MessagesSection } from "@/components/messages/message-section";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { currentAuthUser } from "@/helpers/auth.helper";
 import { Channel as ChannelInterface } from "@/interface";
-import { getOrCreateConversation } from "@/lib/conversation";
 import Channel from "@/models/channel.model";
 import Member from "@/models/member.model";
 import mongoose from "mongoose";
@@ -58,18 +57,6 @@ export default async function Page(
     return redirect("/");
   }
 
-  const conversation = await getOrCreateConversation({
-    admin: profile.id,
-    serverId,
-    type: "server",
-    channelId,
-    participants: [member.profileId.toString(), profile.id]
-  });
-
-  // console.log({ conversation });
-
-  const conversationId = conversation?._id?.toString();
-
   return (
     <div className="flex h-full flex-col border-y">
       <ChatHeader
@@ -88,14 +75,11 @@ export default async function Page(
           isPrivate={channel?.category?.private ?? false}
         />
 
-        <MessagesSection conversationId={conversationId as string} />
+        <MessagesSection channelId={channelId} />
       </ScrollArea>
       <ChatInput
-        query={{
-          channelId,
-          serverId,
-          conversationId
-        }}
+        channelId={channelId}
+        serverId={serverId}
         name={channel.name}
         type="channel"
       />
