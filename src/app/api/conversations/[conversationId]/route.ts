@@ -50,7 +50,7 @@ export const DELETE = AsyncHandler(
     // await Conversation.updateOne(
     //   { _id: conversation._id },
     //   {
-    //     $push: {
+    //     $addToSet: {
     //       deletedBy: user.id
     //     }
     //   }
@@ -69,7 +69,7 @@ export const DELETE = AsyncHandler(
         _id: conversationId
       }),
       Message.deleteMany({
-        conversation: conversationId
+        conversationId
       })
     ]);
 

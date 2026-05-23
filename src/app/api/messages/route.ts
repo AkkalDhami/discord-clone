@@ -10,6 +10,9 @@ import { validateRequest } from "@/lib/validation";
 import { CreateMessageSchema } from "@/validators/message";
 import { validateObjectId } from "@/utils/validate-objid";
 import { Types } from "mongoose";
+import Channel from "@/models/channel.model";
+import Server from "@/models/server.model";
+import Member from "@/models/member.model";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
   const body = await req.json();
@@ -33,80 +36,177 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
-  const { content, conversationId, privateUsers, replyTo, forwarded } =
-    validationResult.data;
-
-  if (!conversationId) {
-    return ApiResponse({
-      statusCode: STATUS_CODES.BAD_REQUEST,
-      success: false,
-      message: "conversationId is required"
-    });
-  }
-
-  if (!validateObjectId(conversationId)) {
-    return ApiResponse({
-      statusCode: STATUS_CODES.BAD_REQUEST,
-      success: false,
-      message: "Invalid conversation Id"
-    });
-  }
-
-  const conversation = await Conversation.findById(conversationId);
-  if (!conversation) {
-    return ApiResponse({
-      statusCode: STATUS_CODES.NOT_FOUND,
-      success: false,
-      message: "Conversation not found"
-    });
-  }
-
-  const isParticipant = conversation.participants.includes(
-    new Types.ObjectId(user?.id)
-  );
-  if (!isParticipant) {
-    return ApiResponse({
-      statusCode: STATUS_CODES.FORBIDDEN,
-      success: false,
-      message: "You are not a participant of this conversation"
-    });
-  }
-
-  const message = await Message.create({
-    sender: user.id,
-    conversation: conversationId,
+  const {
     content,
-    visibleTo: privateUsers?.length ? [user.id, ...privateUsers] : [],
+    conversationId,
+    channelId,
+    serverId,
+    privateUsers,
     replyTo,
     forwarded
-  });
+  } = validationResult.data;
 
-  await Conversation.findByIdAndUpdate(conversationId, {
-    lastMessage: message._id,
-    updatedAt: new Date()
-  });
+  if (!conversationId && !channelId) {
+    return ApiResponse({
+      statusCode: STATUS_CODES.BAD_REQUEST,
+      success: false,
+      message: "conversationId or channelId is required"
+    });
+  }
 
-  return ApiResponse({
-    statusCode: STATUS_CODES.OK,
-    success: true,
-    data: message,
-    message: "Message sent successfully"
-  });
+  if (conversationId) {
+    if (!validateObjectId(conversationId ?? channelId ?? "")) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        success: false,
+        message: "Invalid conversation or channel Id"
+      });
+    }
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.NOT_FOUND,
+        success: false,
+        message: "Conversation not found"
+      });
+    }
+
+    const isParticipant = conversation?.participants.includes(
+      new Types.ObjectId(user?.id)
+    );
+    if (!isParticipant) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.FORBIDDEN,
+        success: false,
+        message: "You are not a participant of this conversation"
+      });
+    }
+
+    const message = await Message.create({
+      sender: user.id,
+      conversationId,
+      content,
+      visibleTo: privateUsers?.length ? [user.id, ...privateUsers] : [],
+      replyTo,
+      forwarded
+    });
+
+    await Conversation.findByIdAndUpdate(conversationId, {
+      lastMessage: message._id,
+      updatedAt: new Date()
+    });
+
+    return ApiResponse({
+      statusCode: STATUS_CODES.CREATED,
+      success: true,
+      data: message,
+      message: "Message sent successfully"
+    });
+  } else {
+    if (!validateObjectId(channelId ?? "")) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        success: false,
+        message: "Invalid channel Id"
+      });
+    }
+
+    if (!serverId) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        success: false,
+        message: "serverId is required"
+      });
+    }
+
+    const channel = await Channel.findById(channelId);
+    if (!channel) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.NOT_FOUND,
+        success: false,
+        message: "Channel not found"
+      });
+    }
+
+    const server = await Server.findById(serverId);
+    if (!server) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.NOT_FOUND,
+        success: false,
+        message: "Server not found"
+      });
+    }
+
+    if (channel.serverId.toString() !== serverId) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.BAD_REQUEST,
+        success: false,
+        message: "Channel is not part of this server"
+      });
+    }
+
+    const members = await Member.find({
+      serverId: new Types.ObjectId(serverId)
+    });
+
+    const currentMember = await Member.findOne({
+      serverId: new Types.ObjectId(serverId),
+      profileId: new Types.ObjectId(user?.id)
+    });
+
+    if (!currentMember) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.FORBIDDEN,
+        success: false,
+        message: "You are not a member of this server"
+      });
+    }
+
+    const isParticipant = members.some(
+      member => member._id.toString() === currentMember._id.toString()
+    );
+    if (!isParticipant) {
+      return ApiResponse({
+        statusCode: STATUS_CODES.FORBIDDEN,
+        success: false,
+        message: "You are not a participant of this server"
+      });
+    }
+
+    const message = await Message.create({
+      sender: user.id,
+      channelId,
+      serverId,
+      content,
+      visibleTo: privateUsers?.length ? [user.id, ...privateUsers] : [],
+      replyTo,
+      forwarded
+    });
+
+    return ApiResponse({
+      statusCode: STATUS_CODES.CREATED,
+      success: true,
+      data: message,
+      message: "Message sent successfully"
+    });
+  }
 });
 
 export const GET = AsyncHandler(async (req: NextRequest) => {
   const { searchParams } = new URL(req.url);
 
   const conversationId = searchParams.get("conversationId") as string;
+  const channelId = searchParams.get("channelId") as string;
   const limit = parseInt(searchParams.get("limit") || "50", 10);
   const cursor = searchParams.get("cursor");
   const onlyPinned = searchParams.get("pinned") === "true";
 
-  if (!validateObjectId(conversationId)) {
+  if (!validateObjectId(conversationId || channelId)) {
     return ApiResponse({
       statusCode: STATUS_CODES.BAD_REQUEST,
       success: false,
-      message: "Invalid conversation Id"
+      message: "Invalid conversation or or channel Id"
     });
   }
 
@@ -120,10 +220,14 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
   }
 
   const matchQuery: {
-    conversation: Types.ObjectId;
+    conversationId?: Types.ObjectId;
+    channelId?: Types.ObjectId;
     _id?: { $lt: Types.ObjectId };
   } = {
-    conversation: new Types.ObjectId(conversationId)
+    conversationId: !conversationId
+      ? undefined
+      : new Types.ObjectId(conversationId),
+    channelId: channelId ? new Types.ObjectId(channelId) : undefined
   };
 
   if (cursor && validateObjectId(cursor)) {

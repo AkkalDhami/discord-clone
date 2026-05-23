@@ -157,7 +157,7 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   });
 });
 
-export const GET = AsyncHandler(async (req: NextRequest) => {
+export const GET = AsyncHandler(async () => {
   const user = await currentAuthUser();
 
   if (!user) {
@@ -171,44 +171,10 @@ export const GET = AsyncHandler(async (req: NextRequest) => {
   const conversations = await Conversation.aggregate([
     {
       $match: {
-        participants: user.id
+        participants: new Types.ObjectId(user.id),
+        deletedBy: { $ne: new Types.ObjectId(user.id) }
       }
     },
-    // {
-    //   $lookup: {
-    //     from: "profiles",
-    //     localField: "participants",
-    //     foreignField: "_id",
-    //     as: "participants",
-    //     pipeline: [
-    //       {
-    //         $project: {
-    //           _id: 1,
-    //           username: 1,
-    //           avatar: 1
-    //         }
-    //       }
-    //     ]
-    //   }
-    // },
-    // {
-    //   $lookup: {
-    //     from: "channels",
-    //     localField: "channelId",
-    //     foreignField: "_id",
-    //     as: "channel",
-    //     pipeline: [
-    //       {
-    //         $lookup: {
-    //           from: "servers",
-    //           localField: "serverId",
-    //           foreignField: "_id",
-    //           as: "server"
-    //         }
-    //       }
-    //     ]
-    //   }
-    // },
     {
       $sort: {
         updatedAt: -1
