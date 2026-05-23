@@ -11,7 +11,7 @@ export function MobileDirectChatSidebar() {
     <Sheet>
       <SheetTrigger
         render={
-          <Button variant={"secondary"} className={"px-1 py-3"}>
+          <Button variant={"secondary"} className={"rounded-full px-1 py-3"}>
             <IconChevronLeft className={"size-6"} />
           </Button>
         }></SheetTrigger>

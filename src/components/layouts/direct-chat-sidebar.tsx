@@ -1,7 +1,7 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { DirectChatSection } from "@/app/api/servers/chat/direct-chat-section";
+import { DirectChatSection } from "@/components/chat/direct-chat-section";
 
-import { DirectChatItemSection } from "@/app/api/servers/chat/direct-chat-item-section";
+import { DirectChatItemSection } from "@/components/chat/direct-chat-item-section";
 import { DirectChatSidebarHeader } from "@/components/layouts/direct-chat-sidebar-header";
 import dbConnect from "@/configs/db";
 import Friendship from "@/models/friendship.model";
@@ -123,6 +123,7 @@ export async function DirectChatSidebar() {
       <ScrollArea
         className={"border-edge mb-4 h-[calc(100vh-120px)] border-b pb-4"}>
         <DirectChatSection
+          user={JSON.stringify(currentUser)}
           friend={JSON.stringify(mappedFriends)}
           conversations={JSON.stringify(conversations)}
         />

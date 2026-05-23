@@ -19,7 +19,7 @@ import {
   IconX
 } from "@tabler/icons-react";
 import { removeLeadingEmoji } from "@/utils/remove-leading-emoji";
-import { UserAvatar } from "@/components/common/user-avatar";
+import { OnlineUserAvatar, UserAvatar } from "@/components/common/user-avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -43,6 +43,7 @@ import { ChatInputType } from "@/validators/chat";
 import { useMessage } from "@/hooks/use-message";
 import { useReply } from "@/hooks/use-reply-store";
 import toast from "react-hot-toast";
+import { useSocket } from "@/hooks/use-socket-store";
 
 export function ProfileSidebar() {
   const { isOpen, type, data } = useModal();
@@ -80,6 +81,8 @@ function DirectProfileSidebar() {
   const mutualServers = sidebarProfile?.mutualServers || [];
   const servers = sidebarProfile?.servers || [];
 
+  const onlineUsers = useSocket(state => state.onlineUsers);
+
   const onSubmit = async (data: ChatInputType) => {
     try {
       const res = await createMessage({
@@ -109,6 +112,8 @@ function DirectProfileSidebar() {
     }
   };
 
+  const isOnline = onlineUsers.includes(friend?._id || "");
+
   return (
     <>
       <div className="relative h-24 bg-linear-to-r from-neutral-300 to-neutral-400 dark:from-neutral-700 dark:to-neutral-800">
@@ -129,11 +134,20 @@ function DirectProfileSidebar() {
 
       <div className="space-y-3 px-4 pb-4">
         <div className="-mt-10 flex items-end gap-3">
-          <UserAvatar
-            src={friend?.avatar?.url}
-            className="size-20 border-4"
-            name={friend?.name}
-          />
+          <div className="relative">
+            <UserAvatar
+              name={friend?.name}
+              src={friend?.avatar?.url}
+              className="size-20 border-4"
+            />
+
+            <div
+              className={cn(
+                "bg-background ring-background absolute right-1 bottom-3 size-2.5 rounded-full border-[3px] border-neutral-500 ring-4",
+                isOnline && "border-green-500 bg-green-500"
+              )}
+            />
+          </div>
         </div>
 
         <div className="flex justify-between">
@@ -143,6 +157,7 @@ function DirectProfileSidebar() {
           </div>
           <DropdownMenu>
             <DropdownMenuTrigger
+              nativeButton={false}
               render={
                 <IconDotsVertical className="hover:text-accent-foreground bg-background text-muted-foreground flex size-8 cursor-pointer items-center justify-center rounded-full p-1.5" />
               }></DropdownMenuTrigger>
@@ -295,19 +310,27 @@ function DirectProfileSidebar() {
             <CollapsibleContent className="flex w-full flex-col items-start gap-2 bg-transparent p-2.5 pt-0 text-sm">
               <div className="mt-3 w-full space-y-2">
                 {mutualFriends &&
-                  mutualFriends.map(f => (
-                    <div
-                      key={f._id}
-                      className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
-                      <UserAvatar src={f.avatar?.url} name={f.name} />
-                      <div>
-                        <p>{f.name}</p>
-                        <p className="text-muted-foreground text-xs">
-                          @{f.username}
-                        </p>
+                  mutualFriends.map(f => {
+                    const isOnline = onlineUsers.includes(f?._id || "");
+                    return (
+                      <div
+                        key={f._id}
+                        className="flex w-full items-center gap-3 rounded-md p-1.5 duration-300 hover:bg-neutral-200 dark:hover:bg-neutral-800">
+                        <OnlineUserAvatar
+                          src={f?.avatar?.url}
+                          name={f?.name}
+                          isOnline={isOnline}
+                          className="size-11"
+                        />
+                        <div>
+                          <p>{f.name}</p>
+                          <p className="text-muted-foreground text-xs">
+                            @{f.username}
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
               </div>
             </CollapsibleContent>
           </Collapsible>
@@ -324,6 +347,7 @@ function GroupSidebar({
   const { user } = useUser();
 
   const { isOpen, close, type } = useModal();
+  const onlineUsers = useSocket(state => state.onlineUsers);
 
   const isSidebarOpen = isOpen && type === "profile-sidebar";
 
@@ -349,28 +373,37 @@ function GroupSidebar({
         </div>
         <div className="mt-2 flex flex-col">
           {members.length > 0 &&
-            members?.map(m => (
-              <div
-                key={m._id}
-                className={cn(
-                  "hover:bg-secondary relative flex w-full items-center gap-2 px-3 py-3 transition",
-                  "border-edge border-t last:border-b"
-                )}>
-                <UserAvatar src={m.avatar?.url} name={m.name} />
-                <div>
-                  <h3 className="flex items-center gap-2 font-normal">
-                    {m.name}
-                    {m._id === user?.id && (
-                      <div className="bg-primary-600 absolute top-2 right-3 size-2 rounded-full" />
-                    )}
-                    {m._id === adminId && (
-                      <IconCrownFilled className="size-4 text-orange-500" />
-                    )}
-                  </h3>
-                  <p className="text-muted-foreground text-xs">@{m.username}</p>
+            members?.map(m => {
+              const isOnline = onlineUsers.includes(m._id || "");
+              return (
+                <div
+                  key={m._id}
+                  className={cn(
+                    "hover:bg-secondary relative flex w-full items-center gap-2 px-3 py-3 transition",
+                    "border-edge border-t last:border-b"
+                  )}>
+                  <OnlineUserAvatar
+                    src={m.avatar?.url}
+                    name={m.name}
+                    isOnline={isOnline}
+                  />
+                  <div>
+                    <h3 className="flex items-center gap-2 font-normal">
+                      {m.name}
+                      {m._id === user?.id && (
+                        <div className="bg-primary-600 absolute top-2 right-3 size-2 rounded-full" />
+                      )}
+                      {m._id === adminId && (
+                        <IconCrownFilled className="size-4 text-orange-500" />
+                      )}
+                    </h3>
+                    <p className="text-muted-foreground text-xs">
+                      @{m.username}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
         </div>
       </aside>
     )

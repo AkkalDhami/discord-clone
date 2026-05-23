@@ -11,14 +11,14 @@ export function MobileServerSidebar({ serverId }: { serverId: string }) {
     <Sheet>
       <SheetTrigger
         render={
-          <Button variant={"secondary"} className={"px-1 py-3"}>
+          <Button variant={"secondary"} className={"rounded-full px-1 py-3"}>
             <IconChevronLeft className={"size-6"} />
           </Button>
         }></SheetTrigger>
       <SheetContent
         side="left"
         className={
-          "flex flex-row items-center gap-0 border-transparent pt-12 data-[side=left]:w-[98%]"
+          "flex flex-row items-center gap-0 border-transparent pt-12 data-[side=left]:w-[99%]"
         }>
         <NavigationSidebar className="border-edge p-2 pt-3" />
         <div className="flex-1 pt-4 pr-1">

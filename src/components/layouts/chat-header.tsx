@@ -1,14 +1,16 @@
 "use client";
 
 import { IconHash, IconLockFilled } from "@tabler/icons-react";
-import { UserAvatar } from "@/components/common/user-avatar";
-import { ChatHeaderAction } from "@/app/api/servers/chat/chat-header-action";
+import { OnlineUserAvatar } from "@/components/common/user-avatar";
+import { ChatHeaderAction } from "@/components/chat/chat-header-action";
 import { cn } from "@/lib/utils";
 import { SidebarProfileData, useModal } from "@/hooks/use-modal-store";
-import { GroupChatLogo, splitContent } from "@/app/api/servers/chat/chat-item";
-import { PopulatedConversation } from "@/app/api/servers/chat/direct-chat-section";
+import { GroupChatLogo } from "@/components/chat/chat-item";
+import { PopulatedConversation } from "@/components/chat/direct-chat-section";
 import { ActionTooltip } from "@/components/common/action-tooltip";
 import { useUser } from "@/hooks/use-user-store";
+import { useSocket } from "@/hooks/use-socket-store";
+import { splitContent } from "@/utils/split-content";
 
 export type ChatHeaderType = "channel" | "member" | "friend" | "group";
 
@@ -35,6 +37,9 @@ export function ChatHeader({
   const { user } = useUser();
   const isGroupAdmin = user?.id && conversation?.admin === user.id;
 
+  const onlineUsers = useSocket(state => state.onlineUsers);
+  const isOnline = onlineUsers.includes(user?.id || "");
+
   const displayName = conversation?.name
     ? conversation.name
     : "@" +
@@ -49,7 +54,7 @@ export function ChatHeader({
       className={cn(
         "border-edge mt-4 flex items-center justify-between border-y px-4 pt-3 pb-3",
         isSidebarOpen && "lg:pr-84",
-        type === "group" && "pt-1.5 pb-1.5",
+        type === "group" || (type === "friend" && "pt-1.5 pb-1.5"),
         type === "channel" && "pt-2 pb-2.25"
       )}>
       <div className="relative flex items-center gap-2 px-8 md:px-0">
@@ -66,7 +71,12 @@ export function ChatHeader({
           </>
         )}
         {(type === "member" || type === "friend") && (
-          <UserAvatar name={name} src={imageUrl} className="size-6" />
+          <OnlineUserAvatar
+            isOnline={isOnline}
+            name={name}
+            src={imageUrl}
+            className="size-10"
+          />
         )}
         {type === "group" && conversation && (
           <>
