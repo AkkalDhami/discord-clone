@@ -10,16 +10,18 @@ import { Button } from "@/components/ui/button";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { ServerSchema, ServerSchemaType } from "@/validators/server";
 import { FileUpload } from "@/components/uploads/file-upload";
 import toast from "react-hot-toast";
 import { useModal } from "@/hooks/use-modal-store";
 import { Spinner } from "@/components/ui/spinner";
 import { FileUploadSchema, FileUploadType } from "@/validators/chat";
+import { useUser } from "@/hooks/use-user-store";
 
 export function FileUploadModal() {
   const { close, isOpen, type } = useModal();
   const isModalOpen = isOpen && type === "file-upload";
+
+  const { setFile } = useUser();
 
   const form = useForm<FileUploadType>({
     resolver: zodResolver(FileUploadSchema),
@@ -29,21 +31,16 @@ export function FileUploadModal() {
   });
 
   async function onSubmit(data: FileUploadType) {
-    try {
-      console.log(data);
-      // const res = await createServer(data);
-      // if (res.success) {
-      //   toast.success(res.message);
+    console.log(form.formState.errors);
 
-      //   form.reset();
-      //   router.refresh();
-      //   close();
-      // } else {
-      //   toast.error(res.message);
-      // }
+    try {
+      setFile({
+        url: data.file,
+        type: "file"
+      });
     } catch (error) {
       console.log(error);
-      toast.error("Failed to create server");
+      toast.error("Failed to upload file");
     }
   }
 
@@ -59,7 +56,7 @@ export function FileUploadModal() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Upload File</DialogTitle>
-          <form id="server-form" onSubmit={form.handleSubmit(onSubmit)}>
+          <form id="file-upload-form" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup>
               <Controller
                 name="file"
@@ -94,7 +91,7 @@ export function FileUploadModal() {
             <Button
               type="submit"
               variant={"primary"}
-              form="server-form"
+              form="file-upload-form"
               className="h-10 w-full py-2"
               disabled={isLoading || !form.formState.isDirty}>
               {isLoading ? (

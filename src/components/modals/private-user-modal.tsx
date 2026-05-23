@@ -149,7 +149,7 @@ export function PrivateUserModal() {
                   <Textarea
                     value={content}
                     onChange={e => setContent(e.target.value)}
-                    className="mt-1 h-auto min-h-16 resize-none border-none bg-transparent p-2 text-sm outline-none"
+                    className="mt-1 h-auto min-h-16 resize-none bg-transparent p-2 text-sm outline-none"
                   />
                 </div>
               )}

@@ -14,7 +14,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useFriend } from "@/hooks/use-friend";
-import { UserAvatar } from "../common/user-avatar";
+import { UserAvatar } from "@/components/common/user-avatar";
 
 export function RemoveFriendModal() {
   const { close, isOpen, type, data } = useModal();
@@ -52,9 +52,9 @@ export function RemoveFriendModal() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Ignore Friend</DialogTitle>
-          <DialogDescription className={"text-base"}>
+          <div className={"text-muted-foreground text-base"}>
             Are you sure you want to ignore this friend?
-            <div className="mt-1 flex items-center gap-1.5">
+            <div className="bg-secondary mt-2 flex items-center gap-1.5 rounded-lg p-2">
               <UserAvatar
                 name={friend.name}
                 src={friend.avatar?.url}
@@ -68,7 +68,7 @@ export function RemoveFriendModal() {
                 <p className="text-muted-primary text-xs">@{friend.username}</p>
               </div>
             </div>
-          </DialogDescription>
+          </div>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
           <Button

@@ -14,6 +14,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useFriend } from "@/hooks/use-friend";
+import { UserAvatar } from "@/components/common/user-avatar";
 
 export function BlockFriendModal() {
   const { close, isOpen, type, data } = useModal();
@@ -56,8 +57,23 @@ export function BlockFriendModal() {
             <strong className="text-muted-primary font-medium">
               &lsquo;@{friend.username}&rsquo;
             </strong>{" "}
-            from your friends?
+            ?
           </DialogDescription>
+
+          <div className="bg-secondary mt-2 flex items-center gap-1.5 rounded-lg p-2">
+            <UserAvatar
+              name={friend.name}
+              src={friend.avatar?.url}
+              className="size-10"
+            />
+            <div className="flex w-full flex-col">
+              <h3 className="text-accent-foreground text-[15px]">
+                {friend.name}
+              </h3>
+
+              <p className="text-muted-primary text-xs">@{friend.username}</p>
+            </div>
+          </div>
         </DialogHeader>
         <div className="grid grid-cols-2 gap-2">
           <Button
