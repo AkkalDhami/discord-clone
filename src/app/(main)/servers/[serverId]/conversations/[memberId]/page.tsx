@@ -101,10 +101,7 @@ export default async function Page(
         {JSON.stringify(member, null, 2)}
       </ScrollArea>
       <ChatInput
-        query={{
-          memberId,
-          serverId
-        }}
+        serverId={serverId}
         name={member.profile.username}
         type="member"
       />
