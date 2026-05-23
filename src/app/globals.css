@@ -7,6 +7,64 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Font Family Styles */
+:root[data-font="geist"],
+:root[data-font="geist-mono"] {
+  --applied-font: var(--font-geist-sans);
+}
+
+:root[data-font="inter"] {
+  font-family: "Inter", sans-serif;
+}
+
+:root[data-font="fira-sans"] {
+  font-family: "Fira Sans", sans-serif;
+}
+
+:root[data-font="fira-mono"] {
+  font-family: "Fira Mono", monospace;
+}
+
+:root[data-font="consolas"] {
+  font-family: "Consolas", monospace;
+}
+
+:root[data-font="menlo"] {
+  font-family: "Menlo", monospace;
+}
+
+:root[data-font="roboto"] {
+  font-family: "Roboto", sans-serif;
+}
+
+:root[data-font="roboto-mono"] {
+  font-family: "Roboto Mono", monospace;
+}
+
+:root[data-font="courier"] {
+  font-family: "Courier New", monospace;
+}
+
+:root[data-font="source-code"] {
+  font-family: "Source Code Pro", monospace;
+}
+
+:root[data-font="jetbrains"] {
+  font-family: "JetBrains Mono", monospace;
+}
+
+/* Theme Styles */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"],
+:root[data-theme="onyx"],
+:root[data-theme="pure-dark"],
+:root[data-theme="ash"] {
+  color-scheme: dark;
+}
+
 @theme inline {
   --color-card-hover: var(--color-card-hover);
   --color-background: var(--background);

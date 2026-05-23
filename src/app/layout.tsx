@@ -1,7 +1,16 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import {
+  inter,
+  roboto,
+  robotoMono,
+  firaSans,
+  firaMono,
+  sourceCodePro
+} from "@/fonts";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AppearanceProvider } from "@/components/providers/appearance-provider";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 import { ourFileRouter } from "./api/uploadthing/core";
@@ -40,13 +49,15 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sans.variable} font-sans ${mono.variable} h-full antialiased`}>
+      className={`${sans.variable} ${mono.variable} ${inter.variable} ${roboto.variable} ${robotoMono.variable} ${firaSans.variable} ${firaMono.variable} ${sourceCodePro.variable} h-full font-sans antialiased`}
+      suppressContentEditableWarning>
       <body className="selection:bg-primary-600 flex min-h-full flex-col selection:text-white">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
           enableSystem={false}
           disableTransitionOnChange>
+          <AppearanceProvider />
           <Toaster position="top-center" reverseOrder={false} gutter={8} />
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
           <TooltipProvider>
