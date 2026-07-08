@@ -72,6 +72,14 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
+  if (!existingUser.isEmailVerified) {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.UNAUTHORIZED,
+      message: "Email is not verified. Please verify your email first."
+    });
+  }
+
   if (existingUser?.provider === "google") {
     return ApiResponse({
       success: false,
