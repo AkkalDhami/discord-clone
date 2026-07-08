@@ -16,7 +16,7 @@ function BouncingDots({
           }
 
           50% {
-            transform: scale(1.2);
+            transform: scale(1.1);
             opacity: 1;
           }
         }

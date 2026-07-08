@@ -38,7 +38,7 @@ export function ChatHeader({
   const isGroupAdmin = user?.id && conversation?.admin === user.id;
 
   const onlineUsers = useSocket(state => state.onlineUsers);
-  const isOnline = onlineUsers.includes(user?.id || "");
+  const isOnline = onlineUsers.includes(sidebarProfile?.friend?._id || "");
 
   const displayName = conversation?.name
     ? conversation.name

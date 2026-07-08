@@ -15,7 +15,7 @@ interface VerifyEmailProps {
   url: string;
 }
 
-export const VerifyEmail = (props: VerifyEmailProps) => {
+export const VerifyEmailTemplate = (props: VerifyEmailProps) => {
   const { name, url } = props;
   return (
     <Html dir="ltr" lang="en">
@@ -42,7 +42,7 @@ export const VerifyEmail = (props: VerifyEmailProps) => {
                 </Button>
               </Section>
 
-              <Text className="mt-0 mb-[24px] text-[14px] leading-[20px] text-gray-600">
+              <Text className="mt-0 mb-6 text-[14px] leading-[20px] text-gray-600">
                 If the button doesn&apos;t work, you can copy and paste this
                 link into your browser:
                 <br />

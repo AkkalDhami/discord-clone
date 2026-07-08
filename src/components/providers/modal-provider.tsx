@@ -19,6 +19,7 @@ import { EditCategoryModal } from "@/components/modals/edit-category-modal";
 import { DeleteCategoryModal } from "@/components/modals/delete-category-modal";
 
 import { FileUploadModal } from "@/components/modals/file-upload-modal";
+import { EditProfilePictureModal } from "@/components/modals/edit-profile-picture-modal";
 
 import { RemoveMemberModal } from "@/components/modals/remove-member-modal";
 import { AddFriendModal } from "@/components/modals/add-friend-modal";
@@ -50,6 +51,7 @@ export function ModalProvider() {
       <DeleteServerModal />
 
       <FileUploadModal />
+      <EditProfilePictureModal />
 
       <ProfileSidebar />
 

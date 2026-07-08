@@ -8,6 +8,7 @@ import {
 } from "@/components/messages/message-card";
 import { useInfiniteMessages } from "@/hooks/use-message";
 import { getDateKey } from "@/utils/date";
+
 import { Spinner } from "@/components/ui/spinner";
 import { useModal } from "@/hooks/use-modal-store";
 import { cn } from "@/lib/utils";
@@ -21,15 +22,20 @@ export function MessagesSection({
   channelId,
   conversationId
 }: MessagesSectionProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
-
   const { isOpen, type: modalType } = useModal();
   const isSidebarOpen = isOpen && modalType === "profile-sidebar";
 
   const [showJumpToPresent, setShowJumpToPresent] = useState(false);
-  const [isInitialScrollDone, setIsInitialScrollDone] = useState(false);
+  const isInitialScrollDoneRef = useRef(false);
 
   const isFetchingRef = useRef(false);
+
+  const getContainer = () => {
+    if (typeof document === "undefined") return null;
+    return document.getElementById(
+      "messages-scroll-viewport"
+    ) as HTMLDivElement | null;
+  };
 
   const {
     data,
@@ -52,18 +58,24 @@ export function MessagesSection({
   }, [data]);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container || isLoading || isInitialScrollDone) return;
+    const container = getContainer();
+    if (
+      typeof document === "undefined" ||
+      !container ||
+      isLoading ||
+      isInitialScrollDoneRef.current
+    )
+      return;
 
     requestAnimationFrame(() => {
       container.scrollTop = container.scrollHeight;
-      setIsInitialScrollDone(true);
+      isInitialScrollDoneRef.current = true;
     });
-  }, [isLoading, isInitialScrollDone]);
+  }, [conversationId, channelId, isLoading]);
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container || !isInitialScrollDone) return;
+    const container = getContainer();
+    if (!container || !isInitialScrollDoneRef.current) return;
 
     const isNearBottom =
       container.scrollHeight - container.scrollTop - container.clientHeight <=
@@ -74,10 +86,14 @@ export function MessagesSection({
         container.scrollTop = container.scrollHeight;
       });
     }
-  }, [messages.length, isInitialScrollDone]);
+  }, [conversationId, channelId, messages.length]);
 
   useEffect(() => {
-    const container = containerRef.current;
+    isInitialScrollDoneRef.current = false;
+  }, [conversationId, channelId]);
+
+  useEffect(() => {
+    const container = getContainer();
     if (!container) return;
 
     const handleScroll = async () => {
@@ -117,10 +133,16 @@ export function MessagesSection({
 
     container.addEventListener("scroll", handleScroll);
     return () => container.removeEventListener("scroll", handleScroll);
-  }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
+  }, [
+    conversationId,
+    channelId,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage
+  ]);
 
   const scrollToBottom = (smooth = true) => {
-    const container = containerRef.current;
+    const container = getContainer();
     if (!container) return;
 
     container.scrollTo({
@@ -201,8 +223,6 @@ export function MessagesSection({
           </button>
         </div>
       )}
-
-      <div ref={containerRef} id="messages-container" className="mb-4" />
     </div>
   );
 }

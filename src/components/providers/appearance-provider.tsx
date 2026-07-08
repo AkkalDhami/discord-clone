@@ -8,6 +8,7 @@ const fontMap: Record<string, string> = {
   "geist-mono": "var(--font-geist-mono)",
   inter: "var(--font-inter)",
   "fira-sans": "var(--font-fira-sans)",
+  "fira-code": "var(--font-fira-code)",
   "fira-mono": "var(--font-fira-mono)",
   roboto: "var(--font-roboto)",
   "roboto-mono": "var(--font-roboto-mono)",
@@ -15,6 +16,7 @@ const fontMap: Record<string, string> = {
   menlo: '"Menlo", monospace',
   courier: '"Courier New", monospace',
   "source-code": "var(--font-source-code)",
+  manrope: "var(--font-manrope)",
   jetbrains: "var(--font-jetbrains)"
 };
 

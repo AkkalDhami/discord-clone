@@ -49,6 +49,8 @@ import Image from "next/image";
 import { useTyping } from "@/hooks/use-typing-store";
 import { useDebounce } from "@/hooks/use-debounce";
 import { CreateMessageType } from "@/validators/message";
+import { IMessage } from "@/interface";
+import MessageType from "@/enums/message.enum";
 
 type ChatInputProps = {
   conversationId?: string;
@@ -92,43 +94,20 @@ export function ChatInput({
   useEffect(() => {
     if (!socket) return;
 
-    socket?.emit("conversation:join", conversationId);
+    if (conversationId) {
+      socket.emit("conversation:join", conversationId);
+    } else if (channelId) {
+      socket.emit("channel:join", channelId);
+    }
 
     return () => {
-      socket?.emit("conversation:leave", conversationId);
+      if (conversationId) {
+        socket.emit("conversation:leave", conversationId);
+      } else if (channelId) {
+        socket.emit("channel:leave", channelId);
+      }
     };
-  }, [socket, conversationId]);
-
-  useEffect(() => {
-    if (!socket || !conversationId) return;
-
-    const handleNewMessage = (message: CreateMessageType) => {
-      queryClient.setQueryData(["messages", conversationId], (old: any) => {
-        if (!old) return old;
-
-        return {
-          ...old,
-          pages: old.pages.map((page: any, index: number) => {
-            if (index !== 0) return page;
-
-            return {
-              ...page,
-              data: {
-                ...page.data,
-                messages: [...page.data.messages, message]
-              }
-            };
-          })
-        };
-      });
-    };
-
-    socket.on("message:new", handleNewMessage);
-
-    return () => {
-      socket.off("message:new", handleNewMessage);
-    };
-  }, [socket, conversationId, queryClient]);
+  }, [socket, conversationId, channelId]);
 
   const isTypingRef = useRef(false);
 
@@ -204,34 +183,53 @@ export function ChatInput({
       if (isTypingRef.current) {
         socket?.emit("typing:stop", {
           conversationId,
-          userId: user?.id
+          userId: user?.id,
+          username: user?.username
         });
       }
     };
   }, [socket, conversationId, user, emitTypingStop]);
 
   useEffect(() => {
-    if (!socket) return;
+    if (!socket || !(conversationId || channelId)) return;
 
-    const handleMessage = (payload: {
-      conversationId: string;
-      userId: string;
-      content: string;
-    }) => {
-      // remove typing state immediately
-      useTyping
-        .getState()
-        .removeTypingUser(payload.conversationId, payload.userId);
+    const roomKey = conversationId ? "conversationId" : "channelId";
+    const roomValue = conversationId ?? channelId ?? "";
+    const queryKey = ["messages", roomKey, roomValue, false] as const;
 
-      // your existing message logic...
+    const handleNewMessage = (message: CreateMessageType) => {
+      // if (message.conversationId) {
+      //   useTyping
+      //     .getState()
+      //     .removeTypingUser(message.conversationId, message.sender?._id ?? "");
+      // }
+
+      queryClient.setQueryData(queryKey, (old: any) => {
+        if (!old) return old;
+
+        return {
+          ...old,
+          pages: old.pages.map((page: any, index: number) => {
+            if (index !== 0) return page;
+
+            return {
+              ...page,
+              data: {
+                ...page.data,
+                messages: [...page.data.messages, message]
+              }
+            };
+          })
+        };
+      });
     };
 
-    socket.on("message:send", handleMessage);
+    socket.on("message:new", handleNewMessage);
 
     return () => {
-      socket.off("message:send", handleMessage);
+      socket.off("message:new", handleNewMessage);
     };
-  }, [socket]);
+  }, [socket, conversationId, channelId, queryClient]);
 
   const onSubmit = async (data: ChatInputType) => {
     try {
@@ -249,20 +247,45 @@ export function ChatInput({
         return;
       }
 
-      console.log({ res });
+      // console.log({ res });
 
-      const message = res.data;
+      const message: IMessage = {
+        _id: res.data._id,
+        content: data.content,
+        conversation: {
+          _id: conversationId ?? ""
+        },
+        sender: {
+          _id: user?.id ?? "",
+          name: user?.name ?? "",
+          username: user?.username ?? "",
+          avatar: user?.avatar ?? undefined,
+          email: user?.email ?? ""
+        },
+        type: MessageType.TEXT
+      };
 
       socket?.emit("message:send", {
         conversationId,
+        channelId,
         message
       });
+
+      if (isTypingRef.current) {
+        isTypingRef.current = false;
+        emitTypingStop.cancel?.();
+        socket?.emit("typing:stop", {
+          conversationId,
+          userId: user?.id,
+          username: user?.username
+        });
+      }
 
       form.reset();
       clearReply();
 
       requestAnimationFrame(() => {
-        const container = document.getElementById("messages-container");
+        const container = document.getElementById("messages-scroll-viewport");
 
         container?.scrollTo({
           top: container.scrollHeight,
@@ -343,7 +366,7 @@ export function ChatInput({
                       id="chat-input"
                       className={cn(
                         "no-scrollbar resize-none",
-                        "max-h-[120px] min-h-[63.5px]",
+                        "max-h-30 min-h-[63.5px]",
                         "leading-5"
                       )}
                       autoFocus={replyingTo?._id ? true : false}

@@ -28,6 +28,7 @@ import { extractInviteId } from "@/utils/url";
 import { useInvitePreview } from "@/hooks/use-invite-preview";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Marker, MarkerContent } from "@/components/ui/marker";
 
 export function MessageCard(message: IMessage & { grouped?: boolean }) {
   const { user } = useUser();
@@ -92,15 +93,15 @@ export function MessageCard(message: IMessage & { grouped?: boolean }) {
         "group hover:bg-secondary/70 relative py-1 duration-300",
         replyingTo?._id === _id &&
           "bg-primary-600/10 hover:bg-primary-500/10 border-primary-500 border-l-2",
-        isHighlighted && "hover:bg-primary-500/10 bg-primary-500/20",
-        replyTo?.sender._id === user?.id &&
-          "bg-amber-500/10 hover:bg-amber-600/10"
+        isHighlighted && "hover:bg-primary-500/10 bg-primary-500/20"
+        // replyTo?.sender._id === user?.id &&
+        //   "bg-amber-500/10 hover:bg-amber-600/10"
       )}>
       {replyTo && (
         <div className="mb-1 flex items-center gap-1 pl-8 text-xs">
           <div
             onClick={() => scrollToMessage(replyTo._id)}
-            className="hover:border-foreground mt-2 h-4 w-[52px] cursor-pointer rounded-l-lg rounded-b-none border-t-2 border-l-2 border-neutral-500/60"
+            className="hover:border-foreground mt-2 h-4 w-13 cursor-pointer rounded-l-lg rounded-b-none border-t-2 border-l-2 border-neutral-500/60"
           />
           <div className="flex items-center gap-2">
             <UserAvatar
@@ -354,13 +355,9 @@ export function DateSeparator({
   date?: string;
 }) {
   return (
-    <div className="relative my-4 flex items-center">
-      <div className="border-border grow border-t" />
-      <span className="text-muted-foreground mx-2 text-xs font-medium">
-        {formatDateLabel(date)}
-      </span>
-      <div className="border-border grow border-t" />
-    </div>
+    <Marker variant="separator" role="separator">
+      <MarkerContent className="shimmer">{formatDateLabel(date)}</MarkerContent>
+    </Marker>
   );
 }
 

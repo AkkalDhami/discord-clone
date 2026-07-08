@@ -11,7 +11,11 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Input } from "@/components/ui/input";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput
+} from "@/components/ui/input-group";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
@@ -25,6 +29,7 @@ import {
 } from "@/validators/friends";
 import { useFriend } from "@/hooks/use-friend";
 import { useRouter } from "next/navigation";
+import { IconAt } from "@tabler/icons-react";
 
 export function AddFriendModal() {
   const { close, isOpen, type } = useModal();
@@ -83,13 +88,17 @@ export function AddFriendModal() {
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <Input
-                      {...field}
-                      autoComplete="off"
-                      aria-invalid={fieldState.invalid}
-                      className="h-10"
-                      placeholder="Enter username"
-                    />
+                    <InputGroup>
+                      <InputGroupInput
+                        {...field}
+                        autoComplete="off"
+                        aria-invalid={fieldState.invalid}
+                        placeholder="Enter username"
+                      />
+                      <InputGroupAddon>
+                        <IconAt className="text-muted-foreground" />
+                      </InputGroupAddon>
+                    </InputGroup>
 
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

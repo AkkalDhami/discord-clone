@@ -4,10 +4,12 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAppearance } from "@/hooks/use-appearance";
 
 export default function ThemeToggle({ className }: { className?: string }) {
   const [mounted, setMounted] = useState(false);
   const { theme, systemTheme, setTheme } = useTheme();
+  const { setTheme: setAppearanceTheme } = useAppearance();
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -20,6 +22,7 @@ export default function ThemeToggle({ className }: { className?: string }) {
 
   const toggleTheme = async () => {
     setTheme(currentTheme === "dark" ? "light" : "dark");
+    setAppearanceTheme(currentTheme === "dark" ? "light" : "dark");
   };
 
   return (

@@ -148,8 +148,9 @@ export function FriendChatItem({ c }: { c: PopulatedConversation }) {
             </p>
           </div>
           {isTyping ? (
-            <div className="mt-1 flex items-end gap-10 *:w-10">
+            <div className="mt-1 flex items-center gap-2">
               <BouncingDots className="text-[#f59e0b]" />
+              <p className="text-muted-foreground text-xs">Typing...</p>
             </div>
           ) : (
             <div className="flex w-full items-center justify-between">

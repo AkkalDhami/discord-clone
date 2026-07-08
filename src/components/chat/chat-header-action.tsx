@@ -86,14 +86,14 @@ export function ChatHeaderAction({
                 render={
                   <IconPin className="text-muted-foreground hover:text-accent-foreground size-7 cursor-pointer p-1" />
                 }></PopoverTrigger>
-              <PopoverContent className={"w-full max-w-[420px] gap-0 p-0"}>
+              <PopoverContent className={"w-300 max-w-105 gap-0 p-0"}>
                 <PopoverHeader>
                   <PopoverTitle className="flex items-center gap-2 border-b p-3 text-lg font-medium">
                     <IconPin className="text-muted-primary size-6" />
                     Pinned Messages
                   </PopoverTitle>
                 </PopoverHeader>
-                <ScrollArea className="h-[400px] p-2">
+                <ScrollArea className="h-100 p-2">
                   {!isLoading && messages.length === 0 ? (
                     <div className="text-muted-foreground flex items-center justify-center p-4">
                       No pinned messages

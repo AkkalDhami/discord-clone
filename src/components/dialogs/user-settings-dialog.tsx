@@ -17,6 +17,28 @@ import {
 import { IconUser, IconSettings, IconPalette } from "@tabler/icons-react";
 import { useAppearance } from "@/hooks/use-appearance";
 import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
+
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel
+} from "@/components/ui/field";
+
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  ChangePasswordFormData,
+  ChangePasswordSchema
+} from "@/validators/auth";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useAuth } from "@/hooks/use-auth";
+import { useModal } from "@/hooks/use-modal-store";
+import { Spinner } from "@/components/ui/spinner";
+import { useUser } from "@/hooks/use-user-store";
+import { useRouter } from "next/navigation";
+import { IFile } from "@/interface";
 
 type UserSettingsDialogProps = {
   open: boolean;
@@ -25,20 +47,22 @@ type UserSettingsDialogProps = {
     name?: string;
     username?: string;
     email?: string;
+    avatar?: IFile;
     image?: string;
   };
 };
 
 const FONT_OPTIONS = [
   { value: "geist", label: "Geist" },
-  { value: "geist-mono", label: "Geist Mono" },
   { value: "inter", label: "Inter" },
+  { value: "roboto", label: "Roboto" },
+  { value: "manrope", label: "Manrope" },
+  { value: "geist-mono", label: "Geist Mono" },
   { value: "fira-sans", label: "Fira Sans" },
   { value: "fira-code", label: "Fira Code" },
   { value: "fira-mono", label: "Fira Mono" },
   { value: "consolas", label: "Consolas" },
   { value: "menlo", label: "Menlo" },
-  { value: "roboto", label: "Roboto" },
   { value: "roboto-mono", label: "Roboto Mono" },
   { value: "courier", label: "Courier New" },
   { value: "source-code", label: "Source Code Pro" },
@@ -47,10 +71,7 @@ const FONT_OPTIONS = [
 
 const THEME_OPTIONS = [
   { value: "light", label: "Light", color: "#ffffff" },
-  { value: "dark", label: "Dark", color: "#1a1a1a" },
-  { value: "onyx", label: "Onyx", color: "#0f0f0f" },
-  { value: "pure-dark", label: "Pure Dark", color: "#000000" },
-  { value: "ash", label: "Ash", color: "#2a2a2a" }
+  { value: "dark", label: "Dark", color: "#000000" }
 ];
 
 type TabType = "account" | "settings" | "appearance";
@@ -63,6 +84,38 @@ export function UserSettingsDialog({
   const { theme, fontFamily, setTheme, setFontFamily } = useAppearance();
   const [activeTab, setActiveTab] = useState<TabType>("account");
   const [mounted, setMounted] = useState(false);
+
+  const router = useRouter();
+
+  const [editingField, setEditingField] = useState<{
+    username?: boolean;
+    name?: boolean;
+  } | null>({
+    username: false,
+    name: false
+  });
+
+  const [updatedField, setUpdatedField] = useState<{
+    username: string;
+    name: string;
+  }>({
+    username: "",
+    name: ""
+  });
+
+  const { updateProfile, updateProfileLoading } = useAuth();
+
+  const { user: storedUser, setUser } = useUser();
+  const { open: openModal } = useModal();
+  const profile =
+    storedUser ||
+    (user && {
+      id: "",
+      name: user.name,
+      username: user.username,
+      email: user.email,
+      avatar: user.avatar || (user.image ? { url: user.image } : undefined)
+    });
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -90,46 +143,67 @@ export function UserSettingsDialog({
 
   if (!mounted) return null;
 
+  const updateUserProfile = async () => {
+    try {
+      const res = await updateProfile({
+        username: updatedField?.username,
+        name: updatedField?.name
+      });
+
+      if (res.success) {
+        toast.success(res.message || "Profile updated successfully");
+        setEditingField(null);
+        setUpdatedField({
+          username: "",
+          name: ""
+        });
+        setUser({
+          id: res.data.user.id,
+          name: res.data.user.name,
+          username: res.data.user.username,
+          email: res.data.user.email,
+          avatar: res.data.user.avatar
+        });
+        router.refresh();
+      } else {
+        toast.error(res.message || "Failed to update profile");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update profile");
+    }
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90vh] w-full min-w-7xl gap-0 p-0">
+      <DialogContent className="h-full max-h-[90vh] w-full min-w-5xl gap-0 border p-0">
         <div className="flex h-full w-full">
           {/* Left Sidebar Navigation */}
-          <div className="border-border/50 bg-muted/20 flex w-80 flex-col overflow-y-auto border-r">
+          <div className="border-border/50 bg-muted/20 flex w-80 flex-col border-r">
             {/* Profile Section */}
             <div className="border-border/50 border-b p-6">
               <div className="mb-4 flex items-center gap-3">
                 <UserAvatar
-                  src={user?.image}
-                  name={user?.name}
+                  src={profile?.avatar?.url || user?.image}
+                  name={profile?.name || user?.name}
                   rounded="lg"
                   className="size-12"
                 />
                 <div className="min-w-0 flex-1">
-                  <h3 className="truncate text-sm font-semibold">
-                    {user?.name || "User"}
+                  <h3 className="truncate text-lg font-medium">
+                    {profile?.name || user?.name || "User"}
                   </h3>
                   <p className="text-muted-foreground truncate text-xs">
-                    {user?.email || "user@example.com"}
+                    {profile?.email || user?.email || "user@example.com"}
                   </p>
                 </div>
               </div>
               <Button
                 variant="secondary"
-                size="sm"
-                className="w-full text-xs"
-                disabled>
-                Edit Profiles ✏️
+                className="w-full"
+                onClick={() => openModal("edit-profile-picture")}>
+                Edit Profile Picture
               </Button>
-            </div>
-
-            {/* Search Bar */}
-            <div className="border-border/50 border-b p-4">
-              <Input
-                placeholder="Search settings..."
-                className="h-8 text-xs"
-                disabled
-              />
             </div>
 
             {/* Navigation Items */}
@@ -151,49 +225,155 @@ export function UserSettingsDialog({
           </div>
 
           {/* Right Content Area */}
-          <div className="flex flex-1 flex-col overflow-y-auto">
-            <div className="flex-1 p-8">
-              {/* Account Tab */}
+          <div className="flex flex-1 flex-col">
+            <div className="flex-1 py-2">
               {activeTab === "account" && (
-                <div className="max-w-2xl space-y-8">
-                  <div>
-                    <h2 className="mb-2 text-2xl font-bold">Account</h2>
-                    <p className="text-muted-foreground text-sm">
-                      Manage your account information
-                    </p>
-                  </div>
-
+                <>
+                  <h2 className="mb-3 px-8 text-lg font-normal">Account</h2>
                   <Separator />
+                  <ScrollArea className="h-[calc(90vh-100px)] w-full">
+                    <div className="mt-4 space-y-4 px-8">
+                      <h3 className="text-xl font-medium sm:text-2xl">
+                        Account Info
+                      </h3>
 
-                  <div className="space-y-6">
-                    <div>
-                      <Label className="mb-2 block text-sm font-semibold">
-                        Username
-                      </Label>
-                      <div className="bg-muted/50 text-foreground rounded-md px-3 py-2 text-sm">
-                        {user?.username || "Not set"}
+                      <div className="flex items-center justify-between">
+                        <Label className="text-muted-primary mb-2 block text-base font-medium">
+                          Display Name
+                        </Label>
+                        {editingField?.name ? (
+                          <div className="flex items-center gap-4">
+                            <Input
+                              placeholder="Enter your name"
+                              value={updatedField.name}
+                              onChange={e =>
+                                setUpdatedField(prev => ({
+                                  ...prev,
+                                  name: e.target.value
+                                }))
+                              }
+                            />
+
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                className=""
+                                disabled={updateProfileLoading}
+                                onClick={() => setEditingField(null)}>
+                                Cancel
+                              </Button>
+                              <Button
+                                variant="success"
+                                disabled={updateProfileLoading}
+                                onClick={() => updateUserProfile()}>
+                                {updateProfileLoading ? (
+                                  <>
+                                    <Spinner />
+                                    Saving...
+                                  </>
+                                ) : (
+                                  "Save"
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3 px-3 py-2">
+                            <p>{profile?.name || "Not set"}</p>
+                            <Button
+                              variant="outline"
+                              className=""
+                              onClick={() => {
+                                setEditingField({ name: true });
+                                setUpdatedField(prev => ({
+                                  ...prev,
+                                  name: profile?.name || ""
+                                }));
+                              }}>
+                              Edit
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Label className="text-muted-primary mb-2 block text-base font-medium">
+                          Username
+                        </Label>
+                        {editingField?.username ? (
+                          <div className="flex items-center gap-4">
+                            <Input
+                              placeholder="Enter your username"
+                              value={updatedField.username}
+                              onChange={e =>
+                                setUpdatedField(prev => ({
+                                  ...prev,
+                                  username: e.target.value
+                                }))
+                              }
+                            />
+
+                            <div className="flex items-center gap-2">
+                              <Button
+                                variant="outline"
+                                className=""
+                                disabled={updateProfileLoading}
+                                onClick={() => setEditingField(null)}>
+                                Cancel
+                              </Button>
+                              <Button
+                                variant="success"
+                                disabled={updateProfileLoading}
+                                onClick={() => updateUserProfile()}>
+                                {updateProfileLoading ? (
+                                  <>
+                                    <Spinner />
+                                    Saving...
+                                  </>
+                                ) : (
+                                  "Save"
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3 px-3 py-2">
+                            <p>@{profile?.username || "Not set"}</p>
+                            <Button
+                              variant="outline"
+                              className=""
+                              onClick={() => {
+                                setEditingField({ username: true });
+                                setUpdatedField(prev => ({
+                                  ...prev,
+                                  username: profile?.username || ""
+                                }));
+                              }}>
+                              Edit
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <Label className="text-muted-primary mb-2 block text-base font-medium">
+                          Email
+                        </Label>
+                        <div className="flex items-center gap-3 px-3 py-2">
+                          <p> {profile?.email || "Not set"}</p>
+                        </div>
                       </div>
                     </div>
 
-                    <div>
-                      <Label className="mb-2 block text-sm font-semibold">
-                        Email
-                      </Label>
-                      <div className="bg-muted/50 text-foreground rounded-md px-3 py-2 text-sm">
-                        {user?.email || "Not set"}
-                      </div>
-                    </div>
+                    <div className="mt-4 space-y-4 border-t px-8 pt-6">
+                      <h3 className="text-xl font-medium sm:text-2xl">
+                        Password & Security
+                      </h3>
 
-                    <div>
-                      <Label className="mb-2 block text-sm font-semibold">
-                        Display Name
-                      </Label>
-                      <div className="bg-muted/50 text-foreground rounded-md px-3 py-2 text-sm">
-                        {user?.name || "Not set"}
-                      </div>
+                      <ChangePasswordForm />
                     </div>
-                  </div>
-                </div>
+                  </ScrollArea>
+                </>
               )}
 
               {/* Settings Tab */}
@@ -246,7 +426,7 @@ export function UserSettingsDialog({
 
               {/* Appearance Tab */}
               {activeTab === "appearance" && (
-                <div className="max-w-3xl space-y-8">
+                <div className="max-w-xl space-y-8">
                   <div>
                     <h2 className="mb-2 text-2xl font-bold">Appearance</h2>
                     <p className="text-muted-foreground text-sm">
@@ -256,7 +436,6 @@ export function UserSettingsDialog({
 
                   <Separator />
 
-                  {/* Theme Selection */}
                   <div>
                     <h3 className="mb-4 text-lg font-semibold">Theme</h3>
                     <p className="text-muted-foreground mb-6 text-sm">
@@ -267,17 +446,20 @@ export function UserSettingsDialog({
                         <button
                           key={option.value}
                           onClick={() => handleThemeChange(option.value)}
-                          className={`relative h-16 w-16 rounded-lg border-2 transition-all ${
+                          className={cn(
+                            "relative h-16 w-16 rounded-lg border-2 transition-all",
                             theme === option.value
                               ? "border-primary"
                               : "border-border hover:border-muted-foreground"
-                          }`}
+                          )}
                           style={{ backgroundColor: option.color }}
                           title={option.label}>
                           {theme === option.value && (
                             <div className="absolute inset-0 flex items-center justify-center">
                               <div className="bg-primary flex h-5 w-5 items-center justify-center rounded-full border-2 border-white">
-                                <span className="text-xs text-white">✓</span>
+                                <span className="text-xs text-white dark:text-black">
+                                  ✓
+                                </span>
                               </div>
                             </div>
                           )}
@@ -288,7 +470,6 @@ export function UserSettingsDialog({
 
                   <Separator />
 
-                  {/* Font Selection */}
                   <div>
                     <Label
                       htmlFor="font-select"
@@ -320,5 +501,110 @@ export function UserSettingsDialog({
         </div>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function ChangePasswordForm() {
+  const form = useForm<ChangePasswordFormData>({
+    resolver: zodResolver(ChangePasswordSchema),
+    defaultValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmNewPassword: ""
+    }
+  });
+
+  const { changePassword, changePasswordLoading } = useAuth();
+
+  async function onSubmit(data: ChangePasswordFormData) {
+    try {
+      const res = await changePassword(data);
+
+      console.log({ res });
+
+      if (res.success) {
+        toast.success(res.message || "Password changed successfully");
+        form.reset();
+      } else {
+        toast.error(res.message || "Failed to change password");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to change password");
+    }
+  }
+
+  return (
+    <form id="form-rhf-demo" onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <Controller
+          name="currentPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="form-currentPassword">
+                Current Password
+              </FieldLabel>
+              <Input
+                {...field}
+                id="form-currentPassword"
+                type="password"
+                aria-invalid={fieldState.invalid}
+                placeholder="Enter your current password"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="newPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="form-rhf-demo-newPassword">
+                New Password
+              </FieldLabel>
+              <Input
+                {...field}
+                id="form-rhf-demo-newPassword"
+                type="password"
+                aria-invalid={fieldState.invalid}
+                placeholder="Enter your new password"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="confirmNewPassword"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="form-rhf-demo-confirmNewPassword">
+                Confirm New Password
+              </FieldLabel>
+              <Input
+                {...field}
+                id="form-rhf-demo-confirmNewPassword"
+                type="password"
+                aria-invalid={fieldState.invalid}
+                placeholder="Confirm your new password"
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Button type="submit" disabled={changePasswordLoading}>
+          {changePasswordLoading ? (
+            <>
+              <Spinner />
+              Changing...
+            </>
+          ) : (
+            "Change Password"
+          )}
+        </Button>
+      </FieldGroup>
+    </form>
   );
 }
