@@ -65,7 +65,9 @@ export default async function Page(
         type="channel"
         isPrivate={channel?.category?.private ?? false}
       />
-      <ScrollArea className="pt-3 sm:h-[calc(100vh-10.5rem)]">
+      <ScrollArea
+        viewportId="messages-scroll-viewport"
+        className="pt-3 sm:h-[calc(100vh-10.5rem)]">
         <ChannelWelcome
           channel={{
             _id: channel._id.toString(),

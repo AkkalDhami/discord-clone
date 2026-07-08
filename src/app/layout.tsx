@@ -1,12 +1,15 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import {
   inter,
   roboto,
   robotoMono,
   firaSans,
   firaMono,
-  sourceCodePro
+  sourceCodePro,
+  manrope,
+  sans,
+  mono,
+  firaCode
 } from "@/fonts";
 import "./globals.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -20,16 +23,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { ModalProvider } from "@/components/providers/modal-provider";
 import { SessionProvider } from "@/components/providers/session-provider";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
-
-const sans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"]
-});
-
-const mono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"]
-});
 
 export const metadata: Metadata = {
   title: {
@@ -49,7 +42,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${sans.variable} ${mono.variable} ${inter.variable} ${roboto.variable} ${robotoMono.variable} ${firaSans.variable} ${firaMono.variable} ${sourceCodePro.variable} h-full font-sans antialiased`}
+      className={`${sans.variable} ${mono.variable} ${inter.variable} ${roboto.variable} ${robotoMono.variable} ${firaSans.variable} ${firaMono.variable} ${sourceCodePro.variable} ${firaCode.variable} ${manrope.variable} h-full font-sans antialiased`}
       suppressContentEditableWarning>
       <body className="selection:bg-primary-600 flex min-h-full flex-col selection:text-white">
         <ThemeProvider

@@ -7,64 +7,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Font Family Styles */
-:root[data-font="geist"],
-:root[data-font="geist-mono"] {
-  --applied-font: var(--font-geist-sans);
-}
-
-:root[data-font="inter"] {
-  font-family: "Inter", sans-serif;
-}
-
-:root[data-font="fira-sans"] {
-  font-family: "Fira Sans", sans-serif;
-}
-
-:root[data-font="fira-mono"] {
-  font-family: "Fira Mono", monospace;
-}
-
-:root[data-font="consolas"] {
-  font-family: "Consolas", monospace;
-}
-
-:root[data-font="menlo"] {
-  font-family: "Menlo", monospace;
-}
-
-:root[data-font="roboto"] {
-  font-family: "Roboto", sans-serif;
-}
-
-:root[data-font="roboto-mono"] {
-  font-family: "Roboto Mono", monospace;
-}
-
-:root[data-font="courier"] {
-  font-family: "Courier New", monospace;
-}
-
-:root[data-font="source-code"] {
-  font-family: "Source Code Pro", monospace;
-}
-
-:root[data-font="jetbrains"] {
-  font-family: "JetBrains Mono", monospace;
-}
-
-/* Theme Styles */
-:root[data-theme="light"] {
-  color-scheme: light;
-}
-
-:root[data-theme="dark"],
-:root[data-theme="onyx"],
-:root[data-theme="pure-dark"],
-:root[data-theme="ash"] {
-  color-scheme: dark;
-}
-
 @theme inline {
   --color-card-hover: var(--color-card-hover);
   --color-background: var(--background);
@@ -105,13 +47,21 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  --font-sans: Geist, sans-serif;
+  --font-sans: var(--font-geist-sans);
   --font-serif: Georgia, serif;
-  --font-mono: Geist Mono, monospace;
-  --font-code: Fira Code, monospace;
+  --font-mono: var(--font-geist-mono);
+  --font-code: var(--font-fira-code);
   --font-poppins: var(--font-poppins);
   --font-google-sans: var(--font-google-sans);
   --font-inter: var(--font-inter);
+  --font-roboto: var(--font-roboto);
+  --font-roboto-mono: var(--font-roboto-mono);
+  --font-fira-sans: var(--font-fira-sans);
+  --font-fira-mono: var(--font-fira-mono);
+  --font-fira-code: var(--font-fira-code);
+  --font-source-code: var(--font-source-code);
+  --font-manrope: var(--font-manrope);
+  --font-jetbrains: var(--font-jetbrains);
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -271,6 +221,71 @@
     0 1px 1px #ffffff0d, 0 4px 6px #ffffff0a, 0 24px 68px #ffffff0d,
     0 2px 3px #ffffff0a;
   --shadow-tertiary: 0 2px 10px rgb(255, 255, 255, 0.12);
+}
+
+/* Font Family Styles */
+:root[data-font="geist"] {
+  --applied-font: var(--font-geist-sans);
+}
+:root[data-font="geist-mono"] {
+  --applied-font: var(--font-geist-mono);
+}
+
+:root[data-font="inter"] {
+  font-family: var(--font-inter);
+}
+
+:root[data-font="fira-sans"] {
+  font-family: var(--font-fira-sans);
+}
+
+:root[data-font="fira-mono"] {
+  font-family: var(--font-fira-mono);
+}
+
+:root[data-font="fira-code"] {
+  font-family: var(--font-fira-code), monospace;
+}
+
+:root[data-font="consolas"] {
+  font-family: "Consolas", monospace;
+}
+
+:root[data-font="menlo"] {
+  font-family: "Menlo", monospace;
+}
+
+:root[data-font="roboto"] {
+  font-family: var(--font-roboto);
+}
+
+:root[data-font="roboto-mono"] {
+  font-family: var(--font-roboto-mono);
+}
+
+:root[data-font="courier"] {
+  font-family: "Courier New", monospace;
+}
+
+:root[data-font="source-code"] {
+  font-family: var(--font-source-code), monospace;
+}
+
+:root[data-font="jetbrains"] {
+  font-family: var(--font-jetbrains), monospace;
+}
+
+:root[data-font="manrope"] {
+  font-family: var(--font-manrope), sans-serif;
+}
+
+/* Theme Styles */
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @layer base {

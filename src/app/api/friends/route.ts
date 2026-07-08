@@ -14,8 +14,11 @@ import {
 } from "@/validators/friends";
 import { NextRequest } from "next/server";
 
-export const GET = AsyncHandler(async () => {
+export const GET = AsyncHandler(async (req: NextRequest) => {
+  const { searchParams } = new URL(req.url);
   await dbConnect();
+
+  const status = searchParams.get("status") as string;
 
   const currentUser = await currentAuthUser();
   if (!currentUser) {
@@ -27,7 +30,8 @@ export const GET = AsyncHandler(async () => {
   }
 
   const friends = await Friendship.find({
-    user: currentUser.id
+    user: currentUser.id,
+    ...(status ? { status } : {})
   })
     .populate("friend", "username name email _id avatar")
     .lean();

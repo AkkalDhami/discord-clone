@@ -329,7 +329,9 @@ export default async function Page(
         }}
       />
 
-      <ScrollArea className="h-[calc(100vh-12rem)] pt-3 sm:h-[calc(100vh-11.1rem)]">
+      <ScrollArea
+        viewportId="messages-scroll-viewport"
+        className="h-[calc(100vh-12rem)] pt-3 sm:h-[calc(100vh-11.1rem)]">
         {groupConversation?.type !== "direct" && friend && friendship ? (
           <DirectChatWelcome
             friend={{

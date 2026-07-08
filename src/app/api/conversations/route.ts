@@ -112,6 +112,9 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
   const validationResult = validateRequest(ConversationSchema, body);
 
   if (!validationResult.success) {
+    console.log({
+      erros: validationResult.errors
+    });
     return ApiResponse({
       statusCode: STATUS_CODES.BAD_REQUEST,
       message: "Invalid request body",

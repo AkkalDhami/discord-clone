@@ -10,12 +10,23 @@ import {
   hashPassword
 } from "@/helpers/auth.helper";
 import {
+  OTP_CODE_EXPIRY,
+  OTP_CODE_LENGTH,
   RATE_LIMIT_MAX_REQUESTS,
   RATE_LIMIT_WINDOW
 } from "@/constants/auth-constants";
 import Profile from "@/models/profile.model";
 import { ApiResponse } from "@/utils/api-response";
 import { AsyncHandler } from "@/utils/async-handler";
+import redis from "@/configs/redis";
+import {
+  checkOtpRestrictions,
+  sendOtp,
+  trackOtpRequests
+} from "@/helpers/otp.helper";
+import { generateOTP } from "@/helpers/token.helper";
+import { UserSignupData } from "@/types/auth";
+import { logger } from "@/utils/logger";
 
 export const POST = AsyncHandler(async (req: NextRequest) => {
   const formData = await req.json();
@@ -72,37 +83,70 @@ export const POST = AsyncHandler(async (req: NextRequest) => {
     });
   }
 
+  const pending = await redis.get(`user:pending:${email}`);
+
+  if (pending) {
+    return ApiResponse({
+      success: false,
+      statusCode: STATUS_CODES.CONFLICT,
+      message: "Signup already in progress. Check your email for OTP."
+    });
+  }
+
   const hashedPassword = await hashPassword(password);
 
-  const newUser = new Profile({
+  const otpRestrictionResult = await checkOtpRestrictions(email);
+  if (!otpRestrictionResult.success) {
+    return ApiResponse({
+      success: false,
+      statusCode: otpRestrictionResult.statusCode,
+      message: otpRestrictionResult.message
+    });
+  }
+
+  const trackOtpResult = await trackOtpRequests(email);
+  if (!trackOtpResult.success) {
+    return ApiResponse({
+      success: false,
+      statusCode: trackOtpResult.statusCode,
+      message: trackOtpResult.message
+    });
+  }
+
+  const { code, hashCode } = generateOTP(OTP_CODE_LENGTH);
+
+  logger.info(`OTP generated successfully: ${code}`);
+
+  const redisKey = `user:${email}:${hashCode}`;
+  const indexKey = `user:pending:${email}`;
+
+  await redis.set(redisKey, hashCode, {
+    px: OTP_CODE_EXPIRY
+  });
+
+  await sendOtp({
+    name,
+    email,
+    code,
+    hashCode,
+    type: "verify-email",
+    subject: "Verify your email"
+  });
+
+  const userData: UserSignupData = {
     name,
     email,
     password: hashedPassword,
     username
+  };
+
+  await redis.set(indexKey, JSON.stringify(userData), {
+    px: OTP_CODE_EXPIRY
   });
-
-  if (!newUser) {
-    return ApiResponse({
-      success: false,
-      statusCode: STATUS_CODES.INTERNAL_SERVER_ERROR,
-      message: "Something went wrong. Please try again."
-    });
-  }
-
-  await newUser.save();
 
   return ApiResponse({
     success: true,
     statusCode: STATUS_CODES.CREATED,
-    message: "User registered successfully",
-    data: {
-      user: {
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        username: newUser.username,
-        avatar: newUser.avatar
-      }
-    }
+    message: "User registered successfully"
   });
 });
