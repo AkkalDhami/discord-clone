@@ -25,23 +25,21 @@ export function useMessage() {
     mutationFn: messageApi.createMessage,
 
     onMutate: async payload => {
-      const { conversationId, content } = payload;
+      const paramKey = payload.channelId ? "channelId" : "conversationId";
+      const paramValue = payload.channelId ?? payload.conversationId ?? "";
+      const queryKey = ["messages", paramKey, paramValue, false] as const;
 
       // stop ongoing refetch
-      await queryClient.cancelQueries({
-        queryKey: ["messages", conversationId]
-      });
+      await queryClient.cancelQueries({ queryKey });
 
-      const previousData = queryClient.getQueryData([
-        "messages",
-        conversationId
-      ]);
+      const previousData = queryClient.getQueryData(queryKey);
 
       // optimistic message object
       const optimisticMessage = {
         _id: uuid(), // temporary id
-        conversation: conversationId,
-        content,
+        conversation: payload.conversationId,
+        channelId: payload.channelId,
+        content: payload.content,
         createdAt: new Date().toISOString(),
         edited: false,
         isBot: false,
@@ -55,7 +53,7 @@ export function useMessage() {
       };
 
       // update cache (insert into first page because your API returns newest first)
-      queryClient.setQueryData(["messages", conversationId], (old: any) => {
+      queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old;
 
         return {
@@ -74,14 +72,17 @@ export function useMessage() {
         };
       });
 
-      return { previousData, optimisticId: optimisticMessage._id };
+      return { previousData, optimisticId: optimisticMessage._id, queryKey };
     },
 
     onSuccess: (res, payload, context) => {
-      const { conversationId } = payload;
+      const queryKey = context?.queryKey as
+        | readonly [string, string, string, boolean]
+        | undefined;
 
-      // replace optimistic message with real message
-      queryClient.setQueryData(["messages", conversationId], (old: any) => {
+      if (!queryKey) return;
+
+      queryClient.setQueryData(queryKey, (old: any) => {
         if (!old) return old;
 
         return {
@@ -100,18 +101,21 @@ export function useMessage() {
     },
 
     onError: (_err, payload, context) => {
-      const { conversationId } = payload;
+      const queryKey = context?.queryKey as
+        | readonly [string, string, string, boolean]
+        | undefined;
 
-      // rollback to previous state
-      queryClient.setQueryData(
-        ["messages", conversationId],
-        context?.previousData
-      );
+      if (!queryKey) return;
+
+      queryClient.setQueryData(queryKey, context?.previousData);
     },
 
     onSettled: (_data, _err, payload) => {
+      const paramKey = payload.channelId ? "channelId" : "conversationId";
+      const paramValue = payload.channelId ?? payload.conversationId ?? "";
+
       queryClient.invalidateQueries({
-        queryKey: ["messages", payload.conversationId]
+        queryKey: ["messages", paramKey, paramValue, false]
       });
       queryClient.invalidateQueries({ queryKey: ["conversations"] });
     }
@@ -215,7 +219,7 @@ export function useInfiniteMessages({
   onlyPinned = false
 }: Omit<FetchMessagePayload, "cursor">) {
   return useInfiniteQuery<FetchMessagesResponse>({
-    queryKey: ["messages", paramKey, onlyPinned],
+    queryKey: ["messages", paramKey, paramValue, onlyPinned],
 
     queryFn: async ({ pageParam }) => {
       const res = await messageApi.fetchMessages({

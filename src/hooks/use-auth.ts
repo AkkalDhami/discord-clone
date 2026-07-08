@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-query";
 import * as authApi from "@/lib/api/auth";
 import {
+  ChangePasswordFormData,
   ForgotPasswordFormData,
   ResetPasswordFormData,
   SigninFormData,
@@ -17,6 +18,7 @@ import {
   GetMeResponse,
   SigninResponse
 } from "@/interface/response";
+import { UpdateUserProfile } from "@/types/auth";
 
 export function useAuth() {
   const queryClient = useQueryClient();
@@ -36,6 +38,17 @@ export function useAuth() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
     }
+  });
+
+  const verifyEmailMutation = useMutation({
+    mutationFn: authApi.verifyEmail,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+    }
+  });
+
+  const resendVerificationOtpMutation = useMutation({
+    mutationFn: authApi.resendVerificationOtp
   });
 
   const loginMutation = useMutation({
@@ -76,6 +89,41 @@ export function useAuth() {
     }
   });
 
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: ChangePasswordFormData) => {
+      const res = await authApi.changePassword(data);
+      return res as ApiResponse;
+    }
+  });
+
+  const updateProfileMutation = useMutation({
+    mutationFn: async (data: UpdateUserProfile) => {
+      const res = await authApi.updateProfile(data);
+      return res as SigninResponse;
+    },
+    onSuccess: response => {
+      if (response?.success && response?.data?.user) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        queryClient.setQueryData(["auth", "me"], (old: any) => {
+          if (!old) {
+            return response;
+          }
+
+          return {
+            ...old,
+            data: {
+              ...old.data,
+              user: {
+                ...old.data?.user,
+                ...response.data.user
+              }
+            }
+          };
+        });
+      }
+    }
+  });
+
   return {
     user: userQuery.data?.data?.user,
     error: userQuery.error,
@@ -88,6 +136,10 @@ export function useAuth() {
     isLoggingOut: logoutMutation.isPending,
 
     signup: signupMutation.mutateAsync,
+    verifyEmail: verifyEmailMutation.mutateAsync,
+    verifyEmailLoading: verifyEmailMutation.isPending,
+    resendVerificationOtp: resendVerificationOtpMutation.mutateAsync,
+    resendVerificationOtpLoading: resendVerificationOtpMutation.isPending,
 
     loginLoading: loginMutation.isPending,
     signupLoading: signupMutation.isPending,
@@ -99,6 +151,12 @@ export function useAuth() {
     verifyResetOtpLoading: verifyResetOtpMutation.isPending,
 
     resetPassword: resetPasswordMutation.mutateAsync,
-    resetPasswordLoading: resetPasswordMutation.isPending
+    resetPasswordLoading: resetPasswordMutation.isPending,
+
+    changePassword: changePasswordMutation.mutateAsync,
+    changePasswordLoading: changePasswordMutation.isPending,
+
+    updateProfile: updateProfileMutation.mutateAsync,
+    updateProfileLoading: updateProfileMutation.isPending
   };
 }

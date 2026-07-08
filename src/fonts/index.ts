@@ -5,29 +5,54 @@ import {
   Fira_Sans,
   Fira_Mono,
   Fira_Code,
-  Source_Code_Pro
+  Source_Code_Pro,
+  Manrope,
+  Geist_Mono,
+  Geist
 } from "next/font/google";
 
-export const inter = Inter({ variable: "--font-inter", subsets: ["latin"] });
+export const sans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800", "900"]
+});
+
+export const mono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800", "900"]
+});
+
+export const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800", "900"]
+});
+
 export const roboto = Roboto({
-  weight: ["400", "500", "700"],
+  weight: ["400", "500", "700", "800", "900"],
   variable: "--font-roboto",
   subsets: ["latin"]
 });
+
 export const robotoMono = Roboto_Mono({
   variable: "--font-roboto-mono",
-  subsets: ["latin"]
-});
-export const firaSans = Fira_Sans({
-  variable: "--font-fira-sans",
   subsets: ["latin"],
   weight: ["400", "500", "700"]
 });
+
+export const firaSans = Fira_Sans({
+  variable: "--font-fira-sans",
+  subsets: ["latin"],
+  weight: ["400", "500", "700", "800", "900"]
+});
+
 export const firaMono = Fira_Mono({
   variable: "--font-fira-mono",
   subsets: ["latin"],
   weight: ["400", "500", "700"]
 });
+
 export const firaCode = Fira_Code({
   variable: "--font-fira-code",
   subsets: ["latin"],
@@ -36,5 +61,12 @@ export const firaCode = Fira_Code({
 
 export const sourceCodePro = Source_Code_Pro({
   variable: "--font-source-code",
-  subsets: ["latin"]
+  subsets: ["latin"],
+  weight: ["400", "500", "700"]
+});
+
+export const manrope = Manrope({
+  variable: "--font-manrope",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"]
 });

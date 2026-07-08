@@ -36,6 +36,7 @@ export type ModalType =
   | "kick-group-members"
   | "add-group-members"
   | "profile-sidebar"
+  | "edit-profile-picture"
   | "edit-message"
   | "delete-message"
   | "forward-message"

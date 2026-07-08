@@ -104,7 +104,8 @@ export const currentAuthUser = async () => {
       email: user.email,
       avatar: user.avatar,
       createdAt: user.createdAt,
-      updatedAt: user.updatedAt
+      updatedAt: user.updatedAt,
+      isEmailVerified: user.isEmailVerified
     };
 
     return userData;
