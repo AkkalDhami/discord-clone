@@ -3,7 +3,7 @@ import z from "zod";
 
 export const ConversationSchema = z.object({
   participants: z.array(z.string()),
-  admin: z.string().min(1, "Admin Id is required"),
+  admin: z.string().optional(),
   name: z.string().optional(),
   type: z.enum(CONVERSATION_TYPES, {
     error: "Invalid conversation type"
