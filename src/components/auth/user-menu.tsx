@@ -11,6 +11,7 @@ import {
 import { UserAvatar } from "@/components/common/user-avatar";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { useUser } from "@/hooks/use-user-store";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { UserSettingsDialog } from "@/components/dialogs/user-settings-dialog";
@@ -24,8 +25,11 @@ type UserMenuProps = {
 
 export function UserMenu({ name, username, image, email }: UserMenuProps) {
   const { logout } = useAuth();
+  const { user: storedUser } = useUser();
   const router = useRouter();
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const profile = storedUser || { name, username, email, avatar: image };
 
   const handleLogout = async () => {
     try {
@@ -55,26 +59,26 @@ export function UserMenu({ name, username, image, email }: UserMenuProps) {
 
         <DropdownMenuContent align="end" className="relative z-50 w-56">
           <div className="space-y-1 px-2 py-1.5 text-sm">
-            <p className="font-medium">{name || "User"}</p>
-            {username && (
+            <p className="font-medium">{profile.name || "User"}</p>
+            {profile.username && (
               <p className="text-muted-foreground truncate text-xs">
-                {`@${username}`}
+                {`@${profile.username}`}
               </p>
             )}
-            {email && (
+            {profile.email && (
               <p className="text-muted-foreground truncate text-xs">
-                {`${email}`}
+                {`${profile.email}`}
               </p>
             )}
           </div>
 
           <DropdownMenuSeparator />
 
-          {/* <DropdownMenuItem
+          <DropdownMenuItem
             onClick={() => setSettingsOpen(true)}
             className="cursor-pointer">
             Profile Settings
-          </DropdownMenuItem> */}
+          </DropdownMenuItem>
 
           <DropdownMenuSeparator />
 
@@ -89,12 +93,7 @@ export function UserMenu({ name, username, image, email }: UserMenuProps) {
       <UserSettingsDialog
         open={settingsOpen}
         onOpenChange={setSettingsOpen}
-        user={{
-          name,
-          username,
-          email,
-          image
-        }}
+        user={profile}
       />
     </>
   );

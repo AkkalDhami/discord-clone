@@ -36,7 +36,7 @@ import { OAuthSignin } from "@/components/auth/oauth-signin";
 export function SignupForm() {
   const { signup, signupLoading } = useAuth();
   const router = useRouter();
-  const { setUser } = useUser();
+  const { setOtp } = useUser();
 
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [showConfirmPassword, setShowConfirmPassword] =
@@ -59,16 +59,13 @@ export function SignupForm() {
 
       if (res.success) {
         toast.success(res.message || "Singup successful");
-        setUser({
-          id: res.user?.id,
-          name: res.user?.name,
-          username: res?.user?.username,
-          email: res.user?.email,
-          avatar: res.user?.avatar
+        setOtp({
+          email: values.email,
+          type: "verify-email"
         });
         form.reset();
 
-        router.push("/signin");
+        router.push("/verify-email");
         return;
       } else {
         toast.error(res.message || "Something went wrong.");
